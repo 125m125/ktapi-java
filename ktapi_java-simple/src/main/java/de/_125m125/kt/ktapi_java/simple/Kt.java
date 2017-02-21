@@ -44,7 +44,7 @@ public class Kt {
     private static final String        SIGNATURE_ALGORITHM = "HmacSHA256";
 
     /** The base url of the api. */
-    private static final String        BASE_URL            = "https://kt.125m125.de/api/";
+    protected static final String      BASE_URL            = "https://kt.125m125.de/api/";
 
     /** The maximum offset of the timestamp from the current time. */
     private static final long          MAX_OFFSET          = 4 * 60 * 1000;
@@ -78,23 +78,23 @@ public class Kt {
     }
 
     /** The CsvParser used to parse csv answers. */
-    private static final CsvParser  csvParser  = new CsvParser();
+    protected static final CsvParser  csvParser  = new CsvParser();
 
     /** The JsonParser used to parse json answers. */
-    private static final JsonParser jsonParser = new JsonParser();
+    protected static final JsonParser jsonParser = new JsonParser();
 
     static {
         Kt.df.setRoundingMode(RoundingMode.HALF_UP);
     }
 
     /** The user. */
-    private final User user;
+    protected final User user;
 
     /** The time offset. */
-    private long       timeOffset;
+    private long         timeOffset;
 
     /** The last used timestamp. */
-    private long       lastTime;
+    private long         lastTime;
 
     /**
      * Instantiates a new kt.

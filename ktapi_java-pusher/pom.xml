@@ -6,17 +6,19 @@
 		<artifactId>ktapi_java</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>ktapi_java-simple</artifactId>
-	<packaging>jar</packaging>
-	
+	<artifactId>ktapi_java-pusher</artifactId>
+
 	<dependencies>
 		<dependency>
-			<groupId>com.univocity</groupId>
-			<artifactId>univocity-parsers</artifactId>
-			<version>2.3.0</version>
-			<type>jar</type>
+			<groupId>com.pusher</groupId>
+			<artifactId>pusher-java-client</artifactId>
+			<version>1.4.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>de._125m125.kt</groupId>
+			<artifactId>ktapi_java-simple</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
