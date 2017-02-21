@@ -1,0 +1,13 @@
+language: java
+jdk:
+  - oraclejdk8
+
+deploy:
+  provider: releases
+  api_key:
+    secure: NoGsHFyZt5b6rbTCigOtUgkLMVV8HvHoF2u2JViOD2nkMqHiD7iTvE31Ybtol3v0eTtQVKfDWlegiY+YqlL7+iLUSa6w7nnKIvZ7IM97OyThMUEbXbxsxTy2dhJkxZ2kGCr7g1YbVSdPb3E2iNsp+eR7D9HuVN66ufRHmzsQKA9f9yx+jqgFPBsEwugt+k7jtUNwnoCoP2lUq+iKUD8B9P9AX9Yy1eA38N+xMkW03jQPwSx6A7IXYmVGmAejI/CYU6OBcry/3ZkjOKFRJkD8CKpPB40bKB0uPtxLHXOv4TrB4dtMq8pQoDUDlGEXMx8qvDfI03maJ0kt2W0Plx9FIMKJ81coooe/+miZayQW5uO/p7RUR6mqLXacUgIWZtoh417yg+UjQ0QanUnbcPnXezaGpXHJtGbypQdDHFK3r/eCKO96Uf5B5xo+lmF4Jzz15enW/O4aQWZixvOg7jy+yy+xWjQCxT9X08qhtwnCkAylY8mKg+gnYVYvXCtO/sazUUVjUeSaJbWOfne88Hpm2m3dZn44UQRgRdi5/xZNRu0NIMEIultlD1Ayv7OVHOYcZRHj0hf3e/GrmAfkKSpLc01IuhtlHuX4yGzyK9YCvQ8m3ENnKsObH8cjOrsXOgfRkjIejnGdmQY6AjnCELO+LgYjkRjmdg9eGDoCbKJXBAI=
+  file_glob: true
+  file: "**/*.jar"
+  skip_cleanup: true
+  on:
+    repo: 125m125/ktapi-java
