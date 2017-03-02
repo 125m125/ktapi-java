@@ -148,4 +148,36 @@ public class PusherKt extends Kt implements PrivateChannelEventListener {
         subscribe(channelName, "update", listener);
     }
 
+    public void subscribeToAll(final PusherListener listener, final boolean selfCreated) {
+        subscribeToHistory(listener);
+        subscribeToItems(listener, selfCreated);
+        subscribeToMessages(listener, selfCreated);
+        subscribeToOrderbook(listener);
+        subscribeToPayouts(listener, selfCreated);
+        subscribeToTrades(listener, selfCreated);
+    }
+
+    public void subscribeToUpdates(final PusherListener listener, final String path, final boolean selfCreated) {
+        switch (path) {
+            case "messages":
+                subscribeToMessages(listener, selfCreated);
+                break;
+            case "trades":
+                subscribeToTrades(listener, selfCreated);
+                break;
+            case "itemlist":
+                subscribeToItems(listener, selfCreated);
+                break;
+            case "payouts":
+                subscribeToPayouts(listener, selfCreated);
+                break;
+            case "history":
+                subscribeToHistory(listener);
+                break;
+            case "order":
+                subscribeToOrderbook(listener);
+                break;
+        }
+    }
+
 }
