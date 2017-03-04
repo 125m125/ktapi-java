@@ -10,14 +10,17 @@ import com.univocity.parsers.common.processor.RowProcessor;
 
 public class ObjectParser<T> implements RowProcessor {
 
-    private final Class<T>          clazz;
+    private final Class<T>             clazz;
 
-    private List<ParseableField<T>> fields;
+    private List<ParseableField<T>>    fields;
 
-    private final List<T>           parsedResults;
+    private final List<T>              parsedResults;
 
-    public ObjectParser(final Class<T> clazz) {
+    private final TypeConverterFactory converterFactory;
+
+    public ObjectParser(final Class<T> clazz, final TypeConverterFactory converterFactory) {
         this.clazz = clazz;
+        this.converterFactory = converterFactory;
         this.parsedResults = new ArrayList<>();
     }
 
@@ -30,13 +33,9 @@ public class ObjectParser<T> implements RowProcessor {
 
         for (int i = 0; i < headers.length; i++) {
             final String header = headers[i].replaceAll(" ", "_");
-            System.out.println("header " + i + ": " + header);
             for (final Field f : clazzFields) {
-                System.out.println("comparing " + f.getName());
                 if (f.getName().equals(header)) {
-                    System.out.println("potential match!" + f.getType());
-                    final Converter c = Converter.getConverterFor(f.getType());
-                    System.out.println(c);
+                    final Function<String, Object> c = this.converterFactory.getConverterFor(f.getType());
                     if (c != null) {
                         this.fields.add(new ParseableField<>(f, i, c));
                     }
@@ -70,11 +69,11 @@ public class ObjectParser<T> implements RowProcessor {
     }
 
     private static class ParseableField<T> {
-        private final Field     field;
-        private final int       colIndex;
-        private final Converter converter;
+        private final Field                    field;
+        private final int                      colIndex;
+        private final Function<String, Object> converter;
 
-        public ParseableField(final Field field, final int colIndex, final Converter converter) {
+        public ParseableField(final Field field, final int colIndex, final Function<String, Object> converter) {
             super();
             this.field = field;
             this.colIndex = colIndex;
@@ -89,39 +88,6 @@ public class ObjectParser<T> implements RowProcessor {
             } finally {
                 this.field.setAccessible(false);
             }
-        }
-    }
-
-    private static enum Converter {
-        StringConverter((e) -> e),
-        BooleanConverter((e) -> e == null ? null : Boolean.parseBoolean(e)),
-        IntConverter((e) -> e == null ? null : Integer.parseInt(e)),
-        LongConverter((e) -> e == null ? null : Long.parseLong(e)),
-        DoubleConverter((e) -> e == null ? null : Double.parseDouble(e));
-
-        private static Converter getConverterFor(final Class<?> clazz) {
-            if (clazz.isAssignableFrom(String.class)) {
-                return StringConverter;
-            } else if (clazz.isAssignableFrom(Boolean.class) || clazz.isAssignableFrom(boolean.class)) {
-                return BooleanConverter;
-            } else if (clazz.isAssignableFrom(Integer.class) || clazz.isAssignableFrom(int.class)) {
-                return IntConverter;
-            } else if (clazz.isAssignableFrom(Long.class) || clazz.isAssignableFrom(long.class)) {
-                return LongConverter;
-            } else if (clazz.isAssignableFrom(Double.class) || clazz.isAssignableFrom(double.class)) {
-                return DoubleConverter;
-            }
-            return null;
-        }
-
-        private final Function<String, Object> converter;
-
-        private Converter(final Function<String, Object> converter) {
-            this.converter = converter;
-        }
-
-        public Object apply(final String s) {
-            return this.converter.apply(s);
         }
     }
 }

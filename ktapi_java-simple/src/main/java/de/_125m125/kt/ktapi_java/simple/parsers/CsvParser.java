@@ -8,6 +8,18 @@ import com.univocity.parsers.csv.CsvParserSettings;
 import de._125m125.kt.ktapi_java.core.Parser;
 
 public class CsvParser implements Parser<List<String[]>, List<?>, Class<?>> {
+    private static final TypeConverterFactory DEFAULT_CONVERTER_FACTORY = new TypeConverterFactory();
+
+    private final TypeConverterFactory        converterFactory;
+
+    public CsvParser() {
+        this.converterFactory = CsvParser.DEFAULT_CONVERTER_FACTORY;
+    }
+
+    public CsvParser(final TypeConverterFactory converterFactory) {
+        this.converterFactory = converterFactory;
+
+    }
 
     @Override
     public List<String[]> parse(final Reader content) {
@@ -20,7 +32,7 @@ public class CsvParser implements Parser<List<String[]>, List<?>, Class<?>> {
 
     @Override
     public List<?> parse(final Reader content, final Class<?> U) {
-        final ObjectParser<?> rowProcessor = new ObjectParser<>(U);
+        final ObjectParser<?> rowProcessor = new ObjectParser<>(U, this.converterFactory);
 
         final CsvParserSettings parserSettings = new CsvParserSettings();
         parserSettings.setProcessor(rowProcessor);
