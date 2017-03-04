@@ -213,24 +213,24 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
         switch (path) {
-        case "messages":
-            subscribeToMessages(listener, u, selfCreated);
-            break;
-        case "trades":
-            subscribeToTrades(listener, u, selfCreated);
-            break;
-        case "itemlist":
-            subscribeToItems(listener, u, selfCreated);
-            break;
-        case "payouts":
-            subscribeToPayouts(listener, u, selfCreated);
-            break;
-        case "history":
-            subscribeToHistory(listener);
-            break;
-        case "order":
-            subscribeToOrderbook(listener);
-            break;
+            case "messages":
+                subscribeToMessages(listener, u, selfCreated);
+                break;
+            case "trades":
+                subscribeToTrades(listener, u, selfCreated);
+                break;
+            case "itemlist":
+                subscribeToItems(listener, u, selfCreated);
+                break;
+            case "payouts":
+                subscribeToPayouts(listener, u, selfCreated);
+                break;
+            case "history":
+                subscribeToHistory(listener);
+                break;
+            case "order":
+                subscribeToOrderbook(listener);
+                break;
         }
     }
 
