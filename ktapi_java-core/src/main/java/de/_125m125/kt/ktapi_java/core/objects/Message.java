@@ -1,15 +1,11 @@
-package de._125m125.kt.ktapi_java.simple.objects;
+package de._125m125.kt.ktapi_java.core.objects;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.univocity.parsers.annotations.Parsed;
-
 public class Message {
     private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-    @Parsed
     private String                   timestamp;
-    @Parsed
     private String                   message;
 
     public Message() {

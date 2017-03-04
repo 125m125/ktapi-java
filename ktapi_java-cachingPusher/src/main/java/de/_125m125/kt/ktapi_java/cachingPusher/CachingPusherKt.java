@@ -9,16 +9,18 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 
 import de._125m125.kt.ktapi_java.cachingPusher.objects.TimestampedList;
-import de._125m125.kt.ktapi_java.pusher.PusherKt;
-import de._125m125.kt.ktapi_java.pusher.PusherListener;
-import de._125m125.kt.ktapi_java.pusher.PusherNotification;
-import de._125m125.kt.ktapi_java.simple.objects.User;
-import de._125m125.kt.ktapi_java.simple.parsers.Parser;
+import de._125m125.kt.ktapi_java.core.KtCachingRequester;
+import de._125m125.kt.ktapi_java.core.KtNotificationManager;
+import de._125m125.kt.ktapi_java.core.KtRequester;
+import de._125m125.kt.ktapi_java.core.Notification;
+import de._125m125.kt.ktapi_java.core.NotificationListener;
+import de._125m125.kt.ktapi_java.core.Parser;
+import de._125m125.kt.ktapi_java.core.objects.User;
 
 /**
  * 
  */
-public class CachingPusherKt extends PusherKt implements PusherListener {
+public class CachingPusherKt implements KtRequester, NotificationListener, KtCachingRequester {
 
     /** The Set of paths that can be cached. */
     private static final Set<String>                        cacheablePaths = ImmutableSet.of("messages", "trades",
@@ -28,16 +30,19 @@ public class CachingPusherKt extends PusherKt implements PusherListener {
     private final LoadingCache<CacheKey<Object, Object>, ?> cache          = CacheBuilder.newBuilder()
             .build(new CacheLoader<>());
 
+    private final KtRequester                               requester;
+
     /**
      * Instantiates a new caching pusher kt.
      *
      * @param user
      *            the user
      */
-    public CachingPusherKt(final User user) {
-        super(user);
+    public CachingPusherKt(final User user, final KtRequester requester,
+            final KtNotificationManager ktNotificationManager) {
+        this.requester = requester;
         for (final String s : CachingPusherKt.cacheablePaths) {
-            subscribeToUpdates(this, s, true);
+            ktNotificationManager.subscribeToUpdates(this, user, s, true);
         }
     }
 
@@ -61,33 +66,19 @@ public class CachingPusherKt extends PusherKt implements PusherListener {
         }
     }
 
-    /**
-     * Perform a request to the kadcontrade api ignoring the cache of the
-     * CachingPusherKt.
-     *
-     * @param <T>
-     *            the generic type of the helper
-     * @param <U>
-     *            the generic type of the result
-     * @param method
-     *            the method of the request
-     * @param path
-     *            the path of the request
-     * @param params
-     *            the parameters for the request
-     * @param auth
-     *            true, if authentication is required for the request
-     * @param parser
-     *            the parser
-     * @param helper
-     *            the helper for the parser
-     * @return the parsed result
-     * @throws ClassCastException
-     *             if the result of the parser is not of the Type &lt;U&gt;
+    @Override
+    public <T> T performPlainRequest(final String method, final String path, final Map<String, String> params,
+            final boolean auth, final Parser<T, ?, ?> parser) {
+        return performRequest(method, path, params, auth, parser, null);
+    }
+
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.cachingPusher.KtCachingRequester#performUncachedRequest(java.lang.String, java.lang.String, java.util.Map, boolean, de._125m125.kt.ktapi_java.core.Parser, T)
      */
+    @Override
     public <T, U> U performUncachedRequest(final String method, final String path, final Map<String, String> params,
             final boolean auth, final Parser<?, ?, T> parser, final T helper) {
-        return super.performRequest(method, path, params, auth, parser, helper);
+        return this.requester.performRequest(method, path, params, auth, parser, helper);
     }
 
     /**
@@ -103,13 +94,10 @@ public class CachingPusherKt extends PusherKt implements PusherListener {
         return "GET".equals(method) && CachingPusherKt.cacheablePaths.contains(path);
     }
 
-    /**
-     * Checks if a given object might have updated on the server.
-     *
-     * @param toCheck
-     *            the object to check
-     * @return true, if the given object might have updated on the server
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.cachingPusher.KtCachingRequester#hasUpdated(java.lang.Object)
      */
+    @Override
     public boolean hasUpdated(final Object toCheck) {
         if (!(toCheck instanceof Timestamped)) {
             return true;
@@ -128,7 +116,7 @@ public class CachingPusherKt extends PusherKt implements PusherListener {
      * ktapi_java.pusher.PusherNotification)
      */
     @Override
-    public void update(final PusherNotification notification) {
+    public void update(final Notification notification) {
         for (final CacheKey<Object, Object> entry : this.cache.asMap().keySet()) {
             if (entry.path.startsWith(notification.getDetails().get("source"))) {
                 this.cache.invalidate(entry);
@@ -220,41 +208,55 @@ public class CachingPusherKt extends PusherKt implements PusherListener {
          */
         @Override
         public boolean equals(final Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             @SuppressWarnings("rawtypes")
             final CacheKey other = (CacheKey) obj;
-            if (this.auth != other.auth)
+            if (this.auth != other.auth) {
                 return false;
+            }
             if (this.helper == null) {
-                if (other.helper != null)
+                if (other.helper != null) {
                     return false;
-            } else if (!this.helper.equals(other.helper))
+                }
+            } else if (!this.helper.equals(other.helper)) {
                 return false;
+            }
             if (this.method == null) {
-                if (other.method != null)
+                if (other.method != null) {
                     return false;
-            } else if (!this.method.equals(other.method))
+                }
+            } else if (!this.method.equals(other.method)) {
                 return false;
+            }
             if (this.params == null) {
-                if (other.params != null)
+                if (other.params != null) {
                     return false;
-            } else if (!this.params.equals(other.params))
+                }
+            } else if (!this.params.equals(other.params)) {
                 return false;
+            }
             if (this.parser == null) {
-                if (other.parser != null)
+                if (other.parser != null) {
                     return false;
-            } else if (!this.parser.equals(other.parser))
+                }
+            } else if (!this.parser.equals(other.parser)) {
                 return false;
+            }
             if (this.path == null) {
-                if (other.path != null)
+                if (other.path != null) {
                     return false;
-            } else if (!this.path.equals(other.path))
+                }
+            } else if (!this.path.equals(other.path)) {
                 return false;
+            }
             return true;
         }
 
@@ -288,7 +290,9 @@ public class CachingPusherKt extends PusherKt implements PusherListener {
          *         not be timestamped
          */
         private Object timestamp(final Object o) {
-            if (o instanceof List) { return new TimestampedList<>((List<?>) o, System.currentTimeMillis()); }
+            if (o instanceof List) {
+                return new TimestampedList<>((List<?>) o, System.currentTimeMillis());
+            }
             return o;
         }
     }

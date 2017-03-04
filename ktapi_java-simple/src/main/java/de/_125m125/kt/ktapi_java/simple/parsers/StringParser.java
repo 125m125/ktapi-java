@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import de._125m125.kt.ktapi_java.core.Parser;
+
 public class StringParser implements Parser<String, String, Void> {
 
     @Override

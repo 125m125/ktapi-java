@@ -1,13 +1,8 @@
-package de._125m125.kt.ktapi_java.simple;
-
-import com.univocity.parsers.annotations.Parsed;
+package de._125m125.kt.ktapi_java.core;
 
 public class Result<T> {
-    @Parsed
     private boolean success;
-    @Parsed
     private String  message;
-    @Parsed
     private T       result;
 
     public Result() {

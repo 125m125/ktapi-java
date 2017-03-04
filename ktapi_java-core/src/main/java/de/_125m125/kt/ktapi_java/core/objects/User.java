@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi_java.simple.objects;
+package de._125m125.kt.ktapi_java.core.objects;
 
 public class User {
     private final String uid;

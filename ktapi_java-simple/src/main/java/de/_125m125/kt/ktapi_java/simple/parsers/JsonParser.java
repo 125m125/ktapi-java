@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import de._125m125.kt.ktapi_java.core.Parser;
+
 public class JsonParser implements Parser<JsonObject, Object, TypeToken<?>> {
 
     private static final Gson                       GSON   = new Gson();

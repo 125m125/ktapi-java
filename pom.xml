@@ -32,6 +32,8 @@
 		<module>ktapi_java-simple</module>
 		<module>ktapi_java-pusher</module>
 		<module>ktapi_java-cachingPusher</module>
+		<module>ktapi_java-core</module>
+		<module>ktapi_java-full</module>
 	</modules>
 
 	<build>

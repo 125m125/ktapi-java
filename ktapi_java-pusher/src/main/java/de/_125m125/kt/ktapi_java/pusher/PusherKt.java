@@ -1,13 +1,11 @@
 package de._125m125.kt.ktapi_java.pusher;
 
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.StampedLock;
 
-import com.google.gson.reflect.TypeToken;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
@@ -17,18 +15,25 @@ import com.pusher.client.connection.ConnectionState;
 import com.pusher.client.connection.ConnectionStateChange;
 import com.pusher.client.util.HttpAuthorizer;
 
-import de._125m125.kt.ktapi_java.simple.Kt;
-import de._125m125.kt.ktapi_java.simple.objects.User;
+import de._125m125.kt.ktapi_java.core.JsonParser;
+import de._125m125.kt.ktapi_java.core.KtNotificationManager;
+import de._125m125.kt.ktapi_java.core.Notification;
+import de._125m125.kt.ktapi_java.core.NotificationListener;
+import de._125m125.kt.ktapi_java.core.objects.User;
 
-public class PusherKt extends Kt implements PrivateChannelEventListener {
-    private final Pusher                            pusher;
+public class PusherKt implements PrivateChannelEventListener, KtNotificationManager {
+    private final Pusher                                  pusher;
 
-    private final Map<String, List<PusherListener>> listeners     = new HashMap<>();
-    private final StampedLock                       listenersLock = new StampedLock();
+    private final Map<String, List<NotificationListener>> listeners     = new HashMap<>();
+    private final StampedLock                             listenersLock = new StampedLock();
 
-    public PusherKt(final User user) {
-        super(user);
-        final HttpAuthorizer authorizer = new HttpAuthorizer(Kt.BASE_URL + "pusher");
+    private final JsonParser<Notification>                parser;
+    private final User                                    user;
+
+    public PusherKt(final User user, final JsonParser<Notification> parser, final String baseUrl) {
+        this.user = user;
+        this.parser = parser;
+        final HttpAuthorizer authorizer = new HttpAuthorizer(baseUrl + "pusher");
         final HashMap<String, String> parameters = new HashMap<>(3);
         parameters.put("uid", user.getUID());
         parameters.put("tid", user.getTID());
@@ -56,11 +61,9 @@ public class PusherKt extends Kt implements PrivateChannelEventListener {
     @Override
     public void onEvent(final String channelname, final String eventName, final String data) {
         final String unescapedData = data.substring(1, data.length() - 1).replaceAll("\\\\\"", "\"");
-        final PusherNotification notification = (PusherNotification) Kt.jsonParser
-                .parse(new StringReader(unescapedData), new TypeToken<PusherNotification>() {
-                });
+        final Notification notification = this.parser.parse(unescapedData);
         final long stamp = this.listenersLock.tryOptimisticRead();
-        List<PusherListener> receivers = this.listeners.get(channelname);
+        List<NotificationListener> receivers = this.listeners.get(channelname);
         if (!this.listenersLock.validate(stamp)) {
             final long readLock = this.listenersLock.readLock();
             try {
@@ -69,7 +72,7 @@ public class PusherKt extends Kt implements PrivateChannelEventListener {
                 this.listenersLock.unlockRead(readLock);
             }
         }
-        for (final PusherListener pl : receivers) {
+        for (final NotificationListener pl : receivers) {
             pl.update(notification);
         }
     }
@@ -85,9 +88,9 @@ public class PusherKt extends Kt implements PrivateChannelEventListener {
         arg1.printStackTrace();
     }
 
-    public void subscribe(final String channel, final String eventName, final PusherListener listener) {
+    public void subscribe(final String channel, final String eventName, final NotificationListener listener) {
         final boolean subscribe;
-        final List<PusherListener> receivers;
+        final List<NotificationListener> receivers;
         final long writeLock = this.listenersLock.writeLock();
         try {
             subscribe = !this.listeners.containsKey(channel);
@@ -106,77 +109,128 @@ public class PusherKt extends Kt implements PrivateChannelEventListener {
         }
     }
 
-    public void subscribeToMessages(final PusherListener listener, final boolean selfCreated) {
-        final String channelName = "private-" + this.user.getTID() + "_rMessages";
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
+     */
+    @Override
+    public void subscribeToMessages(final NotificationListener listener, final User user, final boolean selfCreated) {
+        if (!user.equals(this.user)) {
+            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
+        }
+        final String channelName = "private-" + user.getTID() + "_rMessages";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
         }
     }
 
-    public void subscribeToTrades(final PusherListener listener, final boolean selfCreated) {
-        final String channelName = "private-" + this.user.getTID() + "_rOrders";
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
+     */
+    @Override
+    public void subscribeToTrades(final NotificationListener listener, final User user, final boolean selfCreated) {
+        if (!user.equals(this.user)) {
+            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
+        }
+        final String channelName = "private-" + user.getTID() + "_rOrders";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
         }
     }
 
-    public void subscribeToItems(final PusherListener listener, final boolean selfCreated) {
-        final String channelName = "private-" + this.user.getTID() + "_rItems";
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
+     */
+    @Override
+    public void subscribeToItems(final NotificationListener listener, final User user, final boolean selfCreated) {
+        if (!user.equals(this.user)) {
+            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
+        }
+        final String channelName = "private-" + user.getTID() + "_rItems";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
         }
     }
 
-    public void subscribeToPayouts(final PusherListener listener, final boolean selfCreated) {
-        final String channelName = "private-" + this.user.getTID() + "_rPayouts";
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
+     */
+    @Override
+    public void subscribeToPayouts(final NotificationListener listener, final User user, final boolean selfCreated) {
+        if (!user.equals(this.user)) {
+            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
+        }
+        final String channelName = "private-" + user.getTID() + "_rPayouts";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
         }
     }
 
-    public void subscribeToOrderbook(final PusherListener listener) {
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToOrderbook(de._125m125.kt.ktapi_java.pusher.NotificationListener)
+     */
+    @Override
+    public void subscribeToOrderbook(final NotificationListener listener) {
         final String channelName = "order";
         subscribe(channelName, "update", listener);
     }
 
-    public void subscribeToHistory(final PusherListener listener) {
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToHistory(de._125m125.kt.ktapi_java.pusher.NotificationListener)
+     */
+    @Override
+    public void subscribeToHistory(final NotificationListener listener) {
         final String channelName = "history";
         subscribe(channelName, "update", listener);
     }
 
-    public void subscribeToAll(final PusherListener listener, final boolean selfCreated) {
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToAll(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
+     */
+    @Override
+    public void subscribeToAll(final NotificationListener listener, final User u, final boolean selfCreated) {
+        if (!this.user.equals(this.user)) {
+            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
+        }
         subscribeToHistory(listener);
-        subscribeToItems(listener, selfCreated);
-        subscribeToMessages(listener, selfCreated);
+        subscribeToItems(listener, u, selfCreated);
+        subscribeToMessages(listener, u, selfCreated);
         subscribeToOrderbook(listener);
-        subscribeToPayouts(listener, selfCreated);
-        subscribeToTrades(listener, selfCreated);
+        subscribeToPayouts(listener, u, selfCreated);
+        subscribeToTrades(listener, u, selfCreated);
     }
 
-    public void subscribeToUpdates(final PusherListener listener, final String path, final boolean selfCreated) {
+    /* (non-Javadoc)
+     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToUpdates(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, java.lang.String, boolean)
+     */
+    @Override
+    public void subscribeToUpdates(final NotificationListener listener, final User u, final String path,
+            final boolean selfCreated) {
+        if (!this.user.equals(this.user)) {
+            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
+        }
         switch (path) {
-            case "messages":
-                subscribeToMessages(listener, selfCreated);
-                break;
-            case "trades":
-                subscribeToTrades(listener, selfCreated);
-                break;
-            case "itemlist":
-                subscribeToItems(listener, selfCreated);
-                break;
-            case "payouts":
-                subscribeToPayouts(listener, selfCreated);
-                break;
-            case "history":
-                subscribeToHistory(listener);
-                break;
-            case "order":
-                subscribeToOrderbook(listener);
-                break;
+        case "messages":
+            subscribeToMessages(listener, u, selfCreated);
+            break;
+        case "trades":
+            subscribeToTrades(listener, u, selfCreated);
+            break;
+        case "itemlist":
+            subscribeToItems(listener, u, selfCreated);
+            break;
+        case "payouts":
+            subscribeToPayouts(listener, u, selfCreated);
+            break;
+        case "history":
+            subscribeToHistory(listener);
+            break;
+        case "order":
+            subscribeToOrderbook(listener);
+            break;
         }
     }
 

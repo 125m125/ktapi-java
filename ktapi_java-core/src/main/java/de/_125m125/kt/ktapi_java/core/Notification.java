@@ -1,15 +1,15 @@
-package de._125m125.kt.ktapi_java.pusher;
+package de._125m125.kt.ktapi_java.core;
 
 import java.util.Map;
 
-public class PusherNotification {
+public class Notification {
     private final boolean             selfCreated;
     private final long                uid;
     private final String              base32Uid;
     private final String              type;
     private final Map<String, String> details;
 
-    public PusherNotification(final boolean selfCreated, final long uid, final String base32Uid, final String type,
+    public Notification(final boolean selfCreated, final long uid, final String base32Uid, final String type,
             final Map<String, String> details) {
         super();
         this.selfCreated = selfCreated;

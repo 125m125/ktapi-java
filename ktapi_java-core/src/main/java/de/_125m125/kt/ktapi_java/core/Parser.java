@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi_java.simple.parsers;
+package de._125m125.kt.ktapi_java.core;
 
 import java.io.Reader;
 

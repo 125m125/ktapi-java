@@ -1,23 +1,13 @@
-package de._125m125.kt.ktapi_java.simple.objects;
-
-import com.univocity.parsers.annotations.Parsed;
+package de._125m125.kt.ktapi_java.core.objects;
 
 public class Payout {
-    @Parsed
     private long   id;
-    @Parsed
     private String material;
-    @Parsed
     private String materialName;
-    @Parsed
     private double amount;
-    @Parsed
     private String state;
-    @Parsed
     private String payoutType;
-    @Parsed
     private String date;
-    @Parsed
     private String message;
 
     public Payout() {

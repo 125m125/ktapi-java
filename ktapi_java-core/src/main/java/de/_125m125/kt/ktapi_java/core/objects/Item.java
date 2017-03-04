@@ -1,13 +1,8 @@
-package de._125m125.kt.ktapi_java.simple.objects;
-
-import com.univocity.parsers.annotations.Parsed;
+package de._125m125.kt.ktapi_java.core.objects;
 
 public class Item {
-    @Parsed
     private String id;
-    @Parsed
     private String name;
-    @Parsed
     private double amount;
 
     public Item() {

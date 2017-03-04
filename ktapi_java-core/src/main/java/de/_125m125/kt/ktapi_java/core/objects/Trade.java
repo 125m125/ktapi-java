@@ -1,29 +1,17 @@
-package de._125m125.kt.ktapi_java.simple.objects;
+package de._125m125.kt.ktapi_java.core.objects;
 
-import com.univocity.parsers.annotations.Parsed;
-
-import de._125m125.kt.ktapi_java.simple.Kt.BUY_SELL;
+import de._125m125.kt.ktapi_java.core.BUY_SELL;
 
 public class Trade {
-    @Parsed
     private long    id;
-    @Parsed
     private boolean buySell;
-    @Parsed
     private String  materialId;
-    @Parsed
     private String  materialName;
-    @Parsed
     private int     amount;
-    @Parsed
     private double  price;
-    @Parsed
     private int     sold;
-    @Parsed
     private double  toTakeM;
-    @Parsed
     private int     toTakeI;
-    @Parsed
     private boolean cancelled;
 
     public Trade() {

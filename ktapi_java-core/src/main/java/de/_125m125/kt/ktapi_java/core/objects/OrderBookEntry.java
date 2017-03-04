@@ -1,15 +1,10 @@
-package de._125m125.kt.ktapi_java.simple.objects;
+package de._125m125.kt.ktapi_java.core.objects;
 
-import com.univocity.parsers.annotations.Parsed;
-
-import de._125m125.kt.ktapi_java.simple.Kt.BUY_SELL;
+import de._125m125.kt.ktapi_java.core.BUY_SELL;
 
 public class OrderBookEntry {
-    @Parsed
     private String type;
-    @Parsed
     private double price;
-    @Parsed
     private int    amount;
 
     public OrderBookEntry() {
