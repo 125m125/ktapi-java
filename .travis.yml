@@ -11,3 +11,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: 125m125/ktapi-java
+    tags: true
