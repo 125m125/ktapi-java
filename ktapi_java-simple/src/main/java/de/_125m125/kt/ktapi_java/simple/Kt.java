@@ -30,18 +30,18 @@ import de._125m125.kt.ktapi_java.simple.parsers.JsonParser;
 public class Kt implements KtRequester, KtRequestUtil {
 
     /** The DecimalFormat used to format prices of new trades. */
-    private static final DecimalFormat df = new DecimalFormat("#.##");
+    private static final DecimalFormat df         = new DecimalFormat("#.##");
 
     /** The CsvParser used to parse csv answers. */
-    protected static final CsvParser csvParser = new CsvParser();
+    protected static final CsvParser   csvParser  = new CsvParser();
 
     /** The JsonParser used to parse json answers. */
-    protected static final JsonParser jsonParser = new JsonParser();
+    protected static final JsonParser  jsonParser = new JsonParser();
 
-    private final KtRequester requester;
+    private final KtRequester          requester;
 
     static {
-	Kt.df.setRoundingMode(RoundingMode.HALF_UP);
+        Kt.df.setRoundingMode(RoundingMode.HALF_UP);
     }
 
     /**
@@ -51,12 +51,12 @@ public class Kt implements KtRequester, KtRequestUtil {
      *            the user
      */
     public Kt(final User user) {
-	this.requester = new KtRequesterImpl(user);
-	((KtRequesterImpl) this.requester).syncTime();
+        this.requester = new KtRequesterImpl(user);
+        ((KtRequesterImpl) this.requester).syncTime();
     }
 
     public Kt(final KtRequester requester) {
-	this.requester = requester;
+        this.requester = requester;
     }
 
     /* (non-Javadoc)
@@ -64,8 +64,8 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Permissions getPermissions() {
-	return performRequest("GET", "permissions", null, true, Kt.jsonParser, new TypeToken<Permissions>() {
-	});
+        return performRequest("GET", "permissions", null, true, Kt.jsonParser, new TypeToken<Permissions>() {
+        });
     }
 
     /* (non-Javadoc)
@@ -73,7 +73,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<Item> getItems() {
-	return performRequest("GET", "itemlist", null, true, Kt.csvParser, Item.class);
+        return performRequest("GET", "itemlist", null, true, Kt.csvParser, Item.class);
     }
 
     /* (non-Javadoc)
@@ -81,7 +81,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<Trade> getTrades() {
-	return performRequest("GET", "trades", null, true, Kt.csvParser, Trade.class);
+        return performRequest("GET", "trades", null, true, Kt.csvParser, Trade.class);
     }
 
     /* (non-Javadoc)
@@ -89,7 +89,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<Message> getMessages() {
-	return performRequest("GET", "messages", null, true, Kt.csvParser, Message.class);
+        return performRequest("GET", "messages", null, true, Kt.csvParser, Message.class);
     }
 
     /* (non-Javadoc)
@@ -97,7 +97,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<Payout> getPayouts() {
-	return performRequest("GET", "payouts", null, true, Kt.csvParser, Payout.class);
+        return performRequest("GET", "payouts", null, true, Kt.csvParser, Payout.class);
     }
 
     /* (non-Javadoc)
@@ -105,7 +105,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<OrderBookEntry> getOrderBook(final Item material, final int limit, final boolean summarize) {
-	return getOrderBook(material.getId(), limit, summarize);
+        return getOrderBook(material.getId(), limit, summarize);
     }
 
     /* (non-Javadoc)
@@ -113,11 +113,11 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<OrderBookEntry> getOrderBook(final String material, final int limit, final boolean summarize) {
-	final Map<String, String> params = new HashMap<>();
-	params.put("res", material);
-	params.put("limit", String.valueOf(limit));
-	params.put("summarize", String.valueOf(summarize));
-	return performRequest("GET", "order", params, false, Kt.csvParser, OrderBookEntry.class);
+        final Map<String, String> params = new HashMap<>();
+        params.put("res", material);
+        params.put("limit", String.valueOf(limit));
+        params.put("summarize", String.valueOf(summarize));
+        return performRequest("GET", "order", params, false, Kt.csvParser, OrderBookEntry.class);
     }
 
     /* (non-Javadoc)
@@ -125,7 +125,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<HistoryEntry> getStatistics(final Item material, final int limit) {
-	return getStatistics(material.getId(), limit);
+        return getStatistics(material.getId(), limit);
     }
 
     /* (non-Javadoc)
@@ -133,10 +133,10 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public List<HistoryEntry> getStatistics(final String material, final int limit) {
-	final Map<String, String> params = new HashMap<>();
-	params.put("res", material);
-	params.put("limit", String.valueOf(limit));
-	return performRequest("GET", "history", params, false, Kt.csvParser, HistoryEntry.class);
+        final Map<String, String> params = new HashMap<>();
+        params.put("res", material);
+        params.put("limit", String.valueOf(limit));
+        return performRequest("GET", "history", params, false, Kt.csvParser, HistoryEntry.class);
     }
 
     /* (non-Javadoc)
@@ -144,7 +144,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> createTrade(final BUY_SELL buySell, final Item item, final int count, final double price) {
-	return createTrade(buySell, item.getId(), count, price);
+        return createTrade(buySell, item.getId(), count, price);
     }
 
     /* (non-Javadoc)
@@ -152,7 +152,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> createTrade(final BUY_SELL buySell, final Item item, final double price) {
-	return createTrade(buySell, item.getId(), Math.min(3456, ((Double) item.getAmount()).intValue()), price);
+        return createTrade(buySell, item.getId(), Math.min(3456, ((Double) item.getAmount()).intValue()), price);
     }
 
     /* (non-Javadoc)
@@ -160,7 +160,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> recreateTrade(final Trade trade) {
-	return createTrade(trade.getBuySell(), trade.getMaterialId(), trade.getAmount(), trade.getPrice());
+        return createTrade(trade.getBuySell(), trade.getMaterialId(), trade.getAmount(), trade.getPrice());
     }
 
     /* (non-Javadoc)
@@ -168,8 +168,8 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> fulfillTrade(final Trade trade) {
-	return createTrade(trade.getBuySell().getOpposite(), trade.getMaterialId(), trade.getAmount() - trade.getSold(),
-		trade.getPrice());
+        return createTrade(trade.getBuySell().getOpposite(), trade.getMaterialId(), trade.getAmount() - trade.getSold(),
+                trade.getPrice());
     }
 
     /* (non-Javadoc)
@@ -177,14 +177,14 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> createTrade(final BUY_SELL buySell, final String item, final int count, final double price) {
-	final Map<String, String> params = new HashMap<>();
-	params.put("create", "create");
-	params.put("bs", buySell == BUY_SELL.BUY ? "buy" : "sell");
-	params.put("item", item);
-	params.put("count", String.valueOf(count));
-	params.put("price", Kt.df.format(price));
-	return performRequest("POST", "trades", params, true, Kt.jsonParser, new TypeToken<Result<Trade>>() {
-	});
+        final Map<String, String> params = new HashMap<>();
+        params.put("create", "create");
+        params.put("bs", buySell == BUY_SELL.BUY ? "buy" : "sell");
+        params.put("item", item);
+        params.put("count", String.valueOf(count));
+        params.put("price", Kt.df.format(price));
+        return performRequest("POST", "trades", params, true, Kt.jsonParser, new TypeToken<Result<Trade>>() {
+        });
     }
 
     /* (non-Javadoc)
@@ -192,7 +192,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> cancelTrade(final Trade trade) {
-	return cancelTrade(trade.getId());
+        return cancelTrade(trade.getId());
     }
 
     /* (non-Javadoc)
@@ -200,11 +200,11 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> cancelTrade(final long tradeid) {
-	final Map<String, String> params = new HashMap<>();
-	params.put("cancel", "cancel");
-	params.put("tradeid", String.valueOf(tradeid));
-	return performRequest("POST", "trades", params, true, Kt.jsonParser, new TypeToken<Result<Trade>>() {
-	});
+        final Map<String, String> params = new HashMap<>();
+        params.put("cancel", "cancel");
+        params.put("tradeid", String.valueOf(tradeid));
+        return performRequest("POST", "trades", params, true, Kt.jsonParser, new TypeToken<Result<Trade>>() {
+        });
     }
 
     /* (non-Javadoc)
@@ -212,7 +212,7 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> takeoutFromTrade(final Trade trade) {
-	return takeoutFromTrade(trade.getId());
+        return takeoutFromTrade(trade.getId());
     }
 
     /* (non-Javadoc)
@@ -220,11 +220,11 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public Result<Trade> takeoutFromTrade(final long tradeid) {
-	final Map<String, String> params = new HashMap<>();
-	params.put("takeout", "takeout");
-	params.put("tradeid", String.valueOf(tradeid));
-	return performRequest("POST", "trades", params, true, Kt.jsonParser, new TypeToken<Result<Trade>>() {
-	});
+        final Map<String, String> params = new HashMap<>();
+        params.put("takeout", "takeout");
+        params.put("tradeid", String.valueOf(tradeid));
+        return performRequest("POST", "trades", params, true, Kt.jsonParser, new TypeToken<Result<Trade>>() {
+        });
     }
 
     /* (non-Javadoc)
@@ -232,8 +232,8 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public <T> T performPlainRequest(final String method, final String path, final Map<String, String> params,
-	    final boolean auth, final Parser<T, ?, ?> parser) {
-	return this.requester.performPlainRequest(method, path, params, auth, parser);
+            final boolean auth, final Parser<T, ?, ?> parser) {
+        return this.requester.performPlainRequest(method, path, params, auth, parser);
     }
 
     /* (non-Javadoc)
@@ -241,8 +241,8 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     @Override
     public <T, U> U performRequest(final String method, final String path, final Map<String, String> params,
-	    final boolean auth, final Parser<?, ?, T> parser, final T helper) {
-	return this.requester.performRequest(method, path, params, auth, parser, helper);
+            final boolean auth, final Parser<?, ?, T> parser, final T helper) {
+        return this.requester.performRequest(method, path, params, auth, parser, helper);
     }
 
 }
