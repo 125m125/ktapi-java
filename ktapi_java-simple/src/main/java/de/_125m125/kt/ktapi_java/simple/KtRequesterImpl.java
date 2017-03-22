@@ -3,6 +3,7 @@ package de._125m125.kt.ktapi_java.simple;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
@@ -75,8 +76,7 @@ public class KtRequesterImpl implements KtRequester {
 
         HttpsURLConnection connection = null;
         try {
-            final URL url = new URL(fullUrl.toString());
-            connection = (HttpsURLConnection) url.openConnection();
+            connection = createConnection(fullUrl.toString());
             connection.setRequestMethod(method);
             connection.setRequestProperty("Accept", parser.getResponseType());
 
@@ -91,6 +91,13 @@ public class KtRequesterImpl implements KtRequester {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected HttpsURLConnection createConnection(final String fullUrl) throws MalformedURLException, IOException {
+        HttpsURLConnection connection;
+        final URL url = new URL(fullUrl.toString());
+        connection = (HttpsURLConnection) url.openConnection();
+        return connection;
     }
 
     /* (non-Javadoc)

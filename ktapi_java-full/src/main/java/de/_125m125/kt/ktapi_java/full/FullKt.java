@@ -20,6 +20,7 @@ import de._125m125.kt.ktapi_java.core.objects.Payout;
 import de._125m125.kt.ktapi_java.core.objects.Permissions;
 import de._125m125.kt.ktapi_java.core.objects.Trade;
 import de._125m125.kt.ktapi_java.core.objects.User;
+import de._125m125.kt.ktapi_java.pinningRequester.KtPinningRequester;
 import de._125m125.kt.ktapi_java.pusher.PusherKt;
 import de._125m125.kt.ktapi_java.simple.Kt;
 import de._125m125.kt.ktapi_java.simple.KtRequesterImpl;
@@ -27,8 +28,8 @@ import de._125m125.kt.ktapi_java.simple.parsers.SpecializedJsonParser;
 
 public class FullKt implements KtRequester, KtRequestUtil, KtCachingRequester, KtNotificationManager {
 
-    public static FullKt create(final User u) {
-        final KtRequester r = new KtRequesterImpl(u);
+    public static FullKt create(final User u, final boolean pinning) {
+        final KtRequester r = createRequester(u, pinning);
         final KtNotificationManager nm = new PusherKt(u, new SpecializedJsonParser<>(), KtRequesterImpl.BASE_URL);
         final CachingPusherKt cp = new CachingPusherKt(u, r, nm);
         final KtRequestUtil kt = new Kt(cp);
@@ -36,11 +37,31 @@ public class FullKt implements KtRequester, KtRequestUtil, KtCachingRequester, K
         return new FullKt(kt, nm, cp);
     }
 
-    public static FullKt createWithoutCache(final User u) {
-        final KtRequestUtil kt = new Kt(u);
+    public static FullKt createWithoutCache(final User u, final boolean pinning) {
+        final KtRequester r = createRequester(u, pinning);
+        final KtRequestUtil kt = new Kt(r);
         final KtNotificationManager nm = new PusherKt(u, new SpecializedJsonParser<>(), KtRequesterImpl.BASE_URL);
 
         return new FullKt(kt, nm);
+    }
+
+    public static FullKt create(final User u, final boolean caching, final boolean pinning) {
+        if (caching) {
+            return create(u, pinning);
+        } else {
+            return createWithoutCache(u, pinning);
+        }
+    }
+
+    private static KtRequesterImpl createRequester(final User u, final boolean pinning) {
+        KtRequesterImpl result;
+        if (pinning) {
+            result = new KtPinningRequester(u);
+        } else {
+            result = new KtRequesterImpl(u);
+        }
+        result.syncTime();
+        return result;
     }
 
     private final KtRequestUtil         requestUtil;
