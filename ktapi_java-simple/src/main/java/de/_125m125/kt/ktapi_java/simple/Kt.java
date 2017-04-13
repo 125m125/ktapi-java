@@ -52,7 +52,6 @@ public class Kt implements KtRequester, KtRequestUtil {
      */
     public Kt(final User user) {
         this.requester = new KtRequesterImpl(user);
-        ((KtRequesterImpl) this.requester).syncTime();
     }
 
     public Kt(final KtRequester requester) {

@@ -60,7 +60,6 @@ public class FullKt implements KtRequester, KtRequestUtil, KtCachingRequester, K
         } else {
             result = new KtRequesterImpl(u);
         }
-        result.syncTime();
         return result;
     }
 

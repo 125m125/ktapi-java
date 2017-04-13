@@ -1,14 +1,20 @@
 package de._125m125.kt.ktapi_java.simple;
 
+import authenticator.BasicAuthAuthenticator;
 import de._125m125.kt.ktapi_java.core.BUY_SELL;
 import de._125m125.kt.ktapi_java.core.KtRequestUtil;
+import de._125m125.kt.ktapi_java.core.KtRequester;
 import de._125m125.kt.ktapi_java.core.Result;
 import de._125m125.kt.ktapi_java.core.objects.Trade;
 import de._125m125.kt.ktapi_java.core.objects.User;
 
 public class TestWithMain {
     public static void main(final String[] args) {
-        final KtRequestUtil kt = new Kt(new User("1", "1", "1"));
+        final User user = new User("1", "1", "1");
+        // final KtRequester requester = new KtRequesterImpl(new
+        // URLParamAuthenticator(user));
+        final KtRequester requester = new KtRequesterImpl(new BasicAuthAuthenticator(user));
+        final KtRequestUtil kt = new Kt(requester);
 
         System.out.println(kt.getPermissions());
 
