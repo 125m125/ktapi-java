@@ -1,4 +1,4 @@
-package authenticator;
+package de._125m125.kt.ktapi_java.simple.authenticator;
 
 import java.io.BufferedReader;
 import java.io.IOException;

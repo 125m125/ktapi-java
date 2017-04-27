@@ -33,24 +33,20 @@
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-simple</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-pusher</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>21.0</version>
 			<type>jar</type>
 		</dependency>
 	</dependencies>
