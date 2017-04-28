@@ -4,7 +4,7 @@ import de._125m125.kt.ktapi_java.core.BUY_SELL;
 
 public class Trade {
     private long    id;
-    private boolean buySell;
+    private boolean buy;
     private String  materialId;
     private String  materialName;
     private int     amount;
@@ -23,7 +23,7 @@ public class Trade {
             final boolean cancelled) {
         super();
         this.id = id;
-        this.buySell = buySell;
+        this.buy = buySell;
         this.materialId = materialId;
         this.materialName = materialName;
         this.amount = amount;
@@ -39,19 +39,19 @@ public class Trade {
     }
 
     public BUY_SELL getBuySell() {
-        return this.buySell ? BUY_SELL.BUY : BUY_SELL.SELL;
+        return this.buy ? BUY_SELL.BUY : BUY_SELL.SELL;
     }
 
     public boolean isBuySell() {
-        return this.buySell;
+        return this.buy;
     }
 
     public boolean isBuy() {
-        return this.buySell;
+        return this.buy;
     }
 
     public boolean isSell() {
-        return !this.buySell;
+        return !this.buy;
     }
 
     public String getMaterialId() {
@@ -92,7 +92,7 @@ public class Trade {
         builder.append("Trade [id=");
         builder.append(this.id);
         builder.append(", buySell=");
-        builder.append(this.buySell);
+        builder.append(this.buy);
         builder.append(", materialId=");
         builder.append(this.materialId);
         builder.append(", materialName=");
