@@ -66,4 +66,50 @@ public class Permissions {
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.rItems ? 1231 : 1237);
+        result = prime * result + (this.rMessages ? 1231 : 1237);
+        result = prime * result + (this.rOrders ? 1231 : 1237);
+        result = prime * result + (this.rPayouts ? 1231 : 1237);
+        result = prime * result + (this.wOrders ? 1231 : 1237);
+        result = prime * result + (this.wPayouts ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Permissions other = (Permissions) obj;
+        if (this.rItems != other.rItems) {
+            return false;
+        }
+        if (this.rMessages != other.rMessages) {
+            return false;
+        }
+        if (this.rOrders != other.rOrders) {
+            return false;
+        }
+        if (this.rPayouts != other.rPayouts) {
+            return false;
+        }
+        if (this.wOrders != other.wOrders) {
+            return false;
+        }
+        if (this.wPayouts != other.wPayouts) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -22,4 +22,50 @@ public class User {
     public String getTKN() {
         return this.tkn;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.tid == null) ? 0 : this.tid.hashCode());
+        result = prime * result + ((this.tkn == null) ? 0 : this.tkn.hashCode());
+        result = prime * result + ((this.uid == null) ? 0 : this.uid.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (this.tid == null) {
+            if (other.tid != null) {
+                return false;
+            }
+        } else if (!this.tid.equals(other.tid)) {
+            return false;
+        }
+        if (this.tkn == null) {
+            if (other.tkn != null) {
+                return false;
+            }
+        } else if (!this.tkn.equals(other.tkn)) {
+            return false;
+        }
+        if (this.uid == null) {
+            if (other.uid != null) {
+                return false;
+            }
+        } else if (!this.uid.equals(other.uid)) {
+            return false;
+        }
+        return true;
+    }
 }

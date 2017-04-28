@@ -82,4 +82,84 @@ public class Payout {
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(this.amount);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((this.date == null) ? 0 : this.date.hashCode());
+        result = prime * result + (int) (this.id ^ (this.id >>> 32));
+        result = prime * result + ((this.material == null) ? 0 : this.material.hashCode());
+        result = prime * result + ((this.materialName == null) ? 0 : this.materialName.hashCode());
+        result = prime * result + ((this.message == null) ? 0 : this.message.hashCode());
+        result = prime * result + ((this.payoutType == null) ? 0 : this.payoutType.hashCode());
+        result = prime * result + ((this.state == null) ? 0 : this.state.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Payout other = (Payout) obj;
+        if (Double.doubleToLongBits(this.amount) != Double.doubleToLongBits(other.amount)) {
+            return false;
+        }
+        if (this.date == null) {
+            if (other.date != null) {
+                return false;
+            }
+        } else if (!this.date.equals(other.date)) {
+            return false;
+        }
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.material == null) {
+            if (other.material != null) {
+                return false;
+            }
+        } else if (!this.material.equals(other.material)) {
+            return false;
+        }
+        if (this.materialName == null) {
+            if (other.materialName != null) {
+                return false;
+            }
+        } else if (!this.materialName.equals(other.materialName)) {
+            return false;
+        }
+        if (this.message == null) {
+            if (other.message != null) {
+                return false;
+            }
+        } else if (!this.message.equals(other.message)) {
+            return false;
+        }
+        if (this.payoutType == null) {
+            if (other.payoutType != null) {
+                return false;
+            }
+        } else if (!this.payoutType.equals(other.payoutType)) {
+            return false;
+        }
+        if (this.state == null) {
+            if (other.state != null) {
+                return false;
+            }
+        } else if (!this.state.equals(other.state)) {
+            return false;
+        }
+        return true;
+    }
+
 }

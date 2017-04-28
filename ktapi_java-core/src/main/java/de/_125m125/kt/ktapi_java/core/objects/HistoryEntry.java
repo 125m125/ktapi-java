@@ -83,4 +83,71 @@ public class HistoryEntry {
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(this.close);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((this.date == null) ? 0 : this.date.hashCode());
+        temp = Double.doubleToLongBits(this.dollar_volume);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((this.high == null) ? 0 : this.high.hashCode());
+        result = prime * result + ((this.low == null) ? 0 : this.low.hashCode());
+        temp = Double.doubleToLongBits(this.open);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.unit_volume);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final HistoryEntry other = (HistoryEntry) obj;
+        if (Double.doubleToLongBits(this.close) != Double.doubleToLongBits(other.close)) {
+            return false;
+        }
+        if (this.date == null) {
+            if (other.date != null) {
+                return false;
+            }
+        } else if (!this.date.equals(other.date)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.dollar_volume) != Double.doubleToLongBits(other.dollar_volume)) {
+            return false;
+        }
+        if (this.high == null) {
+            if (other.high != null) {
+                return false;
+            }
+        } else if (!this.high.equals(other.high)) {
+            return false;
+        }
+        if (this.low == null) {
+            if (other.low != null) {
+                return false;
+            }
+        } else if (!this.low.equals(other.low)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.open) != Double.doubleToLongBits(other.open)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.unit_volume) != Double.doubleToLongBits(other.unit_volume)) {
+            return false;
+        }
+        return true;
+    }
+
 }

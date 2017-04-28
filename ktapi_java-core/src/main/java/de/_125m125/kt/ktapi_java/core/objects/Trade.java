@@ -113,4 +113,77 @@ public class Trade {
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.amount;
+        result = prime * result + (this.buy ? 1231 : 1237);
+        result = prime * result + (this.cancelled ? 1231 : 1237);
+        result = prime * result + (int) (this.id ^ (this.id >>> 32));
+        result = prime * result + ((this.materialId == null) ? 0 : this.materialId.hashCode());
+        result = prime * result + ((this.materialName == null) ? 0 : this.materialName.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(this.price);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + this.sold;
+        result = prime * result + this.toTakeI;
+        temp = Double.doubleToLongBits(this.toTakeM);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Trade other = (Trade) obj;
+        if (this.amount != other.amount) {
+            return false;
+        }
+        if (this.buy != other.buy) {
+            return false;
+        }
+        if (this.cancelled != other.cancelled) {
+            return false;
+        }
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.materialId == null) {
+            if (other.materialId != null) {
+                return false;
+            }
+        } else if (!this.materialId.equals(other.materialId)) {
+            return false;
+        }
+        if (this.materialName == null) {
+            if (other.materialName != null) {
+                return false;
+            }
+        } else if (!this.materialName.equals(other.materialName)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.price) != Double.doubleToLongBits(other.price)) {
+            return false;
+        }
+        if (this.sold != other.sold) {
+            return false;
+        }
+        if (this.toTakeI != other.toTakeI) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.toTakeM) != Double.doubleToLongBits(other.toTakeM)) {
+            return false;
+        }
+        return true;
+    }
+
 }
