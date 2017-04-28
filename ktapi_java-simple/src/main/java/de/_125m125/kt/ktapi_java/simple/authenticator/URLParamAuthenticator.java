@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -29,8 +30,16 @@ public class URLParamAuthenticator extends Authenticator {
     /** The maximum offset of the timestamp from the current time. */
     private static final long   MAX_OFFSET          = 4 * 60 * 1000;
 
+    private final Clock         clock;
+
     public URLParamAuthenticator(final User user) {
         this.user = user;
+        this.clock = Clock.systemDefaultZone();
+    }
+
+    public URLParamAuthenticator(final User user, final Clock clock) {
+        this.user = user;
+        this.clock = clock;
     }
 
     @Override
@@ -53,18 +62,18 @@ public class URLParamAuthenticator extends Authenticator {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void syncTime() throws IOException {
-        final long start = System.currentTimeMillis();
+    public synchronized void syncTime() throws IOException {
+        final long start = this.clock.millis();
         final String time;
         try (BufferedReader is = new BufferedReader(new InputStreamReader(
                 new URL(KtRequesterImpl.BASE_URL + "/api/ping").openStream(), Charset.forName("UTF-8")))) {
             time = is.readLine();
         }
-        final long end = System.currentTimeMillis();
+        final long end = this.clock.millis();
         final long serverTime = Long.parseLong(time.trim());
 
         this.timeOffset = serverTime - (start + end) / 2;
-        this.lastTime = System.currentTimeMillis() + URLParamAuthenticator.MAX_OFFSET;
+        this.lastTime = Long.MIN_VALUE;
     }
 
     /**
@@ -74,12 +83,12 @@ public class URLParamAuthenticator extends Authenticator {
      */
     private synchronized long getCurrentTimestamp() {
         if (this.lastTime != 0) {
-            if (this.lastTime < System.currentTimeMillis() - URLParamAuthenticator.MAX_OFFSET) {
-                this.lastTime = System.currentTimeMillis() + URLParamAuthenticator.MAX_OFFSET;
+            if (this.lastTime < this.clock.millis() - URLParamAuthenticator.MAX_OFFSET) {
+                this.lastTime = this.clock.millis() + URLParamAuthenticator.MAX_OFFSET;
             }
             return this.lastTime + this.timeOffset;
         }
-        return System.currentTimeMillis();
+        return this.clock.millis();
     }
 
     /**
