@@ -25,6 +25,7 @@ public class CsvParser implements Parser<List<String[]>, List<?>, Class<?>> {
     public List<String[]> parse(final Reader content) {
         final CsvParserSettings settings = new CsvParserSettings();
         settings.getFormat().setLineSeparator("\n");
+        settings.setHeaderExtractionEnabled(true);
         final com.univocity.parsers.csv.CsvParser parser = new com.univocity.parsers.csv.CsvParser(settings);
         final List<String[]> allRows = parser.parseAll(content);
         return allRows;
