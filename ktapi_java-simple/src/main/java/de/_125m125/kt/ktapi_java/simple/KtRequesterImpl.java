@@ -12,11 +12,11 @@ import java.util.TreeMap;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import authenticator.Authenticator;
-import authenticator.BasicAuthAuthenticator;
 import de._125m125.kt.ktapi_java.core.KtRequester;
 import de._125m125.kt.ktapi_java.core.Parser;
 import de._125m125.kt.ktapi_java.core.objects.User;
+import de._125m125.kt.ktapi_java.simple.authenticator.Authenticator;
+import de._125m125.kt.ktapi_java.simple.authenticator.BasicAuthAuthenticator;
 
 public class KtRequesterImpl implements KtRequester {
     /** The base url of the api. */

@@ -22,7 +22,8 @@ import de._125m125.kt.ktapi_java.simple.KtRequesterImpl;
 
 public class KtPinningRequester extends KtRequesterImpl implements KtRequester {
 
-    private final SSLContext sslContext;
+    protected static final String DEFAULT_PRIMARY_CERTIFICATE_NAME = "kt.125m125.de-certificate.crt";
+    private final SSLContext      sslContext;
 
     public KtPinningRequester(final User user, final InputStream certificateStream) {
         super(user);
@@ -36,7 +37,7 @@ public class KtPinningRequester extends KtRequesterImpl implements KtRequester {
     public KtPinningRequester(final User user) {
         super(user);
         try (InputStream resourceAsStream = KtPinningRequester.class
-                .getResourceAsStream("kt.125m125.de-certificate.crt")) {
+                .getResourceAsStream(KtPinningRequester.DEFAULT_PRIMARY_CERTIFICATE_NAME)) {
             this.sslContext = createSSLContext(resourceAsStream);
         } catch (final Exception e) {
             throw new CertificateLoadingException(e);

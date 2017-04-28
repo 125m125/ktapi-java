@@ -33,17 +33,14 @@
 		<dependency>
 			<groupId>com.pusher</groupId>
 			<artifactId>pusher-java-client</artifactId>
-			<version>1.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-simple</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

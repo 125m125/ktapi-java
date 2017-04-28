@@ -32,27 +32,22 @@
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-simple</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-pusher</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-cachingPusher</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-pinningRequester</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

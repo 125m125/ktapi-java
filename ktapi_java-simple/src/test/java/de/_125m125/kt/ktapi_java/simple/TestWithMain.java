@@ -1,12 +1,12 @@
 package de._125m125.kt.ktapi_java.simple;
 
-import authenticator.BasicAuthAuthenticator;
 import de._125m125.kt.ktapi_java.core.BUY_SELL;
 import de._125m125.kt.ktapi_java.core.KtRequestUtil;
 import de._125m125.kt.ktapi_java.core.KtRequester;
 import de._125m125.kt.ktapi_java.core.Result;
 import de._125m125.kt.ktapi_java.core.objects.Trade;
 import de._125m125.kt.ktapi_java.core.objects.User;
+import de._125m125.kt.ktapi_java.simple.authenticator.BasicAuthAuthenticator;
 
 public class TestWithMain {
     public static void main(final String[] args) {

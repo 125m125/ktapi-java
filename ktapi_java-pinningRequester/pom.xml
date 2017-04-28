@@ -33,12 +33,16 @@
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-simple</artifactId>
-			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

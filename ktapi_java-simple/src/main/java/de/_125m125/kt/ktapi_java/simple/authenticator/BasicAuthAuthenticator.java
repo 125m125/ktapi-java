@@ -1,4 +1,4 @@
-package authenticator;
+package de._125m125.kt.ktapi_java.simple.authenticator;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
