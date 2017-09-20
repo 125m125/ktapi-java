@@ -29,12 +29,14 @@
 	</properties>
 
 	<modules>
-		<module>ktapi_java-simple</module>
+		
 		<module>ktapi_java-pusher</module>
 		<module>ktapi_java-cachingPusher</module>
 		<module>ktapi_java-core</module>
-		<module>ktapi_java-full</module>
-		<module>ktapi_java-pinningRequester</module>
+		
+		<module>ktapi_java-retrofitRequester</module>
+		<module>ktapi_java-retrofitUnivosityCsvparser</module>
+		<module>ktapi_java-retrofit</module>
 	</modules>
 
 	<build>
@@ -52,11 +54,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.8.0</version>
-			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -88,20 +85,17 @@
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>21.0</version>
+				<groupId>de._125m125.kt</groupId>
+				<artifactId>ktapi_java-retrofitRequester</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.pusher</groupId>
-				<artifactId>pusher-java-client</artifactId>
-				<version>1.4.0</version>
+				<groupId>de._125m125.kt</groupId>
+				<artifactId>ktapi_java-retrofitUnivosityTsvparser</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			<dependency>
-				<groupId>com.univocity</groupId>
-				<artifactId>univocity-parsers</artifactId>
-				<version>2.3.0</version>
-			</dependency>
+			
+			
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-all</artifactId>
@@ -116,6 +110,11 @@
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
 				<version>1.6.5</version>
+			</dependency>
+			<dependency>
+				<groupId>de._125m125.kt</groupId>
+				<artifactId>ktapi_java-retrofit</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -6,20 +6,18 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.StampedLock;
 
+import com.pusher.client.Authorizer;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
-import com.pusher.client.channel.Channel;
 import com.pusher.client.channel.PrivateChannelEventListener;
 import com.pusher.client.connection.ConnectionEventListener;
 import com.pusher.client.connection.ConnectionState;
 import com.pusher.client.connection.ConnectionStateChange;
-import com.pusher.client.util.HttpAuthorizer;
 
-import de._125m125.kt.ktapi_java.core.JsonParser;
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
-import de._125m125.kt.ktapi_java.core.Notification;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
-import de._125m125.kt.ktapi_java.core.objects.User;
+import de._125m125.kt.ktapi_java.core.entities.Notification;
+import de._125m125.kt.ktapi_java.core.entities.User;
 
 public class PusherKt implements PrivateChannelEventListener, KtNotificationManager {
     private final Pusher                                  pusher;
@@ -27,18 +25,13 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
     private final Map<String, List<NotificationListener>> listeners     = new HashMap<>();
     private final StampedLock                             listenersLock = new StampedLock();
 
-    private final JsonParser<Notification>                parser;
+    private final NotificationParser                      parser;
     private final User                                    user;
 
-    public PusherKt(final User user, final JsonParser<Notification> parser, final String baseUrl) {
+    public PusherKt(final User user, final NotificationParser parser, final Authorizer authorizer) {
         this.user = user;
         this.parser = parser;
-        final HttpAuthorizer authorizer = new HttpAuthorizer(baseUrl + "pusher");
-        final HashMap<String, String> parameters = new HashMap<>(3);
-        parameters.put("uid", user.getUID());
-        parameters.put("tid", user.getTID());
-        parameters.put("tkn", user.getTKN());
-        authorizer.setQueryStringParameters(parameters);
+
         final PusherOptions options = new PusherOptions();
         options.setCluster("eu");
         options.setEncrypted(true);
@@ -47,13 +40,10 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         this.pusher.connect(new ConnectionEventListener() {
             @Override
             public void onConnectionStateChange(final ConnectionStateChange change) {
-                System.out
-                        .println("State changed to " + change.getCurrentState() + " from " + change.getPreviousState());
             }
 
             @Override
             public void onError(final String message, final String code, final Exception e) {
-                System.out.println("There was a problem connecting!");
             }
         }, ConnectionState.ALL);
     }
@@ -79,12 +69,10 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
 
     @Override
     public void onSubscriptionSucceeded(final String arg0) {
-        System.out.println("subscribeSuccess");
     }
 
     @Override
     public void onAuthenticationFailure(final String arg0, final Exception arg1) {
-        System.out.println(arg0);
         arg1.printStackTrace();
     }
 
@@ -100,11 +88,10 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         }
         receivers.add(listener);
         if (subscribe) {
-            final Channel subChannel;
             if (channel.startsWith("private-")) {
-                subChannel = this.pusher.subscribePrivate(channel, this, eventName);
+                this.pusher.subscribePrivate(channel, this, eventName);
             } else {
-                subChannel = this.pusher.subscribe(channel, this, eventName);
+                this.pusher.subscribe(channel, this, eventName);
             }
         }
     }
@@ -192,7 +179,7 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      */
     @Override
     public void subscribeToAll(final NotificationListener listener, final User u, final boolean selfCreated) {
-        if (!this.user.equals(this.user)) {
+        if (!this.user.equals(u)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
         subscribeToHistory(listener);
@@ -203,35 +190,14 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         subscribeToTrades(listener, u, selfCreated);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToUpdates(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, java.lang.String, boolean)
-     */
     @Override
-    public void subscribeToUpdates(final NotificationListener listener, final User u, final String path,
-            final boolean selfCreated) {
-        if (!this.user.equals(this.user)) {
-            throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
-        }
-        switch (path) {
-            case "messages":
-                subscribeToMessages(listener, u, selfCreated);
-                break;
-            case "trades":
-                subscribeToTrades(listener, u, selfCreated);
-                break;
-            case "itemlist":
-                subscribeToItems(listener, u, selfCreated);
-                break;
-            case "payouts":
-                subscribeToPayouts(listener, u, selfCreated);
-                break;
-            case "history":
-                subscribeToHistory(listener);
-                break;
-            case "order":
-                subscribeToOrderbook(listener);
-                break;
-        }
+    public void subscribeToAll(final NotificationListener listener, final boolean selfCreated) {
+        subscribeToAll(listener, this.user, selfCreated);
+    }
+
+    @Override
+    public void disconnect() {
+        this.pusher.disconnect();
     }
 
 }

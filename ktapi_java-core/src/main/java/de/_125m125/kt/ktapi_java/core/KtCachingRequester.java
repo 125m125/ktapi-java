@@ -1,43 +1,37 @@
 package de._125m125.kt.ktapi_java.core;
 
-import java.util.Map;
+import java.util.List;
+
+import de._125m125.kt.ktapi_java.core.entities.HistoryEntry;
+import de._125m125.kt.ktapi_java.core.entities.Item;
+import de._125m125.kt.ktapi_java.core.entities.Message;
+import de._125m125.kt.ktapi_java.core.entities.OrderBookEntry;
+import de._125m125.kt.ktapi_java.core.entities.Payout;
+import de._125m125.kt.ktapi_java.core.entities.Trade;
 
 public interface KtCachingRequester extends KtRequester {
+    public void invalidateHistory(String itemid);
 
-    /**
-     * Perform a request to the kadcontrade api ignoring the cache of the
-     * CachingPusherKt.
-     *
-     * @param <T>
-     *            the generic type of the helper
-     * @param <U>
-     *            the generic type of the result
-     * @param method
-     *            the method of the request
-     * @param path
-     *            the path of the request
-     * @param params
-     *            the parameters for the request
-     * @param auth
-     *            true, if authentication is required for the request
-     * @param parser
-     *            the parser
-     * @param helper
-     *            the helper for the parser
-     * @return the parsed result
-     * @throws ClassCastException
-     *             if the result of the parser is not of the Type &lt;U&gt;
-     */
-    <T, U> U performUncachedRequest(String method, String path, Map<String, String> params, boolean auth,
-            Parser<?, ?, T> parser, T helper);
+    public void invalidateOrderBook(String itemid);
 
-    /**
-     * Checks if a given object might have updated on the server.
-     *
-     * @param toCheck
-     *            the object to check
-     * @return true, if the given object might have updated on the server
-     */
-    boolean hasUpdated(Object toCheck);
+    public void invalidateMessages(String userid);
+
+    public void invalidatePayouts(String userid);
+
+    public void invalidateTrades(String userid);
+
+    public void invalidateItemList(String userid);
+
+    public boolean isValidHistory(String itemid, List<HistoryEntry> historyEntries);
+
+    public boolean isValidOrderBook(String itemid, List<OrderBookEntry> orderBook);
+
+    public boolean isValidMessageList(String userid, List<Message> messages);
+
+    public boolean isValidPayoutList(String userid, List<Payout> payouts);
+
+    public boolean isValidTradeList(String userid, List<Trade> trades);
+
+    public boolean isValidItemList(String userid, List<Item> items);
 
 }

@@ -1,5 +1,7 @@
 package de._125m125.kt.ktapi_java.core;
 
+import de._125m125.kt.ktapi_java.core.entities.Notification;
+
 @FunctionalInterface
 public interface NotificationListener {
     /**
