@@ -1,5 +1,6 @@
 package de._125m125.kt.ktapi_java.smartCache;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,25 +13,48 @@ import org.apache.commons.collections4.list.GrowthList;
 import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedList;
 
 public class CacheData<T> {
+    private final Clock         clock;
+
     private final ReadWriteLock lock;
     private final GrowthList<T> entries;
     private long                lastInvalidationTime;
     private TimestampedList<T>  allEntries;
 
     public CacheData() {
-        this.lock = new ReentrantReadWriteLock();
-        this.entries = new GrowthList<>();
-        this.lastInvalidationTime = System.currentTimeMillis();
+        this(Clock.systemDefaultZone());
     }
 
+    /* package */ CacheData(final Clock clock) {
+        this.clock = clock;
+        this.lock = new ReentrantReadWriteLock();
+        this.entries = new GrowthList<>();
+        this.lastInvalidationTime = this.clock.millis();
+    }
+
+    /**
+     * sets the cached entries between start(inclusive) and end(exclusive)
+     * 
+     * @param newEntries
+     *            the entries to insert
+     * @param start
+     *            the index where the first entry should be inserted
+     * @param end
+     *            the index behind the last entry to insert
+     * @return a TimestampedList containing the provided entries
+     * @throws IllegalArgumentException
+     *             if the size of defined range does not equal the size of
+     *             supplied list
+     * @throws IllegalArgumentException
+     *             if the start index is negative
+     */
     public TimestampedList<T> set(final List<T> newEntries, final int start, final int end) {
         final int size = end - start;
         if (newEntries.size() != size) {
-            throw new IllegalArgumentException("Size of defined range does not equal size of entry list");
+            throw new IllegalArgumentException("Size of defined range does not equal size of supplied list");
         }
         this.lock.writeLock().lock();
         try {
-            for (int i = 0; i < size; i++) {
+            for (int i = size - 1; i >= 0; i--) {
                 this.entries.set(i + start, newEntries.get(i));
             }
             this.allEntries = null;
@@ -40,11 +64,14 @@ public class CacheData<T> {
         return new TimestampedList<>(newEntries, this.lastInvalidationTime, false);
     }
 
+    /**
+     * invalidates all cached data
+     */
     public void invalidate() {
         this.lock.writeLock().lock();
         try {
             this.entries.clear();
-            this.lastInvalidationTime = System.currentTimeMillis();
+            this.lastInvalidationTime = this.clock.millis();
             this.allEntries = null;
         } finally {
             this.lock.writeLock().unlock();
@@ -112,7 +139,7 @@ public class CacheData<T> {
         }
     }
 
-    public Optional<T> get(final Predicate<T> predicate) {
+    public Optional<T> getAny(final Predicate<T> predicate) {
         this.lock.readLock().lock();
         try {
             return this.entries.stream().filter(predicate).findAny();

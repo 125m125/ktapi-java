@@ -309,7 +309,7 @@ public class KtCachingRequesterIml implements KtRequester, NotificationListener,
     private <T> Result<T> getOrFetch(final String key, final Predicate<T> index, final Supplier<Result<T>> fetcher) {
         @SuppressWarnings("unchecked")
         final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key, s -> new CacheData<T>());
-        final Optional<T> all = cacheEntry.get(index);
+        final Optional<T> all = cacheEntry.getAny(index);
         if (all.isPresent()) {
             return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, all.get());
         } else {
