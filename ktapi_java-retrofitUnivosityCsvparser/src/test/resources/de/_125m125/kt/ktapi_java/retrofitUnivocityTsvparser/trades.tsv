@@ -1,0 +1,4 @@
+id	buy	materialId	materialName	amount	price	sold	toTakeM	toTakeI	cancelled
+5608204481722859487	false	JuniCrate3	JuniCrate3(JuniCrate3)	3456	1000.05	3456	932723928279	0	false
+8906063564992935262	false	1	Stone(1)	3456	0.33	1985	654984495	0	false
+1128838699383035894	true	264	Diamond(264)	2	0.10	2	200000	0	true

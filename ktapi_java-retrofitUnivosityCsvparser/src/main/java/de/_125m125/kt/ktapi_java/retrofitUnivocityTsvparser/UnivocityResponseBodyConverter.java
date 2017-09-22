@@ -17,11 +17,12 @@ public class UnivocityResponseBodyConverter<T> implements Converter<ResponseBody
     private Class<?>                          entryClazz;
 
     public UnivocityResponseBodyConverter(final Class<T> clazz, final Class<?> entryClazz) {
-        this.entryClazz = entryClazz;
-        this.converterFactory = UnivocityResponseBodyConverter.DEFAULT_CONVERTER_FACTORY;
+        this(clazz, entryClazz, UnivocityResponseBodyConverter.DEFAULT_CONVERTER_FACTORY);
     }
 
-    public UnivocityResponseBodyConverter(final TypeConverterFactory converterFactory) {
+    public UnivocityResponseBodyConverter(final Class<T> clazz, final Class<?> entryClazz,
+            final TypeConverterFactory converterFactory) {
+        this.entryClazz = entryClazz;
         this.converterFactory = converterFactory;
 
     }
