@@ -26,13 +26,14 @@ import de._125m125.kt.ktapi_java.core.results.Callback;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
 import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedList;
+import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedObjectFactory;
 
 /**
  * 
  */
 public class KtCachingRequesterIml implements KtRequester, NotificationListener, KtCachingRequester {
 
-    private static final int                CACHE_HIT_STATUS_CODE = 299;
+    public static final int                 CACHE_HIT_STATUS_CODE = 299;
 
     private static final String             ITEMS                 = "items-";
     private static final String             TRADES                = "trades-";
@@ -43,46 +44,52 @@ public class KtCachingRequesterIml implements KtRequester, NotificationListener,
 
     private final Map<String, CacheData<?>> cache;
     private final KtRequester               requester;
+    private final TimestampedObjectFactory  factory;
 
     public KtCachingRequesterIml(final KtRequester requester, final KtNotificationManager ktNotificationManager) {
-        this.requester = requester;
+        this(requester, ktNotificationManager, new TimestampedObjectFactory());
+    }
 
+    public KtCachingRequesterIml(final KtRequester requester, final KtNotificationManager ktNotificationManager,
+            final TimestampedObjectFactory factory) {
         this.cache = new ConcurrentHashMap<>();
+        this.requester = requester;
+        this.factory = factory != null ? factory : new TimestampedObjectFactory();
 
         ktNotificationManager.subscribeToAll(this, false);
     }
 
     @Override
     public void invalidateHistory(final String itemid) {
-        invalide(KtCachingRequesterIml.HISTORY + itemid);
+        invalidate(KtCachingRequesterIml.HISTORY + itemid);
     }
 
     @Override
     public void invalidateOrderBook(final String itemid) {
-        invalide(KtCachingRequesterIml.ORDERBOOK + itemid);
+        invalidate(KtCachingRequesterIml.ORDERBOOK + itemid);
     }
 
     @Override
     public void invalidateMessages(final String userid) {
-        invalide(KtCachingRequesterIml.MESSAGES + userid);
+        invalidate(KtCachingRequesterIml.MESSAGES + userid);
     }
 
     @Override
     public void invalidatePayouts(final String userid) {
-        invalide(KtCachingRequesterIml.PAYOUTS + userid);
+        invalidate(KtCachingRequesterIml.PAYOUTS + userid);
     }
 
     @Override
     public void invalidateTrades(final String userid) {
-        invalide(KtCachingRequesterIml.TRADES + userid);
+        invalidate(KtCachingRequesterIml.TRADES + userid);
     }
 
     @Override
     public void invalidateItemList(final String userid) {
-        invalide(KtCachingRequesterIml.ITEMS + userid);
+        invalidate(KtCachingRequesterIml.ITEMS + userid);
     }
 
-    private void invalide(final String key) {
+    private void invalidate(final String key) {
         final CacheData<?> cacheData = this.cache.get(key);
         if (cacheData != null) {
             cacheData.invalidate();
@@ -131,7 +138,7 @@ public class KtCachingRequesterIml implements KtRequester, NotificationListener,
     @Override
     public void update(final Notification notification) {
         final String key = notification.getDetails().get("source") + "-" + notification.getDetails().get("key");
-        invalide(key);
+        invalidate(key);
     }
 
     @Override
@@ -282,14 +289,16 @@ public class KtCachingRequesterIml implements KtRequester, NotificationListener,
         final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key, s -> new CacheData<T>());
         final Optional<T> all = cacheEntry.get(index);
         if (all.isPresent()) {
-            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, all.get());
+            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE,
+                    KtCachingRequesterIml.this.factory.create(all.get(), cacheEntry.getLastInvalidationTime(), true));
         } else {
             final Result<T> result = fetcher.get();
             final ExposedResult<T> returnResult = new ExposedResult<>();
             result.addCallback(new Callback<T>() {
                 @Override
                 public void onSuccess(final int status, final T result) {
-                    returnResult.setSuccessResult(status, result);
+                    returnResult.setSuccessResult(status, KtCachingRequesterIml.this.factory.create(result,
+                            cacheEntry.getLastInvalidationTime(), false));
                 }
 
                 @Override
@@ -311,14 +320,16 @@ public class KtCachingRequesterIml implements KtRequester, NotificationListener,
         final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key, s -> new CacheData<T>());
         final Optional<T> all = cacheEntry.getAny(index);
         if (all.isPresent()) {
-            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, all.get());
+            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE,
+                    KtCachingRequesterIml.this.factory.create(all.get(), cacheEntry.getLastInvalidationTime(), true));
         } else {
             final Result<T> result = fetcher.get();
             final ExposedResult<T> returnResult = new ExposedResult<>();
             result.addCallback(new Callback<T>() {
                 @Override
                 public void onSuccess(final int status, final T result) {
-                    returnResult.setSuccessResult(status, result);
+                    returnResult.setSuccessResult(status, KtCachingRequesterIml.this.factory.create(result,
+                            cacheEntry.getLastInvalidationTime(), false));
                 }
 
                 @Override

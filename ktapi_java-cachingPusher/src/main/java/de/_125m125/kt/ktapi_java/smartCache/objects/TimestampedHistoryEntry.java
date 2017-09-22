@@ -80,6 +80,9 @@ public class TimestampedHistoryEntry extends HistoryEntry implements Timestamped
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj instanceof TimestampedHistoryEntry) {
+            return this.entry.equals(((TimestampedHistoryEntry) obj).entry);
+        }
         return this.entry.equals(obj);
     }
 
