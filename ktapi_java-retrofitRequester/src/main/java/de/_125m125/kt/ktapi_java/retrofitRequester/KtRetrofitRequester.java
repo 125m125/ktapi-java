@@ -19,6 +19,7 @@ import de._125m125.kt.ktapi_java.core.results.WriteResult;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.RetrofitModifier;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -33,6 +34,14 @@ public class KtRetrofitRequester implements KtRequester {
         this.errorConverter = errorConverter;
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        clientBuilder.addInterceptor((chain) -> {
+            Request request = chain.request();
+            if (request.method().equals("GET")) {
+                return chain.proceed(request);
+            }
+            request = request.newBuilder().addHeader("content-type", "application/x-www-form-urlencoded").build();
+            return chain.proceed(request);
+        });
         if (clientModifiers != null) {
             for (final ClientModifier clientModifier : clientModifiers) {
                 clientBuilder = clientModifier.modify(clientBuilder);
@@ -49,6 +58,7 @@ public class KtRetrofitRequester implements KtRequester {
         this.client = retrofitBuilder.client(this.okHttpClient).build().create(KtRetrofitClient.class);
     }
 
+    @Override
     public void close() {
         this.okHttpClient.connectionPool().evictAll();
         this.okHttpClient.dispatcher().executorService().shutdown();
