@@ -39,6 +39,9 @@ public class KtRetrofitRequester implements KtRequester {
             if (request.method().equals("GET")) {
                 return chain.proceed(request);
             }
+            if (request.header("content-type") != null) {
+                return chain.proceed(request);
+            }
             request = request.newBuilder().addHeader("content-type", "application/x-www-form-urlencoded").build();
             return chain.proceed(request);
         });
