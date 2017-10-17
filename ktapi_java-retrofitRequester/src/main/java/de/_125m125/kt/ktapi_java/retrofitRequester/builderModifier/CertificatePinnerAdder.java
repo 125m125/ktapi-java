@@ -8,11 +8,14 @@ import okhttp3.OkHttpClient.Builder;
 
 public class CertificatePinnerAdder implements ClientModifier {
 
+    //@formatter:off
     public static CertificatePinnerAdderCertificate[] DEFAULT_CERTIFICATES = {
             new CertificatePinnerAdderCertificate("kt.125m125.de",
-                    "sha256/W5eiv0FIDR2Ew0opGSHlFsejH/g4Ad+WXONzuHOpXis=", 1507507200000L),
+                    "sha256/p+4iPfUuLJuKZnwgeX18XBnIZj4lXyR0G3Pn0NjWGCc=", 1515628800000L), // Jan 11 2018
             new CertificatePinnerAdderCertificate("kt.125m125.de",
-                    "sha256/p+4iPfUuLJuKZnwgeX18XBnIZj4lXyR0G3Pn0NjWGCc=", 1512691200000L) };
+                    "sha256//iQnnSh/9lsGEhErSqu/lrMUmVmi/QtJgarE3vtusbc=", 1520726400000L), // Mar 11 2018
+    };
+    //@formatter:on
 
     public static class CertificatePinnerAdderBuilder {
         private final List<CertificatePinnerAdderCertificate> certificatesToAdd = new ArrayList<>();
