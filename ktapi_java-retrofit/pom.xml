@@ -7,6 +7,15 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>ktapi_java-retrofit</artifactId>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>

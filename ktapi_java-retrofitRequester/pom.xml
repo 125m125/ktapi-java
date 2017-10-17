@@ -8,17 +8,26 @@
 	</parent>
 	<artifactId>ktapi_java-retrofitRequester</artifactId>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>de._125m125.kt</groupId>
 			<artifactId>ktapi_java-core</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>retrofit</artifactId>
 			<version>2.3.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

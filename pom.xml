@@ -10,6 +10,10 @@
 	<description>API implementation for Kadcontrade</description>
 	<url>https://kt.125m125.de</url>
 
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -29,21 +33,42 @@
 	</properties>
 
 	<modules>
-		
 		<module>ktapi_java-pusher</module>
 		<module>ktapi_java-cachingPusher</module>
 		<module>ktapi_java-core</module>
-		
+
 		<module>ktapi_java-retrofitRequester</module>
 		<module>ktapi_java-retrofitUnivosityCsvparser</module>
 		<module>ktapi_java-retrofit</module>
 	</modules>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.1.0</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
+				<version>3.7.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -52,13 +77,9 @@
 		</plugins>
 	</build>
 
+
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-			</dependency>
 			<dependency>
 				<groupId>de._125m125.kt</groupId>
 				<artifactId>ktapi_java-core</artifactId>
@@ -76,16 +97,6 @@
 			</dependency>
 			<dependency>
 				<groupId>de._125m125.kt</groupId>
-				<artifactId>ktapi_java-cachingPusher</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>de._125m125.kt</groupId>
-				<artifactId>ktapi_java-pinningRequester</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>de._125m125.kt</groupId>
 				<artifactId>ktapi_java-retrofitRequester</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -94,8 +105,17 @@
 				<artifactId>ktapi_java-retrofitUnivosityTsvparser</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
-			
+			<dependency>
+				<groupId>de._125m125.kt</groupId>
+				<artifactId>ktapi_java-retrofit</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-all</artifactId>
@@ -104,17 +124,12 @@
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-api-mockito</artifactId>
-				<version>1.6.5</version>
+				<version>1.7.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
-				<version>1.6.5</version>
-			</dependency>
-			<dependency>
-				<groupId>de._125m125.kt</groupId>
-				<artifactId>ktapi_java-retrofit</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>2.0.0-beta.5</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
