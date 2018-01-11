@@ -11,9 +11,11 @@ public class CertificatePinnerAdder implements ClientModifier {
     //@formatter:off
     public static CertificatePinnerAdderCertificate[] DEFAULT_CERTIFICATES = {
             new CertificatePinnerAdderCertificate("kt.125m125.de",
-                    "sha256/p+4iPfUuLJuKZnwgeX18XBnIZj4lXyR0G3Pn0NjWGCc=", 1515628800000L), // Jan 11 2018
+                    "sha256//iQnnSh/9lsGEhErSqu/lrMUmVmi/QtJgarE3vtusbc=", 1523404800000L), // Apr 11 2018
             new CertificatePinnerAdderCertificate("kt.125m125.de",
-                    "sha256//iQnnSh/9lsGEhErSqu/lrMUmVmi/QtJgarE3vtusbc=", 1520726400000L), // Mar 11 2018
+                    "sha256/BDHLeJezD9o1bNzFlf1B9MLw/Ab9AzM4S8aTV3TCJUI=", 1528675200000L), // Jun 11 2018
+            new CertificatePinnerAdderCertificate("kt.125m125.de",
+                    "sha256/tKgj8//UI0ceNEqmwGJ9WnSaE/z/fYs/c+CcX80mzzc=", 1528675200000L), // Jun 11 2018
     };
     //@formatter:on
 
