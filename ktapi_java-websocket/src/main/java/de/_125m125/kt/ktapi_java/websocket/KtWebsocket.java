@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -20,21 +21,28 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.User;
 
 @ClientEndpoint
 public class KtWebsocket implements KtNotificationManager {
-    public static final String                                SERVER_ENDPOINT_URI = "wss://kt.125m125.de/websocket";
+    public static final String                                         SERVER_ENDPOINT_URI = "wss://kt.125m125.de/websocket";
 
-    private final Map<String, List<NotificationListener>>     listeners           = new HashMap<>();
-    private final Map<Integer, Consumer<Map<String, Object>>> waiting             = new HashMap<>();
-    private boolean                                           active              = true;
-    private final AtomicInteger                               lastRequestId       = new AtomicInteger();
-    private Session                                           session;
-    private Thread                                            restart_wait_thread;
-    private final URI                                         serverEndpointUri;
+    private final Map<String, Map<String, List<NotificationListener>>> subscriptions       = new HashMap<>();
+    private final Map<Integer, Consumer<ResponseMessage>>              waiting             = new HashMap<>();
+
+    private boolean                                                    active              = true;
+    private final AtomicInteger                                        lastRequestId       = new AtomicInteger();
+    private Session                                                    session;
+    private Thread                                                     restart_wait_thread;
+    private final URI                                                  serverEndpointUri;
+
+    private final MessageParser                                        parser;
 
     public KtWebsocket() {
         try {
@@ -42,10 +50,12 @@ public class KtWebsocket implements KtNotificationManager {
         } catch (final URISyntaxException e) {
             throw new RuntimeException("The default websocket uri is invalid", e);
         }
+        this.parser = new MessageParser();
     }
 
     public KtWebsocket(final String uri) throws URISyntaxException {
         this.serverEndpointUri = new URI(uri);
+        this.parser = new MessageParser();
     }
 
     public synchronized void stop() {
@@ -101,7 +111,6 @@ public class KtWebsocket implements KtNotificationManager {
 
     @Override
     public void subscribeToMessages(final NotificationListener listener, final User user, final boolean selfCreated) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -184,18 +193,58 @@ public class KtWebsocket implements KtNotificationManager {
 
     @OnMessage
     public void onMessage(final String message, final Session session) {
-        // TODO Auto-generated method stub
+        final Optional<Object> parsedMessage = this.parser.parse(message);
+        parsedMessage.ifPresent(obj -> {
+            if (obj instanceof ResponseMessage) {
+                final ResponseMessage responseMessage = (ResponseMessage) obj;
+                responseMessage.getRequestId().map(this.waiting::get).ifPresent(c -> c.accept(responseMessage));
+            } else if (obj instanceof UpdateNotification) {
+                List<NotificationListener> keyList = null;
+                final UpdateNotification notificationMessage = (UpdateNotification) obj;
+                synchronized (this.subscriptions) {
+                    final Map<String, List<NotificationListener>> sourceMap = this.subscriptions
+                            .get(notificationMessage.getSource());
+                    if (sourceMap != null) {
+                        keyList = sourceMap.get(notificationMessage.getKey());
+                    }
+                }
+                if (keyList != null) {
+                    keyList.forEach(c -> c.update(notificationMessage));
+                }
+            }
+        });
     }
 
     public void sendMessage(final String message) {
         try {
             this.session.getBasicRemote().sendText(message);
         } catch (final IOException ex) {
-
+            throw new SendFailedException(ex);
         }
     }
 
-    public void send(final Object data, final Consumer<Map<String, Object>> callback) {
+    public void send(final Object data, final Consumer<ResponseMessage> callback) {
+        final Gson gson = new Gson();
+        final JsonElement jsonData = gson.toJsonTree(data);
+        int rid = -1;
+        if (callback != null) {
+            rid = this.lastRequestId.incrementAndGet();
+            ((JsonObject) jsonData).addProperty("rid", rid);
+        }
+        try {
+            sendMessage(gson.toJson(jsonData));
+            if (callback != null) {
+                synchronized (this.waiting) {
+                    this.waiting.put(rid, callback);
+                }
+            }
+        } catch (final SendFailedException e) {
+            if (callback != null) {
+                callback.accept(new ResponseMessage("failed to send subscription message", e));
+            } else {
+                throw e;
+            }
+        }
 
     }
 
