@@ -19,4 +19,8 @@ public class UpdateNotification extends Notification {
         return getDetails().get("key");
     }
 
+    public String getChannel() {
+        return getDetails().get("channel");
+    }
+
 }

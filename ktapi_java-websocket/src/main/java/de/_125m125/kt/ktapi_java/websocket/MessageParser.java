@@ -7,8 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import de._125m125.kt.ktapi_java.core.entities.Notification;
-
 public class MessageParser {
     public Optional<Object> parse(final String message) {
         final JsonElement parse = new JsonParser().parse(message);
@@ -19,7 +17,7 @@ public class MessageParser {
             }
             if (jsonObject.has("type")) {
                 if ("update".equals(jsonObject.get("type").getAsString())) {
-                    return Optional.of(new Gson().fromJson(jsonObject, Notification.class));
+                    return Optional.of(new Gson().fromJson(jsonObject, UpdateNotification.class));
                 }
             }
         }

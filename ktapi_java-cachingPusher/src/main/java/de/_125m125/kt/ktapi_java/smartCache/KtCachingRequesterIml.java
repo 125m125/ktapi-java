@@ -56,7 +56,9 @@ public class KtCachingRequesterIml implements KtRequester, NotificationListener,
         this.requester = requester;
         this.factory = factory != null ? factory : new TimestampedObjectFactory();
 
-        ktNotificationManager.subscribeToAll(this, false);
+        // ktNotificationManager.subscribeToAll(this, false);
+        // ktNotificationManager.subscribeToAll(this, true);
+        ktNotificationManager.subscribeToAll(this);
     }
 
     @Override

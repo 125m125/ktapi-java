@@ -161,7 +161,7 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      */
     @Override
     public void subscribeToOrderbook(final NotificationListener listener) {
-        final String channelName = "order";
+        final String channelName = "orderbook";
         subscribe(channelName, "update", listener);
     }
 
@@ -182,17 +182,7 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         if (!this.user.equals(u)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
-        subscribeToHistory(listener);
-        subscribeToItems(listener, u, selfCreated);
-        subscribeToMessages(listener, u, selfCreated);
-        subscribeToOrderbook(listener);
-        subscribeToPayouts(listener, u, selfCreated);
-        subscribeToTrades(listener, u, selfCreated);
-    }
-
-    @Override
-    public void subscribeToAll(final NotificationListener listener, final boolean selfCreated) {
-        subscribeToAll(listener, this.user, selfCreated);
+        KtNotificationManager.super.subscribeToAll(listener, u, selfCreated);
     }
 
     @Override

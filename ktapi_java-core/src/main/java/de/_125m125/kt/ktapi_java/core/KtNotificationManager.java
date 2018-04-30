@@ -81,10 +81,19 @@ public interface KtNotificationManager {
      * @param selfCreated
      *            true to listen to self created notifications
      */
-    public void subscribeToAll(NotificationListener listener, User u, boolean selfCreated);
+    public default void subscribeToAll(final NotificationListener listener, final User user,
+            final boolean selfCreated) {
+        subscribeToItems(listener, user, selfCreated);
+        subscribeToMessages(listener, user, selfCreated);
+        subscribeToPayouts(listener, user, selfCreated);
+        subscribeToTrades(listener, user, selfCreated);
+    }
 
-    public void subscribeToAll(NotificationListener ktCachingRequesterIml, boolean selfCreated);
+    public default void subscribeToAll(final NotificationListener listener) {
+        subscribeToHistory(listener);
+        subscribeToOrderbook(listener);
+    }
 
-    void disconnect();
+    public void disconnect();
 
 }

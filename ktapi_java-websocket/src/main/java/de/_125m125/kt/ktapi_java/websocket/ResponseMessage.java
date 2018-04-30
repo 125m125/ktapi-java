@@ -35,4 +35,8 @@ public class ResponseMessage {
     public Optional<Throwable> getErrorCause() {
         return Optional.ofNullable(this.errorCause);
     }
+
+    public boolean success() {
+        return !getError().isPresent();
+    }
 }
