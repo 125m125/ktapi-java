@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi_java.websocket;
+package de._125m125.kt.ktapi_java.websocket.requests;
 
 import de._125m125.kt.ktapi_java.core.entities.User;
 

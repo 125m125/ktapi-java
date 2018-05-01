@@ -15,7 +15,8 @@ public interface KtNotificationManager {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen to self created notifications
+     *            true to listen only to self-created notifications, false to
+     *            only listen to non-self-created notification
      */
     public void subscribeToMessages(NotificationListener listener, User user, boolean selfCreated);
 
@@ -27,7 +28,8 @@ public interface KtNotificationManager {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen to self created notifications
+     *            true to listen only to self-created notifications, false to
+     *            only listen to non-self-created notification
      */
     public void subscribeToTrades(NotificationListener listener, User user, boolean selfCreated);
 
@@ -39,7 +41,8 @@ public interface KtNotificationManager {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen to self created notifications
+     *            true to listen only to self-created notifications, false to
+     *            only listen to non-self-created notification
      */
     public void subscribeToItems(NotificationListener listener, User user, boolean selfCreated);
 
@@ -51,7 +54,8 @@ public interface KtNotificationManager {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen to self created notifications
+     *            true to listen only to self-created notifications, false to
+     *            only listen to non-self-created notification
      */
     public void subscribeToPayouts(NotificationListener listener, User user, boolean selfCreated);
 
@@ -63,6 +67,16 @@ public interface KtNotificationManager {
      */
     public void subscribeToOrderbook(NotificationListener listener);
 
+//    /**
+//     * Subscribe to updates for the orderbook of a specific item.
+//     *
+//     * @param listener
+//     *            the listener
+//     * @param item
+//     *            the id of the item
+//     */
+//    public void subscribeToOrderbook(NotificationListener listener, String item);
+
     /**
      * Subscribe to updates for historic values.
      *
@@ -71,15 +85,26 @@ public interface KtNotificationManager {
      */
     public void subscribeToHistory(NotificationListener listener);
 
+//    /**
+//     * Subscribe to updates for historic values of a specific item.
+//     *
+//     * @param listener
+//     *            the listener
+//     * @param item
+//     *            the id of the item
+//     */
+//    public void subscribeToHistory(NotificationListener listener, String item);
+
     /**
-     * Subscribe to all notifications.
+     * Subscribe to all notifications for a specific user.
      *
      * @param listener
      *            the listener
      * @param u
      *            the u
      * @param selfCreated
-     *            true to listen to self created notifications
+     *            true to listen only to self-created notifications, false to
+     *            only listen to non-self-created notification
      */
     public default void subscribeToAll(final NotificationListener listener, final User user,
             final boolean selfCreated) {
@@ -89,6 +114,12 @@ public interface KtNotificationManager {
         subscribeToTrades(listener, user, selfCreated);
     }
 
+    /**
+     * Subscribe to all notification that do not require a logged in user
+     * 
+     * @param listener
+     *            the listener
+     */
     public default void subscribeToAll(final NotificationListener listener) {
         subscribeToHistory(listener);
         subscribeToOrderbook(listener);

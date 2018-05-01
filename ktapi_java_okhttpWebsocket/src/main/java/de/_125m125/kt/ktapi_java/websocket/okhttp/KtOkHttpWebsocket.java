@@ -50,7 +50,6 @@ public class KtOkHttpWebsocket extends KtWebsocket {
             this.client = new OkHttpClient();
             this.externalClient = false;
         }
-        start();
     }
 
     @Override
@@ -71,7 +70,6 @@ public class KtOkHttpWebsocket extends KtWebsocket {
 
     @Override
     public void sendMessage(final String message) {
-        System.out.println(message);
         this.ws.send(message);
     }
 
@@ -85,7 +83,7 @@ public class KtOkHttpWebsocket extends KtWebsocket {
 
         @Override
         public void onOpen(final WebSocket webSocket, final Response response) {
-            this.listener.onOpen();
+            new Thread(this.listener::onOpen).start();
         }
 
         @Override
@@ -95,6 +93,11 @@ public class KtOkHttpWebsocket extends KtWebsocket {
 
         @Override
         public void onClosed(final WebSocket webSocket, final int code, final String reason) {
+            this.listener.onClose(true);
+        }
+
+        @Override
+        public void onClosing(final WebSocket webSocket, final int code, final String reason) {
             this.listener.onClose(true);
         }
 
