@@ -1,5 +1,6 @@
 package de._125m125.kt.ktapi_java.websocket;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -15,8 +16,8 @@ import com.google.gson.JsonObject;
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.User;
-import de._125m125.kt.ktapi_java.websocket.requests.SessionRequest;
-import de._125m125.kt.ktapi_java.websocket.requests.SubscriptionRequest;
+import de._125m125.kt.ktapi_java.websocket.requests.SessionRequestData;
+import de._125m125.kt.ktapi_java.websocket.requests.SubscriptionRequestData;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
 import de._125m125.kt.ktapi_java.websocket.responses.SessionResponse;
 import de._125m125.kt.ktapi_java.websocket.responses.UpdateNotification;
@@ -84,22 +85,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     public KtWebsocket(final boolean session) {
         this.useSession = session;
-        if (this.useSession) {
-            final Thread thread = new Thread(() -> {
-                while (true) {
-                    try {
-                        Thread.sleep(3600_000);
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if (this.active) {
-                        pingSession();
-                    }
-                }
-            });
-            thread.setDaemon(true);
-            thread.start();
-        }
         this.parser = new MessageParser();
     }
 
@@ -179,7 +164,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     @Override
     public void subscribeToMessages(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequest request = new SubscriptionRequest("rMessages", user, selfCreated);
+        final SubscriptionRequestData request = new SubscriptionRequestData("rMessages", user, selfCreated);
         subscribe(request, "messages", user.getUID(), user, listener);
     }
 
@@ -188,7 +173,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     @Override
     public void subscribeToTrades(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequest request = new SubscriptionRequest("rOrders", user, selfCreated);
+        final SubscriptionRequestData request = new SubscriptionRequestData("rOrders", user, selfCreated);
         subscribe(request, "trades", user.getUID(), user, listener);
     }
 
@@ -197,7 +182,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     @Override
     public void subscribeToItems(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequest request = new SubscriptionRequest("rItems", user, selfCreated);
+        final SubscriptionRequestData request = new SubscriptionRequestData("rItems", user, selfCreated);
         subscribe(request, "items", user.getUID(), user, listener);
     }
 
@@ -206,7 +191,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     @Override
     public void subscribeToPayouts(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequest request = new SubscriptionRequest("rPayouts", user, selfCreated);
+        final SubscriptionRequestData request = new SubscriptionRequestData("rPayouts", user, selfCreated);
         subscribe(request, "payouts", user.getUID(), user, listener);
     }
 
@@ -215,7 +200,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     @Override
     public void subscribeToOrderbook(final NotificationListener listener) {
-        final SubscriptionRequest request = new SubscriptionRequest("orderbook");
+        final SubscriptionRequestData request = new SubscriptionRequestData("orderbook");
         subscribe(request, "orderbook", null, null, listener);
     }
 
@@ -224,7 +209,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     @Override
     public void subscribeToHistory(final NotificationListener listener) {
-        final SubscriptionRequest request = new SubscriptionRequest("history");
+        final SubscriptionRequestData request = new SubscriptionRequestData("history");
         subscribe(request, "history", null, null, listener);
     }
 
@@ -245,7 +230,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      *            the listener that should be notified on new events
      * @return the response message from the server
      */
-    public ResponseMessage subscribe(final SubscriptionRequest request, final String source, final String key,
+    public ResponseMessage subscribe(final SubscriptionRequestData request, final String source, final String key,
             final User owner, final NotificationListener listener) {
         if (this.useSession) {
             checkSession();
@@ -281,7 +266,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
                 return;
             }
             final Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("session", SessionRequest.createStartRequest());
+            requestMap.put("session", SessionRequestData.createStartRequest());
             try {
                 final ResponseMessage responseMessage = sendAndAwait(requestMap);
                 if (!(responseMessage instanceof SessionResponse)) {
@@ -308,7 +293,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
                 return false;
             }
             final Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("session", SessionRequest.createResumtionRequest(this.sessionId));
+            requestMap.put("session", SessionRequestData.createResumtionRequest(this.sessionId));
             try {
                 final ResponseMessage responseMessage = sendAndAwait(requestMap);
                 if (!(responseMessage instanceof SessionResponse)) {
@@ -322,14 +307,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
                 return false;
             }
         }
-    }
-
-    /**
-     * Ping session to keep it alive.
-     */
-    private void pingSession() {
-        final Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("session", SessionRequest.createStatusRequest());
     }
 
     /* (non-Javadoc)
@@ -405,7 +382,7 @@ public abstract class KtWebsocket implements KtNotificationManager {
      * @param message
      *            the message
      */
-    public abstract void sendMessage(final String message);
+    public abstract void sendMessage(final String message) throws IOException;
 
     /**
      * Send.
@@ -454,6 +431,10 @@ public abstract class KtWebsocket implements KtNotificationManager {
         final CompletableFuture<ResponseMessage> cf = new CompletableFuture<>();
         send(data, cf::complete);
         return cf.get();
+    }
+
+    public void setManager(final KtWebsocketManager manager) {
+
     }
 
 }
