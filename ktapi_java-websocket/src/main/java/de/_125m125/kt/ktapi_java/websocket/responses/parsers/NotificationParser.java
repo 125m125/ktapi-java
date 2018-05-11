@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi_java.websocket.parsers;
+package de._125m125.kt.ktapi_java.websocket.responses.parsers;
 
 import java.util.Optional;
 

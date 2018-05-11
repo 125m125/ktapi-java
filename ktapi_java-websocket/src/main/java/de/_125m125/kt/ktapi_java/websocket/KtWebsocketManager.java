@@ -37,13 +37,13 @@ import de._125m125.kt.ktapi_java.websocket.events.WebsocketStatus;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketStoppedEvent;
 import de._125m125.kt.ktapi_java.websocket.exceptions.MessageCancelException;
 import de._125m125.kt.ktapi_java.websocket.exceptions.MessageSendException;
-import de._125m125.kt.ktapi_java.websocket.parsers.NotificationParser;
-import de._125m125.kt.ktapi_java.websocket.parsers.ResponseMessageParser;
-import de._125m125.kt.ktapi_java.websocket.parsers.SessionMessageParser;
-import de._125m125.kt.ktapi_java.websocket.parsers.WebsocketMessageParser;
 import de._125m125.kt.ktapi_java.websocket.requests.RequestMessage;
 import de._125m125.kt.ktapi_java.websocket.requests.WebsocketResult;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
+import de._125m125.kt.ktapi_java.websocket.responses.parsers.NotificationParser;
+import de._125m125.kt.ktapi_java.websocket.responses.parsers.ResponseMessageParser;
+import de._125m125.kt.ktapi_java.websocket.responses.parsers.SessionMessageParser;
+import de._125m125.kt.ktapi_java.websocket.responses.parsers.WebsocketMessageParser;
 
 public class KtWebsocketManager implements Closeable {
     public static Builder builder(final KtWebsocket websocket) {

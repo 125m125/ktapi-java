@@ -13,6 +13,7 @@ public class CancelableWebsocketEvent extends WebsocketEvent {
 
     public CancelableWebsocketEvent(final WebsocketStatus websocketStatus) {
         super(websocketStatus);
+        this.cancelState = CancelState.NONE;
     }
 
     public void setCancelState(final CancelState cancelState) {
@@ -37,7 +38,7 @@ public class CancelableWebsocketEvent extends WebsocketEvent {
     }
 
     public boolean isCancelled() {
-        return this.cancelState == CancelState.NONE;
+        return this.cancelState != CancelState.NONE;
     }
 
     public Throwable getCancelReason() {

@@ -69,7 +69,6 @@ public class SessionHandler {
         this.manager.sendRequest(requestMessage);
         try {
             final ResponseMessage responseMessage = requestMessage.getResult().get(5, TimeUnit.SECONDS);
-            System.out.println(responseMessage);
             if (!(responseMessage instanceof SessionResponse)) {
                 return;
             }

@@ -2,8 +2,6 @@ package de._125m125.kt.ktapi_java.websocket.events.listeners;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
@@ -15,7 +13,6 @@ import de._125m125.kt.ktapi_java.websocket.events.WebsocketEventListening;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketManagerCreatedEvent;
 import de._125m125.kt.ktapi_java.websocket.requests.RequestMessage;
 import de._125m125.kt.ktapi_java.websocket.requests.SubscriptionRequestData;
-import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
 import de._125m125.kt.ktapi_java.websocket.responses.UpdateNotification;
 
 public class KtWebsocketNotificationHandler implements KtNotificationManager {
@@ -130,7 +127,7 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
      *            the listener that should be notified on new events
      * @return the response message from the server
      */
-    public ResponseMessage subscribe(final SubscriptionRequestData request, final String source, final String key,
+    public void subscribe(final SubscriptionRequestData request, final String source, final String key,
             final User owner, final NotificationListener listener) {
         KtWebsocketManager manager = this.manager;
         if (manager == null) {
@@ -144,8 +141,7 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
         }
         final RequestMessage requestMessage = RequestMessage.builder().addContent(request).build();
         this.manager.sendRequest(requestMessage);
-        try {
-            final ResponseMessage responseMessage = requestMessage.getResult().get(10, TimeUnit.SECONDS);
+        requestMessage.getResult().addCallback(responseMessage -> {
             if (responseMessage.success()) {
                 SubscriptionList subList;
                 synchronized (this.subscriptions) {
@@ -154,10 +150,7 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
                 }
                 subList.addListener(listener, request.isSelfCreated());
             }
-            return responseMessage;
-        } catch (InterruptedException | TimeoutException e) {
-            return new ResponseMessage("error getting response from server", e);
-        }
+        });
     }
 
     /* (non-Javadoc)
