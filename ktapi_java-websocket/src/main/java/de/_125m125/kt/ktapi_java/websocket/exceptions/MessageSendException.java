@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi_java.websocket;
+package de._125m125.kt.ktapi_java.websocket.exceptions;
 
 public class MessageSendException extends RuntimeException {
     private static final long serialVersionUID = 8156302203651877630L;

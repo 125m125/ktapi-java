@@ -35,7 +35,14 @@ import de._125m125.kt.ktapi_java.websocket.events.WebsocketManagerCreatedEvent;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketStartedEvent;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketStatus;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketStoppedEvent;
+import de._125m125.kt.ktapi_java.websocket.exceptions.MessageCancelException;
+import de._125m125.kt.ktapi_java.websocket.exceptions.MessageSendException;
+import de._125m125.kt.ktapi_java.websocket.parsers.NotificationParser;
+import de._125m125.kt.ktapi_java.websocket.parsers.ResponseMessageParser;
+import de._125m125.kt.ktapi_java.websocket.parsers.SessionMessageParser;
+import de._125m125.kt.ktapi_java.websocket.parsers.WebsocketMessageParser;
 import de._125m125.kt.ktapi_java.websocket.requests.RequestMessage;
+import de._125m125.kt.ktapi_java.websocket.requests.WebsocketResult;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
 
 public class KtWebsocketManager implements Closeable {
@@ -77,6 +84,12 @@ public class KtWebsocketManager implements Closeable {
                     }
                 });
             }
+        }
+
+        public void addDefaultParsers() {
+            addParser(new NotificationParser());
+            addParser(new SessionMessageParser());
+            addParser(new ResponseMessageParser());
         }
 
         public <T> void addParser(final WebsocketMessageParser<T> parser) {
@@ -144,8 +157,7 @@ public class KtWebsocketManager implements Closeable {
                 return;
             }
             // notify caller or callback about failure
-            requestMessage.getResponseConsumer().orElseThrow(() -> new MessageDeliveryException(e))
-                    .accept(new ResponseMessage("message delivery failed", e));
+            requestMessage.getResult().setResponse(new ResponseMessage("message delivery failed", e));
             requestMessage.getRequestId().ifPresent(this.awaitedResponses::remove);
             return;
         }
@@ -161,8 +173,8 @@ public class KtWebsocketManager implements Closeable {
             final Object parsedResponse = parser.get().parse(rawMessage, json);
             if (parsedResponse instanceof ResponseMessage) {
                 final ResponseMessage responseMessage = (ResponseMessage) parsedResponse;
-                responseMessage.getRequestId().map(this.awaitedResponses::remove)
-                        .flatMap(RequestMessage::getResponseConsumer).ifPresent(c -> c.accept(responseMessage));
+                responseMessage.getRequestId().map(this.awaitedResponses::remove).map(RequestMessage::getResult)
+                        .filter(r -> !r.isDone()).ifPresent(r -> r.setResponse(responseMessage));
             }
             fireEvent(new MessageReceivedEvent(generateStatus(), parsedResponse));
         } else {
@@ -202,8 +214,10 @@ public class KtWebsocketManager implements Closeable {
     private void cancelAwaitedResponses() {
         final Iterator<Entry<Integer, RequestMessage>> iterator = this.awaitedResponses.entrySet().iterator();
         while (iterator.hasNext()) {
-            iterator.next().getValue().getResponseConsumer()
-                    .ifPresent(c -> c.accept(new ResponseMessage("websocket closed", null)));
+            final WebsocketResult result = iterator.next().getValue().getResult();
+            if (!result.isDone()) {
+                result.setResponse(new ResponseMessage("websocket closed", null));
+            }
             iterator.remove();
         }
     }

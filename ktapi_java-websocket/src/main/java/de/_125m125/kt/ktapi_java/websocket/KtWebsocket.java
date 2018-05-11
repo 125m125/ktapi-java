@@ -4,22 +4,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.User;
-import de._125m125.kt.ktapi_java.websocket.requests.SessionRequestData;
+import de._125m125.kt.ktapi_java.websocket.parsers.MessageParser;
 import de._125m125.kt.ktapi_java.websocket.requests.SubscriptionRequestData;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
-import de._125m125.kt.ktapi_java.websocket.responses.SessionResponse;
 import de._125m125.kt.ktapi_java.websocket.responses.UpdateNotification;
 
 /**
@@ -41,15 +34,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     private final Map<String, Map<String, SubscriptionList>> subscriptions       = new HashMap<>();
 
-    /**
-     * Callbacks for previous requests that have not been answered so far. The
-     * key represents the Request id.
-     */
-    private final Map<Integer, Consumer<ResponseMessage>>    waiting             = new HashMap<>();
-
-    /** The id of the websocket session. */
-    private String                                           sessionId;
-
     /** True, if the websocket is currently active. */
     private volatile boolean                                 active              = false;
 
@@ -67,9 +51,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
     /** The Messageparser for incoming messages. */
     private final MessageParser                              parser;
 
-    /** True, if websocket sessions should be used. */
-    private final boolean                                    useSession;
-
     /**
      * Instantiates a new KtWebsocket.
      */
@@ -84,7 +65,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
      *            true, if the websocket should use sessions
      */
     public KtWebsocket(final boolean session) {
-        this.useSession = session;
         this.parser = new MessageParser();
     }
 
@@ -232,9 +212,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     public ResponseMessage subscribe(final SubscriptionRequestData request, final String source, final String key,
             final User owner, final NotificationListener listener) {
-        if (this.useSession) {
-            checkSession();
-        }
         final Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("subscribe", request);
         try {
@@ -251,61 +228,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return new ResponseMessage("error getting response from server", e);
-        }
-    }
-
-    /**
-     * Check for an existing session and start a new session if required.
-     */
-    private void checkSession() {
-        if (!this.useSession || this.sessionId != null) {
-            return;
-        }
-        synchronized (this) {
-            if (this.sessionId != null) {
-                return;
-            }
-            final Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("session", SessionRequestData.createStartRequest());
-            try {
-                final ResponseMessage responseMessage = sendAndAwait(requestMap);
-                if (!(responseMessage instanceof SessionResponse)) {
-                    return;
-                }
-                this.sessionId = ((SessionResponse) responseMessage).getSessionDetails().getId();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Resume the previous session.
-     *
-     * @return true, if the session was resumed successfully
-     */
-    private boolean resumeSession() {
-        if (!this.useSession) {
-            return false;
-        }
-        synchronized (this) {
-            if (this.sessionId == null) {
-                return false;
-            }
-            final Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("session", SessionRequestData.createResumtionRequest(this.sessionId));
-            try {
-                final ResponseMessage responseMessage = sendAndAwait(requestMap);
-                if (!(responseMessage instanceof SessionResponse)) {
-                    responseMessage.getError().filter("unknownSessionId"::equals)
-                            .ifPresent(msg -> this.sessionId = null);
-                    return false;
-                }
-                return true;
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-                return false;
-            }
         }
     }
 
@@ -334,12 +256,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
      */
     protected void onOpen() {
         this.lastDelay = 0;
-        synchronized (this.subscriptions) {
-            boolean sessionResumed = false;
-            if (this.useSession) {
-                sessionResumed = sessionResumed || resumeSession();
-            }
-        }
     }
 
     /**
@@ -352,8 +268,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
         final Optional<Object> parsedMessage = this.parser.parse(message);
         parsedMessage.ifPresent(obj -> {
             if (obj instanceof ResponseMessage) {
-                final ResponseMessage responseMessage = (ResponseMessage) obj;
-                responseMessage.getRequestId().map(this.waiting::get).ifPresent(c -> c.accept(responseMessage));
             } else if (obj instanceof UpdateNotification) {
                 SubscriptionList keyList = null;
                 SubscriptionList unkeyedList = null;
@@ -383,55 +297,6 @@ public abstract class KtWebsocket implements KtNotificationManager {
      *            the message
      */
     public abstract void sendMessage(final String message) throws IOException;
-
-    /**
-     * Send.
-     *
-     * @param data
-     *            the data
-     * @param callback
-     *            the callback
-     */
-    public void send(final Object data, final Consumer<ResponseMessage> callback) {
-        final Gson gson = new Gson();
-        final JsonElement jsonData = gson.toJsonTree(data);
-        int rid = -1;
-        if (callback != null) {
-            rid = this.lastRequestId.incrementAndGet();
-            ((JsonObject) jsonData).addProperty("rid", rid);
-        }
-        try {
-            sendMessage(gson.toJson(jsonData));
-            if (callback != null) {
-                synchronized (this.waiting) {
-                    this.waiting.put(rid, callback);
-                }
-            }
-        } catch (final SendFailedException e) {
-            if (callback != null) {
-                callback.accept(new ResponseMessage("failed to send subscription message", e));
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    /**
-     * Send a message to the server and wait for a response
-     *
-     * @param data
-     *            the data to send to the server
-     * @return the response message from the server
-     * @throws InterruptedException
-     *             if the current thread was interrupted while waiting
-     * @throws ExecutionException
-     *             if the request completed exceptionally
-     */
-    public ResponseMessage sendAndAwait(final Object data) throws InterruptedException, ExecutionException {
-        final CompletableFuture<ResponseMessage> cf = new CompletableFuture<>();
-        send(data, cf::complete);
-        return cf.get();
-    }
 
     public void setManager(final KtWebsocketManager manager) {
 

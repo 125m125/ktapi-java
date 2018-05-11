@@ -1,17 +1,17 @@
 package de._125m125.kt.ktapi_java.websocket.events.listeners;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import de._125m125.kt.ktapi_java.websocket.KtWebsocketManager;
-import de._125m125.kt.ktapi_java.websocket.MessageSendException;
+import de._125m125.kt.ktapi_java.websocket.events.BeforeMessageSendEvent;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketConnectedEvent;
+import de._125m125.kt.ktapi_java.websocket.events.WebsocketDisconnectedEvent;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketEventListening;
 import de._125m125.kt.ktapi_java.websocket.events.WebsocketManagerCreatedEvent;
+import de._125m125.kt.ktapi_java.websocket.exceptions.MessageSendException;
 import de._125m125.kt.ktapi_java.websocket.requests.RequestMessage;
 import de._125m125.kt.ktapi_java.websocket.requests.SessionRequestData;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
@@ -23,6 +23,7 @@ public class SessionHandler {
     private ScheduledExecutorService service;
 
     private String                   sessionId;
+    private boolean                  sessionActive = false;
 
     public SessionHandler() {
 
@@ -43,30 +44,67 @@ public class SessionHandler {
     }
 
     @WebsocketEventListening
-    public synchronized void onWebsocketConnected(final WebsocketConnectedEvent e) {
+    public void onWebsocketConnected(final WebsocketConnectedEvent e) {
         resumeSession();
     }
 
-    private synchronized boolean resumeSession() {
-        if (this.sessionId == null) {
-            return false;
+    @WebsocketEventListening
+    public synchronized void onWebsocketDisconnected(final WebsocketDisconnectedEvent e) {
+        this.sessionActive = false;
+    }
+
+    @WebsocketEventListening
+    public void onBeforeMessageSend(final BeforeMessageSendEvent e) {
+        if (e.getMessage().hasContent("subscribe")) {
+            checkSession();
         }
-        final Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("session", SessionRequestData.createResumtionRequest(this.sessionId));
+    }
+
+    private synchronized void checkSession() {
+        if (this.sessionActive) {
+            return;
+        }
+        final RequestMessage requestMessage = RequestMessage.builder()
+                .addContent(SessionRequestData.createStartRequest()).build();
+        this.manager.sendMessage(requestMessage);
         try {
-            final ResponseMessage responseMessage = sendAndAwait(requestMap);
+            final ResponseMessage responseMessage = requestMessage.getResult().get(5, TimeUnit.SECONDS);
             if (!(responseMessage instanceof SessionResponse)) {
-                responseMessage.getError().filter("unknownSessionId"::equals).ifPresent(msg -> this.sessionId = null);
-                return false;
+                return;
             }
+            this.sessionId = ((SessionResponse) responseMessage).getSessionDetails().getId();
+            this.sessionActive = true;
+        } catch (InterruptedException | TimeoutException e) {
+            return;
+        }
+    }
+
+    private synchronized boolean resumeSession() {
+        if (this.sessionId == null || this.sessionActive) {
             return true;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+        }
+        final RequestMessage requestMessage = RequestMessage.builder()
+                .addContent(SessionRequestData.createResumtionRequest(this.sessionId)).build();
+        this.manager.sendMessage(requestMessage);
+        try {
+            final ResponseMessage responseMessage = requestMessage.getResult().get(30, TimeUnit.SECONDS);
+            final boolean error = responseMessage.getError().filter("unknownSessionId"::equals).isPresent();
+            if (error) {
+                this.sessionId = null;
+                return false;
+            } else {
+                this.sessionActive = true;
+                return true;
+            }
+        } catch (InterruptedException | TimeoutException e) {
             return false;
         }
     }
 
-    public void pingSession() {
+    public synchronized void pingSession() {
+        if (!this.sessionActive) {
+            return;
+        }
         try {
             this.manager.sendMessage(new RequestMessage.RequestMessageBuilder()
                     .addContent(SessionRequestData.createStatusRequest()).build());

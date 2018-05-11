@@ -11,13 +11,17 @@ import com.google.gson.Gson;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
 
 public class RequestMessage {
+    public static RequestMessageBuilder builder() {
+        return new RequestMessageBuilder();
+    }
+
     public static class RequestMessageBuilder {
 
         private static final AtomicInteger nextRequestId = new AtomicInteger(0);
 
         private final Map<String, Object>  content;
 
-        private Consumer<ResponseMessage>  responseReceiver;
+        private final WebsocketResult      result        = new WebsocketResult();
 
         public RequestMessageBuilder(final RequestMessage r) {
             this.content = new HashMap<>(r.content);
@@ -50,24 +54,28 @@ public class RequestMessage {
             return this;
         }
 
-        public RequestMessageBuilder setResponseReceiver(final Consumer<ResponseMessage> responseReceiver) {
-            this.responseReceiver = responseReceiver;
+        public RequestMessageBuilder addResponseCallback(final Consumer<ResponseMessage> responseReceiver) {
+            expectResponse();
+            this.result.addCallback(responseReceiver);
+            return this;
+        }
+
+        public RequestMessageBuilder expectResponse() {
             this.content.computeIfAbsent("rid", k -> RequestMessageBuilder.nextRequestId.getAndIncrement());
             return this;
         }
 
         public RequestMessage build() {
-            return new RequestMessage(this.content, Optional.of(this.responseReceiver));
+            return new RequestMessage(this.content, this.result);
         }
     }
 
-    private final Map<String, Object>                 content;
-    private final Optional<Consumer<ResponseMessage>> responseConsumer;
+    private final Map<String, Object> content;
+    private final WebsocketResult     result;
 
-    protected RequestMessage(final Map<String, Object> content,
-            final Optional<Consumer<ResponseMessage>> responseConsumer) {
+    protected RequestMessage(final Map<String, Object> content, final WebsocketResult result) {
         this.content = content;
-        this.responseConsumer = responseConsumer;
+        this.result = result;
     }
 
     public String getMessage() {
@@ -75,11 +83,15 @@ public class RequestMessage {
     }
 
     public Optional<Integer> getRequestId() {
-        return this.responseConsumer.map(v -> (Integer) this.content.get("rid"));
+        return Optional.ofNullable((Integer) this.content.get("rid"));
     }
 
-    public Optional<Consumer<ResponseMessage>> getResponseConsumer() {
-        return this.responseConsumer;
+    public WebsocketResult getResult() {
+        return this.result;
+    }
+
+    public boolean hasContent(final String key) {
+        return this.content.containsKey(key);
     }
 
 }
