@@ -35,7 +35,7 @@ public class SessionHandler {
             throw new IllegalStateException("each session handler can only be used for a single WebsocketManager");
         }
         this.manager = e.getManager();
-        this.service = Executors.newScheduledThreadPool(0, r -> {
+        this.service = Executors.newScheduledThreadPool(1, r -> {
             final Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
             return t;
@@ -66,9 +66,10 @@ public class SessionHandler {
         }
         final RequestMessage requestMessage = RequestMessage.builder()
                 .addContent(SessionRequestData.createStartRequest()).build();
-        this.manager.sendMessage(requestMessage);
+        this.manager.sendRequest(requestMessage);
         try {
             final ResponseMessage responseMessage = requestMessage.getResult().get(5, TimeUnit.SECONDS);
+            System.out.println(responseMessage);
             if (!(responseMessage instanceof SessionResponse)) {
                 return;
             }
@@ -85,7 +86,7 @@ public class SessionHandler {
         }
         final RequestMessage requestMessage = RequestMessage.builder()
                 .addContent(SessionRequestData.createResumtionRequest(this.sessionId)).build();
-        this.manager.sendMessage(requestMessage);
+        this.manager.sendRequest(requestMessage);
         try {
             final ResponseMessage responseMessage = requestMessage.getResult().get(30, TimeUnit.SECONDS);
             final boolean error = responseMessage.getError().filter("unknownSessionId"::equals).isPresent();

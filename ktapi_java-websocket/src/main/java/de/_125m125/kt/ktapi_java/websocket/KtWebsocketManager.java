@@ -46,6 +46,9 @@ import de._125m125.kt.ktapi_java.websocket.requests.WebsocketResult;
 import de._125m125.kt.ktapi_java.websocket.responses.ResponseMessage;
 
 public class KtWebsocketManager implements Closeable {
+    public static Builder builder(final KtWebsocket websocket) {
+        return new Builder(websocket);
+    }
 
     public static class Builder {
         private final KtWebsocket                                                  websocket;
@@ -56,12 +59,14 @@ public class KtWebsocketManager implements Closeable {
             this.websocket = websocket;
         }
 
-        public <T extends WebsocketEvent> void addListener(final Class<T> clazz, final Consumer<? super T> consumer) {
+        public <T extends WebsocketEvent> Builder addListener(final Class<T> clazz,
+                final Consumer<? super T> consumer) {
             this.listeners.computeIfAbsent(clazz, c -> new ArrayList<>()).add(o -> consumer.accept(clazz.cast(o)));
+            return this;
         }
 
         @SuppressWarnings("unchecked")
-        public void addListener(final Object listener) {
+        public Builder addListener(final Object listener) {
             final Method[] methods = listener.getClass().getMethods();
             for (final Method m : methods) {
                 if (m.getAnnotation(WebsocketEventListening.class) == null) {
@@ -72,28 +77,38 @@ public class KtWebsocketManager implements Closeable {
                     throw new IllegalArgumentException("Method " + m.getName() + " should have exactly one argument");
                 }
                 final Parameter p = parameters[0];
-                if (!WebsocketEvent.class.isAssignableFrom(p.getClass())) {
+                if (!WebsocketEvent.class.isAssignableFrom(p.getType())) {
                     throw new IllegalArgumentException("The argument for " + listener.getClass().getName() + "#"
                             + m.getName() + " does not extend WebsocketEvent");
                 }
                 addListener((Class<? extends WebsocketEvent>) p.getType(), t -> {
                     try {
-                        m.invoke(t);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        // System.out.println(listener + "->" + t);
+                        m.invoke(listener, t);
+                    } catch (final IllegalAccessException e) {
                         throw new RuntimeException(e);
+                    } catch (final InvocationTargetException e) {
+                        final Throwable cause = e.getCause();
+                        if (e.getCause() instanceof RuntimeException) {
+                            throw (RuntimeException) e.getCause();
+                        }
+                        throw new RuntimeException(cause);
                     }
                 });
             }
+            return this;
         }
 
-        public void addDefaultParsers() {
+        public Builder addDefaultParsers() {
             addParser(new NotificationParser());
             addParser(new SessionMessageParser());
             addParser(new ResponseMessageParser());
+            return this;
         }
 
-        public <T> void addParser(final WebsocketMessageParser<T> parser) {
+        public <T> Builder addParser(final WebsocketMessageParser<T> parser) {
             this.parsers.add(parser);
+            return this;
         }
 
         public KtWebsocketManager build() {
@@ -101,6 +116,12 @@ public class KtWebsocketManager implements Closeable {
             this.websocket.setManager(manager);
             manager.fireEvent(new WebsocketManagerCreatedEvent(manager));
             return manager;
+        }
+
+        public KtWebsocketManager buildAndOpen() {
+            final KtWebsocketManager build = build();
+            build.open();
+            return build;
         }
     }
 
@@ -165,6 +186,14 @@ public class KtWebsocketManager implements Closeable {
         fireEvent(new AfterMessageSendEvent(generateStatus(), requestMessage));
     }
 
+    public void sendRequest(final RequestMessage requestMessage) throws MessageSendException {
+        if (requestMessage.getRequestId().isPresent()) {
+            sendMessage(requestMessage);
+        } else {
+            sendMessage(new RequestMessage.RequestMessageBuilder(requestMessage).expectResponse().build());
+        }
+    }
+
     public void receiveMessage(final String rawMessage) {
         final Optional<JsonObject> json = tryParse(rawMessage);
         final Optional<WebsocketMessageParser<?>> parser = this.parsers.stream().filter(p -> p.parses(rawMessage, json))
@@ -206,9 +235,19 @@ public class KtWebsocketManager implements Closeable {
     }
 
     public void open() {
+        if (this.active) {
+            return;
+        }
         this.active = true;
-        this.websocket.connect();
         fireEvent(new WebsocketStartedEvent(generateStatus()));
+        connect();
+    }
+
+    public void connect() {
+        if (!this.active) {
+            throw new IllegalStateException("cannot connect websocket while inactive");
+        }
+        this.websocket.connect();
     }
 
     private void cancelAwaitedResponses() {

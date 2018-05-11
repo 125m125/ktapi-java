@@ -1,18 +1,20 @@
 package de._125m125.kt.ktapi_java.websocket.okhttp;
 
 import de._125m125.kt.ktapi_java.websocket.KtWebsocket;
+import de._125m125.kt.ktapi_java.websocket.KtWebsocketManager;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-public class KtOkHttpWebsocket extends KtWebsocket {
+public class KtOkHttpWebsocket implements KtWebsocket {
 
     private final String       url;
     private final boolean      externalClient;
     private final OkHttpClient client;
     private WebSocket          ws;
+    private KtWebsocketManager manager;
 
     /**
      * creates a new OkHttpWebsocket
@@ -42,7 +44,7 @@ public class KtOkHttpWebsocket extends KtWebsocket {
      *            the client that is used for the websocket.
      */
     public KtOkHttpWebsocket(final String url, final OkHttpClient client) {
-        this.url = url != null ? url : KtWebsocket.SERVER_ENDPOINT_URI;
+        this.url = url != null ? url : KtWebsocket.DEFAULT_SERVER_ENDPOINT_URI;
         if (client != null) {
             this.client = client;
             this.externalClient = true;
@@ -53,7 +55,7 @@ public class KtOkHttpWebsocket extends KtWebsocket {
     }
 
     @Override
-    protected void close() {
+    public synchronized void close() {
         this.ws.close(1000, "client shutting down");
         if (!this.externalClient) {
             this.client.dispatcher().executorService().shutdown();
@@ -61,50 +63,49 @@ public class KtOkHttpWebsocket extends KtWebsocket {
     }
 
     @Override
-    protected boolean connect() {
+    public synchronized boolean connect() {
         final Request request = new Request.Builder().url(this.url).build();
-        final WebSocketListener listener = new KtWebsocketListener(this);
+        final WebSocketListener listener = new KtWebsocketListener();
         this.ws = this.client.newWebSocket(request, listener);
         return true;
     }
 
     @Override
-    public void sendMessage(final String message) {
+    public synchronized void sendMessage(final String message) {
         this.ws.send(message);
+    }
+
+    @Override
+    public void setManager(final KtWebsocketManager manager) {
+        this.manager = manager;
     }
 
     public class KtWebsocketListener extends WebSocketListener {
 
-        private final KtOkHttpWebsocket listener;
-
-        public KtWebsocketListener(final KtOkHttpWebsocket listener) {
-            this.listener = listener;
-        }
-
         @Override
         public void onOpen(final WebSocket webSocket, final Response response) {
-            new Thread(this.listener::onOpen).start();
+            new Thread(KtOkHttpWebsocket.this.manager::websocketConnected).start();
         }
 
         @Override
         public void onMessage(final WebSocket webSocket, final String text) {
-            this.listener.onMessage(text);
+            KtOkHttpWebsocket.this.manager.receiveMessage(text);
         }
 
         @Override
         public void onClosed(final WebSocket webSocket, final int code, final String reason) {
-            this.listener.onClose(true);
+            new Thread(KtOkHttpWebsocket.this.manager::websocketDisconnected).start();
         }
 
         @Override
         public void onClosing(final WebSocket webSocket, final int code, final String reason) {
-            this.listener.onClose(true);
+            new Thread(KtOkHttpWebsocket.this.manager::websocketDisconnected).start();
         }
 
         @Override
         public void onFailure(final WebSocket webSocket, final Throwable t, final Response response) {
             t.printStackTrace();
-            this.listener.onClose(true);
+            new Thread(KtOkHttpWebsocket.this.manager::websocketDisconnected).start();
         }
 
     }

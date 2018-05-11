@@ -21,14 +21,16 @@ public class RequestMessage {
 
         private final Map<String, Object>  content;
 
-        private final WebsocketResult      result        = new WebsocketResult();
+        private final WebsocketResult      result;
 
         public RequestMessageBuilder(final RequestMessage r) {
             this.content = new HashMap<>(r.content);
+            this.result = r.result;
         }
 
         public RequestMessageBuilder() {
             this.content = new HashMap<>();
+            this.result = new WebsocketResult();
         }
 
         public RequestMessageBuilder addContent(final String key, final Object value) {
