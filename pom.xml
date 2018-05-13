@@ -40,6 +40,8 @@
 		<module>ktapi_java-retrofitRequester</module>
 		<module>ktapi_java-retrofitUnivosityCsvparser</module>
 		<module>ktapi_java-retrofit</module>
+		<module>ktapi_java-websocket</module>
+		<module>ktapi_java_okhttpWebsocket</module>
 	</modules>
 
 	<build>
@@ -130,6 +132,11 @@
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
 				<version>2.0.0-beta.5</version>
+			</dependency>
+			<dependency>
+				<groupId>de._125m125.kt</groupId>
+				<artifactId>ktapi_java-websocket</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -96,8 +96,8 @@ public class Notification {
      */
     @Override
     public String toString() {
-        return "PusherNotification [selfCreated=" + this.selfCreated + ", uid=" + this.uid + ", base32Uid="
-                + this.base32Uid + ", type=" + this.type + ", details=" + this.details + "]";
+        return "Notification [selfCreated=" + this.selfCreated + ", uid=" + this.uid + ", base32Uid=" + this.base32Uid
+                + ", type=" + this.type + ", details=" + this.details + "]";
     }
 
 }
