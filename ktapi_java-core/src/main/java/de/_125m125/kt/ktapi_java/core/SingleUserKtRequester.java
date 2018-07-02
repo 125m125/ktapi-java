@@ -10,28 +10,28 @@ import de._125m125.kt.ktapi_java.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi_java.core.entities.Payout;
 import de._125m125.kt.ktapi_java.core.entities.Permissions;
 import de._125m125.kt.ktapi_java.core.entities.Trade;
-import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
 
-public class SingleUserKtRequestUtil {
+public class SingleUserKtRequester<T extends UserKey> {
 
     private static final NumberFormat NUMBER_FORMAT;
     static {
         NUMBER_FORMAT = NumberFormat.getInstance();
-        SingleUserKtRequestUtil.NUMBER_FORMAT.setMaximumFractionDigits(2);
-        SingleUserKtRequestUtil.NUMBER_FORMAT.setGroupingUsed(false);
+        SingleUserKtRequester.NUMBER_FORMAT.setMaximumFractionDigits(2);
+        SingleUserKtRequester.NUMBER_FORMAT.setGroupingUsed(false);
     }
 
-    private final User        user;
-    private final KtRequester requester;
+    private final T                      user;
+    private final KtRequester<? super T> requester;
 
-    public SingleUserKtRequestUtil(final User user, final KtRequester requester) {
+    public SingleUserKtRequester(final T user, final KtRequester<? super T> requester) {
         this.user = user;
         this.requester = requester;
     }
 
-    public User getUser() {
+    public T getUser() {
         return this.user;
     }
 
@@ -41,7 +41,7 @@ public class SingleUserKtRequestUtil {
      * @return the permissions
      */
     public Result<Permissions> getPermissions() {
-        return this.requester.getPermissions(this.user.getUID());
+        return this.requester.getPermissions(this.user);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SingleUserKtRequestUtil {
      * @return the items
      */
     public Result<List<Item>> getItems() {
-        return this.requester.getItems(this.user.getUID());
+        return this.requester.getItems(this.user);
     }
 
     /**
@@ -59,7 +59,7 @@ public class SingleUserKtRequestUtil {
      * @return the trades
      */
     public Result<List<Trade>> getTrades() {
-        return this.requester.getTrades(this.user.getUID());
+        return this.requester.getTrades(this.user);
     }
 
     /**
@@ -68,7 +68,7 @@ public class SingleUserKtRequestUtil {
      * @return the messages
      */
     public Result<List<Message>> getMessages() {
-        return this.requester.getMessages(this.user.getUID());
+        return this.requester.getMessages(this.user);
     }
 
     /**
@@ -77,7 +77,7 @@ public class SingleUserKtRequestUtil {
      * @return the payouts
      */
     public Result<List<Payout>> getPayouts() {
-        return this.requester.getPayouts(this.user.getUID());
+        return this.requester.getPayouts(this.user);
     }
 
     /**
@@ -182,7 +182,7 @@ public class SingleUserKtRequestUtil {
      */
     public Result<WriteResult<Trade>> recreateTrade(final Trade trade) {
         return this.createTrade(trade.getBuySell(), trade.getMaterialId(), trade.getAmount(),
-                SingleUserKtRequestUtil.NUMBER_FORMAT.format(trade.getPrice()));
+                SingleUserKtRequester.NUMBER_FORMAT.format(trade.getPrice()));
     }
 
     /**
@@ -194,7 +194,7 @@ public class SingleUserKtRequestUtil {
      */
     public Result<WriteResult<Trade>> fulfillTrade(final Trade trade) {
         return this.createTrade(trade.getBuySell().getOpposite(), trade.getMaterialId(), trade.getAmount(),
-                SingleUserKtRequestUtil.NUMBER_FORMAT.format(trade.getPrice()));
+                SingleUserKtRequester.NUMBER_FORMAT.format(trade.getPrice()));
     }
 
     /**
@@ -212,7 +212,7 @@ public class SingleUserKtRequestUtil {
      */
     public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final String item, final int count,
             final String price) {
-        return this.requester.createTrade(this.user.getUID(), buySell, item, count, price);
+        return this.requester.createTrade(this.user, buySell, item, count, price);
     }
 
     /**
@@ -234,7 +234,7 @@ public class SingleUserKtRequestUtil {
      * @return the result
      */
     public Result<WriteResult<Trade>> cancelTrade(final long tradeid) {
-        return this.requester.cancelTrade(this.user.getUID(), tradeid);
+        return this.requester.cancelTrade(this.user, tradeid);
     }
 
     /**
@@ -256,12 +256,12 @@ public class SingleUserKtRequestUtil {
      * @return the result
      */
     public Result<WriteResult<Trade>> takeoutFromTrade(final long tradeid) {
-        return this.requester.takeoutTrade(this.user.getUID(), tradeid);
+        return this.requester.takeoutTrade(this.user, tradeid);
     }
 
     public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item, final int amount,
             final double price) {
-        return this.createTrade(buySell, item, amount, SingleUserKtRequestUtil.NUMBER_FORMAT.format(price));
+        return this.createTrade(buySell, item, amount, SingleUserKtRequester.NUMBER_FORMAT.format(price));
     }
 
 }

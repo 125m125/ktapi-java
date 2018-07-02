@@ -1,11 +1,11 @@
 package de._125m125.kt.ktapi_java.core;
 
-import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.entities.UserKey;
 
 /**
  * The Interface KtNotificationManager.
  */
-public interface KtNotificationManager {
+public interface KtNotificationManager<T extends UserKey> {
 
     /**
      * Subscribe to updates for messages.
@@ -18,7 +18,7 @@ public interface KtNotificationManager {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToMessages(NotificationListener listener, User user, boolean selfCreated);
+    public void subscribeToMessages(NotificationListener listener, T user, boolean selfCreated);
 
     /**
      * Subscribe to updates for trades of the user.
@@ -31,7 +31,7 @@ public interface KtNotificationManager {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToTrades(NotificationListener listener, User user, boolean selfCreated);
+    public void subscribeToTrades(NotificationListener listener, T user, boolean selfCreated);
 
     /**
      * Subscribe to updates for the itemlist.
@@ -44,7 +44,7 @@ public interface KtNotificationManager {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToItems(NotificationListener listener, User user, boolean selfCreated);
+    public void subscribeToItems(NotificationListener listener, T user, boolean selfCreated);
 
     /**
      * Subscribe to updates for payouts.
@@ -57,7 +57,7 @@ public interface KtNotificationManager {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToPayouts(NotificationListener listener, User user, boolean selfCreated);
+    public void subscribeToPayouts(NotificationListener listener, T user, boolean selfCreated);
 
     /**
      * Subscribe to updates for orderbooks.
@@ -67,15 +67,16 @@ public interface KtNotificationManager {
      */
     public void subscribeToOrderbook(NotificationListener listener);
 
-//    /**
-//     * Subscribe to updates for the orderbook of a specific item.
-//     *
-//     * @param listener
-//     *            the listener
-//     * @param item
-//     *            the id of the item
-//     */
-//    public void subscribeToOrderbook(NotificationListener listener, String item);
+    // /**
+    // * Subscribe to updates for the orderbook of a specific item.
+    // *
+    // * @param listener
+    // * the listener
+    // * @param item
+    // * the id of the item
+    // */
+    // public void subscribeToOrderbook(NotificationListener listener, String
+    // item);
 
     /**
      * Subscribe to updates for historic values.
@@ -85,15 +86,16 @@ public interface KtNotificationManager {
      */
     public void subscribeToHistory(NotificationListener listener);
 
-//    /**
-//     * Subscribe to updates for historic values of a specific item.
-//     *
-//     * @param listener
-//     *            the listener
-//     * @param item
-//     *            the id of the item
-//     */
-//    public void subscribeToHistory(NotificationListener listener, String item);
+    // /**
+    // * Subscribe to updates for historic values of a specific item.
+    // *
+    // * @param listener
+    // * the listener
+    // * @param item
+    // * the id of the item
+    // */
+    // public void subscribeToHistory(NotificationListener listener, String
+    // item);
 
     /**
      * Subscribe to all notifications for a specific user.
@@ -106,8 +108,7 @@ public interface KtNotificationManager {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public default void subscribeToAll(final NotificationListener listener, final User user,
-            final boolean selfCreated) {
+    public default void subscribeToAll(final NotificationListener listener, final T user, final boolean selfCreated) {
         subscribeToItems(listener, user, selfCreated);
         subscribeToMessages(listener, user, selfCreated);
         subscribeToPayouts(listener, user, selfCreated);
@@ -116,7 +117,7 @@ public interface KtNotificationManager {
 
     /**
      * Subscribe to all notification that do not require a logged in user
-     * 
+     *
      * @param listener
      *            the listener
      */

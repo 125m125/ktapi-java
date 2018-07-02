@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
+import de._125m125.kt.ktapi_java.core.KtUserStore;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.websocket.KtWebsocketManager;
 import de._125m125.kt.ktapi_java.websocket.SubscriptionList;
 import de._125m125.kt.ktapi_java.websocket.events.MessageReceivedEvent;
@@ -15,7 +17,7 @@ import de._125m125.kt.ktapi_java.websocket.requests.RequestMessage;
 import de._125m125.kt.ktapi_java.websocket.requests.SubscriptionRequestData;
 import de._125m125.kt.ktapi_java.websocket.responses.UpdateNotification;
 
-public class KtWebsocketNotificationHandler implements KtNotificationManager {
+public class KtWebsocketNotificationHandler<T extends UserKey> implements KtNotificationManager<T> {
 
     private KtWebsocketManager                               manager;
 
@@ -25,6 +27,12 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
      * channel.
      */
     private final Map<String, Map<String, SubscriptionList>> subscriptions = new HashMap<>();
+
+    private final KtUserStore<? extends User>                userStore;
+
+    public KtWebsocketNotificationHandler(final KtUserStore<? extends User> userStore) {
+        this.userStore = userStore;
+    }
 
     @WebsocketEventListening
     public synchronized void onWebsocketManagerCreated(final WebsocketManagerCreatedEvent e) {
@@ -60,36 +68,40 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.User, boolean)
      */
     @Override
-    public void subscribeToMessages(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rMessages", user, selfCreated);
-        subscribe(request, "messages", user.getUID(), user, listener);
+    public void subscribeToMessages(final NotificationListener listener, final T user, final boolean selfCreated) {
+        final SubscriptionRequestData request = new SubscriptionRequestData("rMessages", this.userStore.get(user),
+                selfCreated);
+        subscribe(request, "messages", user.getUid(), user, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.User, boolean)
      */
     @Override
-    public void subscribeToTrades(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rOrders", user, selfCreated);
-        subscribe(request, "trades", user.getUID(), user, listener);
+    public void subscribeToTrades(final NotificationListener listener, final T user, final boolean selfCreated) {
+        final SubscriptionRequestData request = new SubscriptionRequestData("rOrders", this.userStore.get(user),
+                selfCreated);
+        subscribe(request, "trades", user.getUid(), user, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.User, boolean)
      */
     @Override
-    public void subscribeToItems(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rItems", user, selfCreated);
-        subscribe(request, "items", user.getUID(), user, listener);
+    public void subscribeToItems(final NotificationListener listener, final T user, final boolean selfCreated) {
+        final SubscriptionRequestData request = new SubscriptionRequestData("rItems", this.userStore.get(user),
+                selfCreated);
+        subscribe(request, "items", user.getUid(), user, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.User, boolean)
      */
     @Override
-    public void subscribeToPayouts(final NotificationListener listener, final User user, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rPayouts", user, selfCreated);
-        subscribe(request, "payouts", user.getUID(), user, listener);
+    public void subscribeToPayouts(final NotificationListener listener, final T user, final boolean selfCreated) {
+        final SubscriptionRequestData request = new SubscriptionRequestData("rPayouts", this.userStore.get(user),
+                selfCreated);
+        subscribe(request, "payouts", user.getUid(), user, listener);
     }
 
     /* (non-Javadoc)
@@ -127,8 +139,8 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
      *            the listener that should be notified on new events
      * @return the response message from the server
      */
-    public void subscribe(final SubscriptionRequestData request, final String source, final String key,
-            final User owner, final NotificationListener listener) {
+    public void subscribe(final SubscriptionRequestData request, final String source, final String key, final T owner,
+            final NotificationListener listener) {
         KtWebsocketManager manager = this.manager;
         if (manager == null) {
             synchronized (this) {
@@ -146,7 +158,7 @@ public class KtWebsocketNotificationHandler implements KtNotificationManager {
                 SubscriptionList subList;
                 synchronized (this.subscriptions) {
                     subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>()).computeIfAbsent(key,
-                            n -> new SubscriptionList(owner));
+                            n -> new SubscriptionList(this.userStore.get(owner)));
                 }
                 subList.addListener(listener, request.isSelfCreated());
             }

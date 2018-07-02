@@ -32,6 +32,7 @@ import de._125m125.kt.ktapi_java.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi_java.core.entities.Message;
 import de._125m125.kt.ktapi_java.core.entities.Notification;
 import de._125m125.kt.ktapi_java.core.entities.OrderBookEntry;
+import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Callback;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedHistoryEntry;
@@ -41,14 +42,14 @@ import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedList;
 public class KtCachingRequesterImlTest {
 
     @Mock
-    private KtRequester               requester;
+    private KtRequester<UserKey>           requester;
     @Mock
-    private KtNotificationManager     notificationmanager;
+    private KtNotificationManager<UserKey> notificationmanager;
 
     @InjectMocks
-    private KtCachingRequesterIml     uut;
+    private KtCachingRequesterIml<UserKey> uut;
 
-    private Map<String, CacheData<?>> cache;
+    private Map<String, CacheData<?>>      cache;
 
     @Before
     @SuppressWarnings("unchecked")

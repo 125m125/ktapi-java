@@ -13,9 +13,9 @@ public class SubscriptionRequestData {
         this.channel = channel;
         this.selfCreated = selfCreated;
         if (user != null) {
-            this.uid = user.getUID();
-            this.tid = user.getTID();
-            this.tkn = user.getTKN();
+            this.uid = user.getUid();
+            this.tid = user.getTid();
+            this.tkn = user.getTkn();
         } else {
             this.uid = null;
             this.tid = null;
@@ -44,7 +44,7 @@ public class SubscriptionRequestData {
     }
 
     public boolean isSelfCreated() {
-        return selfCreated;
+        return this.selfCreated;
     }
 
 }

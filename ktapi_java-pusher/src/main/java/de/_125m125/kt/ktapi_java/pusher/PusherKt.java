@@ -17,18 +17,18 @@ import com.pusher.client.connection.ConnectionStateChange;
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.Notification;
-import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.entities.UserKey;
 
-public class PusherKt implements PrivateChannelEventListener, KtNotificationManager {
+public class PusherKt<T extends UserKey> implements PrivateChannelEventListener, KtNotificationManager<T> {
     private final Pusher                                  pusher;
 
     private final Map<String, List<NotificationListener>> listeners     = new HashMap<>();
     private final StampedLock                             listenersLock = new StampedLock();
 
     private final NotificationParser                      parser;
-    private final User                                    user;
+    private final T                                       user;
 
-    public PusherKt(final User user, final NotificationParser parser, final Authorizer authorizer) {
+    public PusherKt(final T user, final NotificationParser parser, final Authorizer authorizer) {
         this.user = user;
         this.parser = parser;
 
@@ -100,11 +100,11 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToMessages(final NotificationListener listener, final User user, final boolean selfCreated) {
+    public void subscribeToMessages(final NotificationListener listener, final T user, final boolean selfCreated) {
         if (!user.equals(this.user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTID() + "_rMessages";
+        final String channelName = "private-" + user.getTid() + "_rMessages";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
@@ -115,11 +115,11 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToTrades(final NotificationListener listener, final User user, final boolean selfCreated) {
+    public void subscribeToTrades(final NotificationListener listener, final T user, final boolean selfCreated) {
         if (!user.equals(this.user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTID() + "_rOrders";
+        final String channelName = "private-" + user.getTid() + "_rOrders";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
@@ -130,11 +130,11 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToItems(final NotificationListener listener, final User user, final boolean selfCreated) {
-        if (!user.equals(this.user)) {
+    public void subscribeToItems(final NotificationListener listener, final T user, final boolean selfCreated) {
+        if (!this.user.equals(user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTID() + "_rItems";
+        final String channelName = "private-" + user.getTid() + "_rItems";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
@@ -145,11 +145,11 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToPayouts(final NotificationListener listener, final User user, final boolean selfCreated) {
+    public void subscribeToPayouts(final NotificationListener listener, final T user, final boolean selfCreated) {
         if (!user.equals(this.user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTID() + "_rPayouts";
+        final String channelName = "private-" + user.getTid() + "_rPayouts";
         subscribe(channelName, "update", listener);
         if (selfCreated) {
             subscribe(channelName.concat(".selfCreated"), "update", listener);
@@ -178,11 +178,11 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToAll(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToAll(final NotificationListener listener, final User u, final boolean selfCreated) {
-        if (!this.user.equals(u)) {
+    public void subscribeToAll(final NotificationListener listener, final T user, final boolean selfCreated) {
+        if (!this.user.equals(user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
-        KtNotificationManager.super.subscribeToAll(listener, u, selfCreated);
+        KtNotificationManager.super.subscribeToAll(listener, user, selfCreated);
     }
 
     @Override
