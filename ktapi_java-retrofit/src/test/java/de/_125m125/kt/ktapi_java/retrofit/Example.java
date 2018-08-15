@@ -14,6 +14,9 @@ public class Example {
     public static void main(final String[] args) throws InterruptedException {
         final User user = new User("1", "1", "1");
         final KtRetrofitRequester requester = KtRetrofit.createDefaultRequester(new KtUserStore<>(user));
+        // final SingleUserKtRequester<UserKey> requester =
+        // KtRetrofit.createClientCertificateRequester(user, null,
+        // new File("certificate.p12"), new char[] { 'a' });
         final Result<List<Message>> history = requester.getMessages(user);
         try {
             if (history.isSuccessful()) {

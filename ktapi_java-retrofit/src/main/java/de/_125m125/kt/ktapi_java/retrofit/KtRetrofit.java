@@ -4,12 +4,16 @@ import java.io.File;
 
 import com.google.gson.Gson;
 
+import de._125m125.kt.ktapi_java.core.KtRequester;
 import de._125m125.kt.ktapi_java.core.KtUserStore;
+import de._125m125.kt.ktapi_java.core.SingleUserKtRequester;
 import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.ErrorResponse;
 import de._125m125.kt.ktapi_java.retrofitRequester.KtRetrofitRequester;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.BasicAuthenticator;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.CertificatePinnerAdder;
+import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.ClientCertificateAdder;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.ConverterFactoryAdder;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.HeaderAdder;
@@ -41,5 +45,23 @@ public class KtRetrofit {
                 new RetrofitModifier[] { new ConverterFactoryAdder(new UnivocityConverterFactory()),
                         new ConverterFactoryAdder(GsonConverterFactory.create()) },
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
+    }
+
+    public static SingleUserKtRequester<UserKey> createClientCertificateRequester(final UserKey user, final Cache cache,
+            final File pkcs12File, final char[] filePassword) {
+        final KtRequester<UserKey> baseRequester = new KtRetrofitRequester(KtRetrofit.DEFAULT_BASE_URL,
+                new ClientModifier[] { ClientCertificateAdder.createUnchecked(pkcs12File, filePassword),
+                        new HeaderAdder("Accept", "text/tsv,application/json"), client -> {
+                            if (cache != null) {
+                                client.cache(cache);
+                            }
+                            return client;
+                        },
+                        CertificatePinnerAdder.builder(true).addAll(CertificatePinnerAdder.DEFAULT_CERTIFICATES)
+                                .build() },
+                new RetrofitModifier[] { new ConverterFactoryAdder(new UnivocityConverterFactory()),
+                        new ConverterFactoryAdder(GsonConverterFactory.create()) },
+                value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
+        return new SingleUserKtRequester<>(user, baseRequester);
     }
 }
