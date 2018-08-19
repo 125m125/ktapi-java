@@ -5,23 +5,24 @@ import com.pusher.client.Authorizer;
 
 import de._125m125.kt.ktapi_java.core.KtRequester;
 import de._125m125.kt.ktapi_java.core.entities.PusherResult;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Result;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 
-public class KtPusherAuthorizer<T extends UserKey> implements Authorizer {
+public class KtPusherAuthorizer<T extends UserKey<?>> implements Authorizer {
 
-    private final T                      user;
-    private final KtRequester<? super T> requester;
+    private final T              userKey;
+    private final KtRequester<T> requester;
 
-    public KtPusherAuthorizer(final T user, final KtRequester<? super T> requester) {
-        this.user = user;
+    public KtPusherAuthorizer(final T userKey, final KtRequester<T> requester) {
+        this.userKey = userKey;
         this.requester = requester;
     }
 
     @Override
     public final String authorize(final String channelName, final String socketId)
             throws AuthorizationFailureException {
-        final Result<PusherResult> pusherAuthResult = this.requester.authorizePusher(this.user, channelName, socketId);
+        final Result<PusherResult> pusherAuthResult = this.requester.authorizePusher(this.userKey, channelName,
+                socketId);
         try {
             if (pusherAuthResult.isSuccessful()) {
                 return pusherAuthResult.getContent().getAuthdata();

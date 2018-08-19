@@ -11,11 +11,11 @@ import de._125m125.kt.ktapi_java.core.entities.Payout;
 import de._125m125.kt.ktapi_java.core.entities.Permissions;
 import de._125m125.kt.ktapi_java.core.entities.PusherResult;
 import de._125m125.kt.ktapi_java.core.entities.Trade;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 
-public interface KtRequester<T extends UserKey> extends Closeable {
+public interface KtRequester<T extends UserKey<?>> extends Closeable {
     public Result<List<HistoryEntry>> getHistory(String itemid, int limit, int offset);
 
     public Result<HistoryEntry> getLatestHistory(String itemid);
@@ -25,29 +25,30 @@ public interface KtRequester<T extends UserKey> extends Closeable {
 
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(String itemid, BUY_SELL_BOTH mode);
 
-    public Result<Permissions> getPermissions(T user);
+    public Result<Permissions> getPermissions(T userKey);
 
-    public Result<List<Item>> getItems(T user);
+    public Result<List<Item>> getItems(T userKey);
 
-    public Result<Item> getItem(T user, String itemid);
+    public Result<Item> getItem(T userKey, String itemid);
 
-    public Result<List<Message>> getMessages(T user);
+    public Result<List<Message>> getMessages(T userKey);
 
-    public Result<List<Payout>> getPayouts(T user);
+    public Result<List<Payout>> getPayouts(T userKey);
 
-    public Result<WriteResult<Payout>> createPayout(T user, BUY_SELL type, String itemid, int amount);
+    public Result<WriteResult<Payout>> createPayout(T userKey, BUY_SELL type, String itemid, int amount);
 
-    public Result<WriteResult<Payout>> cancelPayout(T user, String payoutid);
+    public Result<WriteResult<Payout>> cancelPayout(T userKey, String payoutid);
 
-    public Result<WriteResult<Payout>> takeoutPayout(T user, String payoutid);
+    public Result<WriteResult<Payout>> takeoutPayout(T userKey, String payoutid);
 
-    public Result<PusherResult> authorizePusher(T user, String channel_name, String socketId);
+    public Result<PusherResult> authorizePusher(T userKey, String channel_name, String socketId);
 
-    public Result<List<Trade>> getTrades(T user);
+    public Result<List<Trade>> getTrades(T userKey);
 
-    public Result<WriteResult<Trade>> createTrade(T user, BUY_SELL mode, String item, int amount, String pricePerItem);
+    public Result<WriteResult<Trade>> createTrade(T userKey, BUY_SELL mode, String item, int amount,
+            String pricePerItem);
 
-    public Result<WriteResult<Trade>> cancelTrade(T user, long tradeId);
+    public Result<WriteResult<Trade>> cancelTrade(T userKey, long tradeId);
 
-    public Result<WriteResult<Trade>> takeoutTrade(T user, long tradeId);
+    public Result<WriteResult<Trade>> takeoutTrade(T userKey, long tradeId);
 }

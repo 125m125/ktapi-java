@@ -17,18 +17,19 @@ import com.pusher.client.connection.ConnectionStateChange;
 import de._125m125.kt.ktapi_java.core.KtNotificationManager;
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.Notification;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
+import de._125m125.kt.ktapi_java.core.users.TokenUser;
+import de._125m125.kt.ktapi_java.core.users.TokenUserKey;
 
-public class PusherKt<T extends UserKey> implements PrivateChannelEventListener, KtNotificationManager<T> {
+public class PusherKt implements PrivateChannelEventListener, KtNotificationManager<TokenUserKey> {
     private final Pusher                                  pusher;
 
     private final Map<String, List<NotificationListener>> listeners     = new HashMap<>();
     private final StampedLock                             listenersLock = new StampedLock();
 
     private final NotificationParser                      parser;
-    private final T                                       user;
+    private final TokenUser                               user;
 
-    public PusherKt(final T user, final NotificationParser parser, final Authorizer authorizer) {
+    public PusherKt(final TokenUser user, final NotificationParser parser, final Authorizer authorizer) {
         this.user = user;
         this.parser = parser;
 
@@ -100,7 +101,8 @@ public class PusherKt<T extends UserKey> implements PrivateChannelEventListener,
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToMessages(final NotificationListener listener, final T user, final boolean selfCreated) {
+    public void subscribeToMessages(final NotificationListener listener, final TokenUserKey user,
+            final boolean selfCreated) {
         if (!user.equals(this.user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
@@ -115,7 +117,8 @@ public class PusherKt<T extends UserKey> implements PrivateChannelEventListener,
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToTrades(final NotificationListener listener, final T user, final boolean selfCreated) {
+    public void subscribeToTrades(final NotificationListener listener, final TokenUserKey user,
+            final boolean selfCreated) {
         if (!user.equals(this.user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
@@ -130,7 +133,8 @@ public class PusherKt<T extends UserKey> implements PrivateChannelEventListener,
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToItems(final NotificationListener listener, final T user, final boolean selfCreated) {
+    public void subscribeToItems(final NotificationListener listener, final TokenUserKey user,
+            final boolean selfCreated) {
         if (!this.user.equals(user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
@@ -145,7 +149,8 @@ public class PusherKt<T extends UserKey> implements PrivateChannelEventListener,
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToPayouts(final NotificationListener listener, final T user, final boolean selfCreated) {
+    public void subscribeToPayouts(final NotificationListener listener, final TokenUserKey user,
+            final boolean selfCreated) {
         if (!user.equals(this.user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }
@@ -178,7 +183,8 @@ public class PusherKt<T extends UserKey> implements PrivateChannelEventListener,
      * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToAll(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
      */
     @Override
-    public void subscribeToAll(final NotificationListener listener, final T user, final boolean selfCreated) {
+    public void subscribeToAll(final NotificationListener listener, final TokenUserKey user,
+            final boolean selfCreated) {
         if (!this.user.equals(user)) {
             throw new IllegalArgumentException("PusherKt only supports subscriptions for a single user");
         }

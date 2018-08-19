@@ -6,24 +6,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import de._125m125.kt.ktapi_java.core.NotificationListener;
 import de._125m125.kt.ktapi_java.core.entities.Notification;
-import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.users.TokenUser;
 
 public class SubscriptionList {
     private final List<NotificationListener> otherListeners;
     private final List<NotificationListener> selfListeners;
-    private Optional<User>                   owner;
+    private Optional<TokenUser>                   owner;
 
     public SubscriptionList() {
         this(null);
     }
 
-    public SubscriptionList(final User u) {
+    public SubscriptionList(final TokenUser u) {
         this.owner = Optional.ofNullable(u);
         this.otherListeners = new CopyOnWriteArrayList<>();
         this.selfListeners = new CopyOnWriteArrayList<>();
     }
 
-    public void setOwner(final User u) {
+    public void setOwner(final TokenUser u) {
         this.owner = Optional.of(u);
     }
 
@@ -41,7 +41,7 @@ public class SubscriptionList {
         }
     }
 
-    public Optional<User> getOwner() {
+    public Optional<TokenUser> getOwner() {
         return this.owner;
     }
 

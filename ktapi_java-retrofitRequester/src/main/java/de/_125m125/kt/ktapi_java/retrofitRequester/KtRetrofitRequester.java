@@ -13,10 +13,10 @@ import de._125m125.kt.ktapi_java.core.entities.Payout;
 import de._125m125.kt.ktapi_java.core.entities.Permissions;
 import de._125m125.kt.ktapi_java.core.entities.PusherResult;
 import de._125m125.kt.ktapi_java.core.entities.Trade;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.ErrorResponse;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi_java.retrofitRequester.builderModifier.RetrofitModifier;
 import okhttp3.OkHttpClient;
@@ -25,7 +25,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
-public class KtRetrofitRequester implements KtRequester<UserKey> {
+public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T> {
     private final KtRetrofitClient                       client;
     private final Converter<ResponseBody, ErrorResponse> errorConverter;
     private final OkHttpClient                           okHttpClient;
@@ -95,82 +95,85 @@ public class KtRetrofitRequester implements KtRequester<UserKey> {
     }
 
     @Override
-    public Result<Permissions> getPermissions(final UserKey user) {
-        return new RetrofitResult<>(this.client.getPermissions(user.getUid(), UserKey.toString(user)),
+    public Result<Permissions> getPermissions(final T userKey) {
+        return new RetrofitResult<>(this.client.getPermissions(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Item>> getItems(final UserKey user) {
-        return new RetrofitResult<>(this.client.getItems(user.getUid(), UserKey.toString(user)), this.errorConverter);
-    }
-
-    @Override
-    public Result<Item> getItem(final UserKey user, final String itemid) {
-        return new RetrofitResult<>(this.client.getItem(user.getUid(), itemid, UserKey.toString(user)),
+    public Result<List<Item>> getItems(final T userKey) {
+        return new RetrofitResult<>(this.client.getItems(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Message>> getMessages(final UserKey user) {
-        return new RetrofitResult<>(this.client.getMessages(user.getUid(), UserKey.toString(user)),
+    public Result<Item> getItem(final T userKey, final String itemid) {
+        return new RetrofitResult<>(this.client.getItem(userKey.getUserId(), itemid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final UserKey user) {
-        return new RetrofitResult<>(this.client.getPayouts(user.getUid(), UserKey.toString(user)), this.errorConverter);
+    public Result<List<Message>> getMessages(final T userKey) {
+        return new RetrofitResult<>(this.client.getMessages(userKey.getUserId(), userKey.getIdentifier()),
+                this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final UserKey user, final BUY_SELL type, final String itemid,
+    public Result<List<Payout>> getPayouts(final T userKey) {
+        return new RetrofitResult<>(this.client.getPayouts(userKey.getUserId(), userKey.getIdentifier()),
+                this.errorConverter);
+    }
+
+    @Override
+    public Result<WriteResult<Payout>> createPayout(final T userKey, final BUY_SELL type, final String itemid,
             final int amount) {
         return new RetrofitResult<>(
-                this.client.createPayout(user.getUid(), type, itemid, amount, UserKey.toString(user)),
+                this.client.createPayout(userKey.getUserId(), type, itemid, amount, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final UserKey user, final String payoutid) {
-        return new RetrofitResult<>(this.client.cancelPayout(user.getUid(), payoutid, UserKey.toString(user)),
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+        return new RetrofitResult<>(this.client.cancelPayout(userKey.getUserId(), payoutid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final UserKey user, final String payoutid) {
-        return new RetrofitResult<>(this.client.takeoutPayout(user.getUid(), payoutid, UserKey.toString(user)),
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+        return new RetrofitResult<>(this.client.takeoutPayout(userKey.getUserId(), payoutid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final UserKey user, final String channel_name, final String socketId) {
+    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name, final String socketId) {
         return new RetrofitResult<>(
-                this.client.authorizePusher(user.getUid(), channel_name, socketId, UserKey.toString(user)),
+                this.client.authorizePusher(userKey.getUserId(), channel_name, socketId, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final UserKey user) {
-        return new RetrofitResult<>(this.client.getTrades(user.getUid(), UserKey.toString(user)), this.errorConverter);
+    public Result<List<Trade>> getTrades(final T userKey) {
+        return new RetrofitResult<>(this.client.getTrades(userKey.getUserId(), userKey.getIdentifier()),
+                this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final UserKey user, final BUY_SELL mode, final String item,
+    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode, final String item,
             final int amount, final String pricePerItem) {
         return new RetrofitResult<>(
-                this.client.createTrade(user.getUid(), mode, item, amount, pricePerItem, UserKey.toString(user)),
+                this.client.createTrade(userKey.getUserId(), mode, item, amount, pricePerItem, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final UserKey user, final long tradeId) {
-        return new RetrofitResult<>(this.client.cancelTrade(user.getUid(), tradeId, UserKey.toString(user)),
+    public Result<WriteResult<Trade>> cancelTrade(final T userKey, final long tradeId) {
+        return new RetrofitResult<>(this.client.cancelTrade(userKey.getUserId(), tradeId, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final UserKey user, final long tradeId) {
-        return new RetrofitResult<>(this.client.takeoutTrade(user.getUid(), tradeId, UserKey.toString(user)),
+    public Result<WriteResult<Trade>> takeoutTrade(final T userKey, final long tradeId) {
+        return new RetrofitResult<>(this.client.takeoutTrade(userKey.getUserId(), tradeId, userKey.getIdentifier()),
                 this.errorConverter);
     }
 

@@ -23,17 +23,17 @@ import de._125m125.kt.ktapi_java.core.entities.Payout;
 import de._125m125.kt.ktapi_java.core.entities.Permissions;
 import de._125m125.kt.ktapi_java.core.entities.PusherResult;
 import de._125m125.kt.ktapi_java.core.entities.Trade;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Callback;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedList;
 import de._125m125.kt.ktapi_java.smartCache.objects.TimestampedObjectFactory;
 
 /**
  *
  */
-public class KtCachingRequesterIml<U extends UserKey>
+public class KtCachingRequesterIml<U extends UserKey<?>>
         implements KtRequester<U>, NotificationListener, KtCachingRequester<U> {
 
     public static final int                 CACHE_HIT_STATUS_CODE = 299;
