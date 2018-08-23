@@ -11,14 +11,14 @@ import de._125m125.kt.ktapi_java.core.entities.Payout;
 import de._125m125.kt.ktapi_java.core.entities.Permissions;
 import de._125m125.kt.ktapi_java.core.entities.PusherResult;
 import de._125m125.kt.ktapi_java.core.entities.Trade;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 
-public class KtRequesterDecorator<U extends UserKey> implements KtRequester<U> {
-    private final KtRequester<U> requester;
+public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T> {
+    private final KtRequester<T> requester;
 
-    public KtRequesterDecorator(final KtRequester<U> requester) {
+    public KtRequesterDecorator(final KtRequester<T> requester) {
         this.requester = requester;
     }
 
@@ -44,34 +44,34 @@ public class KtRequesterDecorator<U extends UserKey> implements KtRequester<U> {
     }
 
     @Override
-    public Result<Permissions> getPermissions(final U user) {
-        return this.requester.getPermissions(user);
+    public Result<Permissions> getPermissions(final T userKey) {
+        return this.requester.getPermissions(userKey);
     }
 
     @Override
-    public Result<List<Item>> getItems(final U user) {
-        return this.requester.getItems(user);
+    public Result<List<Item>> getItems(final T userKey) {
+        return this.requester.getItems(userKey);
     }
 
     @Override
-    public Result<Item> getItem(final U user, final String itemid) {
-        return this.requester.getItem(user, itemid);
+    public Result<Item> getItem(final T userKey, final String itemid) {
+        return this.requester.getItem(userKey, itemid);
     }
 
     @Override
-    public Result<List<Message>> getMessages(final U user) {
-        return this.requester.getMessages(user);
+    public Result<List<Message>> getMessages(final T userKey) {
+        return this.requester.getMessages(userKey);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final U user) {
-        return this.requester.getPayouts(user);
+    public Result<List<Payout>> getPayouts(final T userKey) {
+        return this.requester.getPayouts(userKey);
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final U user, final BUY_SELL type, final String itemid,
+    public Result<WriteResult<Payout>> createPayout(final T userKey, final BUY_SELL type, final String itemid,
             final int amount) {
-        return this.requester.createPayout(user, type, itemid, amount);
+        return this.requester.createPayout(userKey, type, itemid, amount);
     }
 
     @Override
@@ -80,39 +80,39 @@ public class KtRequesterDecorator<U extends UserKey> implements KtRequester<U> {
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final U user, final String payoutid) {
-        return this.requester.cancelPayout(user, payoutid);
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+        return this.requester.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final U user, final String payoutid) {
-        return this.requester.takeoutPayout(user, payoutid);
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+        return this.requester.takeoutPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final U user, final String channel_name, final String socketId) {
-        return this.requester.authorizePusher(user, channel_name, socketId);
+    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name, final String socketId) {
+        return this.requester.authorizePusher(userKey, channel_name, socketId);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final U user) {
-        return this.requester.getTrades(user);
+    public Result<List<Trade>> getTrades(final T userKey) {
+        return this.requester.getTrades(userKey);
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final U user, final BUY_SELL mode, final String item,
+    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode, final String item,
             final int amount, final String pricePerItem) {
-        return this.requester.createTrade(user, mode, item, amount, pricePerItem);
+        return this.requester.createTrade(userKey, mode, item, amount, pricePerItem);
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final U user, final long tradeId) {
-        return this.requester.cancelTrade(user, tradeId);
+    public Result<WriteResult<Trade>> cancelTrade(final T userKey, final long tradeId) {
+        return this.requester.cancelTrade(userKey, tradeId);
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final U user, final long tradeId) {
-        return this.requester.takeoutTrade(user, tradeId);
+    public Result<WriteResult<Trade>> takeoutTrade(final T userKey, final long tradeId) {
+        return this.requester.takeoutTrade(userKey, tradeId);
     }
 
 }

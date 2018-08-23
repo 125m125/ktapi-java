@@ -187,6 +187,7 @@ public class KtWebsocketManager implements Closeable {
     }
 
     public void sendRequest(final RequestMessage requestMessage) throws MessageSendException {
+        System.out.println("sending " + requestMessage.getMessage());
         if (requestMessage.getRequestId().isPresent()) {
             sendMessage(requestMessage);
         } else {
@@ -195,6 +196,7 @@ public class KtWebsocketManager implements Closeable {
     }
 
     public void receiveMessage(final String rawMessage) {
+        System.out.println("received " + rawMessage);
         final Optional<JsonObject> json = tryParse(rawMessage);
         final Optional<WebsocketMessageParser<?>> parser = this.parsers.stream().filter(p -> p.parses(rawMessage, json))
                 .findFirst();

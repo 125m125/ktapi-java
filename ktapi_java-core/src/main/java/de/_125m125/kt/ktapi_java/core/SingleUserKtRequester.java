@@ -11,11 +11,11 @@ import de._125m125.kt.ktapi_java.core.entities.Payout;
 import de._125m125.kt.ktapi_java.core.entities.Permissions;
 import de._125m125.kt.ktapi_java.core.entities.PusherResult;
 import de._125m125.kt.ktapi_java.core.entities.Trade;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Result;
 import de._125m125.kt.ktapi_java.core.results.WriteResult;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 
-public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorator<T> {
+public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDecorator<T> {
 
     private static final NumberFormat NUMBER_FORMAT;
     static {
@@ -25,16 +25,16 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
     }
 
     private final String wrongUserErrorStart;
-    private final T      user;
+    private final T      userKey;
 
-    public SingleUserKtRequester(final T user, final KtRequester<T> requester) {
+    public SingleUserKtRequester(final T userKey, final KtRequester<T> requester) {
         super(requester);
-        this.user = user;
-        this.wrongUserErrorStart = "This requester only supports " + this.user.getUid() + " but got ";
+        this.userKey = userKey;
+        this.wrongUserErrorStart = "This requester only supports " + this.userKey + " but got ";
     }
 
     public T getUser() {
-        return this.user;
+        return this.userKey;
     }
 
     /**
@@ -43,7 +43,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the permissions
      */
     public Result<Permissions> getPermissions() {
-        return super.getPermissions(this.user);
+        return super.getPermissions(this.userKey);
     }
 
     /**
@@ -52,7 +52,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the items
      */
     public Result<List<Item>> getItems() {
-        return super.getItems(this.user);
+        return super.getItems(this.userKey);
     }
 
     /**
@@ -61,7 +61,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the trades
      */
     public Result<List<Trade>> getTrades() {
-        return super.getTrades(this.user);
+        return super.getTrades(this.userKey);
     }
 
     /**
@@ -70,7 +70,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the messages
      */
     public Result<List<Message>> getMessages() {
-        return super.getMessages(this.user);
+        return super.getMessages(this.userKey);
     }
 
     /**
@@ -79,7 +79,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the payouts
      */
     public Result<List<Payout>> getPayouts() {
-        return super.getPayouts(this.user);
+        return super.getPayouts(this.userKey);
     }
 
     /**
@@ -216,7 +216,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      */
     public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final String item, final int count,
             final String price) {
-        return super.createTrade(this.user, buySell, item, count, price);
+        return super.createTrade(this.userKey, buySell, item, count, price);
     }
 
     /**
@@ -238,7 +238,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the result
      */
     public Result<WriteResult<Trade>> cancelTrade(final long tradeid) {
-        return super.cancelTrade(this.user, tradeid);
+        return super.cancelTrade(this.userKey, tradeid);
     }
 
     /**
@@ -260,7 +260,7 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
      * @return the result
      */
     public Result<WriteResult<Trade>> takeoutFromTrade(final long tradeid) {
-        return super.takeoutTrade(this.user, tradeid);
+        return super.takeoutTrade(this.userKey, tradeid);
     }
 
     public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item, final int amount,
@@ -269,89 +269,89 @@ public class SingleUserKtRequester<T extends UserKey> extends KtRequesterDecorat
     }
 
     private void checkUser(final T user) {
-        if (!user.getUid().equals(this.user.getUid())) {
-            throw new IllegalArgumentException(this.wrongUserErrorStart + user.getUid());
+        if (!user.equals(this.userKey)) {
+            throw new IllegalArgumentException(this.wrongUserErrorStart + user);
         }
     }
 
     @Override
-    public Result<Permissions> getPermissions(final T user) {
-        checkUser(user);
-        return super.getPermissions(user);
+    public Result<Permissions> getPermissions(final T userKey) {
+        checkUser(userKey);
+        return super.getPermissions(userKey);
     }
 
     @Override
-    public Result<List<Item>> getItems(final T user) {
-        checkUser(user);
-        return super.getItems(user);
+    public Result<List<Item>> getItems(final T userKey) {
+        checkUser(userKey);
+        return super.getItems(userKey);
     }
 
     @Override
-    public Result<Item> getItem(final T user, final String itemid) {
-        checkUser(user);
-        return super.getItem(user, itemid);
+    public Result<Item> getItem(final T userKey, final String itemid) {
+        checkUser(userKey);
+        return super.getItem(userKey, itemid);
     }
 
     @Override
-    public Result<List<Message>> getMessages(final T user) {
-        checkUser(user);
-        return super.getMessages(user);
+    public Result<List<Message>> getMessages(final T userKey) {
+        checkUser(userKey);
+        return super.getMessages(userKey);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final T user) {
-        checkUser(user);
-        return super.getPayouts(user);
+    public Result<List<Payout>> getPayouts(final T userKey) {
+        checkUser(userKey);
+        return super.getPayouts(userKey);
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T user, final BUY_SELL type, final String itemid,
+    public Result<WriteResult<Payout>> createPayout(final T userKey, final BUY_SELL type, final String itemid,
             final int amount) {
-        checkUser(user);
-        return super.createPayout(user, type, itemid, amount);
+        checkUser(userKey);
+        return super.createPayout(userKey, type, itemid, amount);
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T user, final String payoutid) {
-        checkUser(user);
-        return super.cancelPayout(user, payoutid);
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+        checkUser(userKey);
+        return super.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T user, final String payoutid) {
-        checkUser(user);
-        return super.takeoutPayout(user, payoutid);
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+        checkUser(userKey);
+        return super.takeoutPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final T user, final String channel_name, final String socketId) {
-        checkUser(user);
-        return super.authorizePusher(user, channel_name, socketId);
+    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name, final String socketId) {
+        checkUser(userKey);
+        return super.authorizePusher(userKey, channel_name, socketId);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final T user) {
-        checkUser(user);
-        return super.getTrades(user);
+    public Result<List<Trade>> getTrades(final T userKey) {
+        checkUser(userKey);
+        return super.getTrades(userKey);
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final T user, final BUY_SELL mode, final String item,
+    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode, final String item,
             final int amount, final String pricePerItem) {
-        checkUser(user);
-        return super.createTrade(user, mode, item, amount, pricePerItem);
+        checkUser(userKey);
+        return super.createTrade(userKey, mode, item, amount, pricePerItem);
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final T user, final long tradeId) {
-        checkUser(user);
-        return super.cancelTrade(user, tradeId);
+    public Result<WriteResult<Trade>> cancelTrade(final T userKey, final long tradeId) {
+        checkUser(userKey);
+        return super.cancelTrade(userKey, tradeId);
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final T user, final long tradeId) {
-        checkUser(user);
-        return super.takeoutTrade(user, tradeId);
+    public Result<WriteResult<Trade>> takeoutTrade(final T userKey, final long tradeId) {
+        checkUser(userKey);
+        return super.takeoutTrade(userKey, tradeId);
     }
 
 }
