@@ -75,23 +75,23 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public void invalidateMessages(final U userid) {
-        invalidate(KtCachingRequesterIml.MESSAGES + userid);
+    public void invalidateMessages(final U userKey) {
+        invalidate(KtCachingRequesterIml.MESSAGES + userKey.getUserId());
     }
 
     @Override
-    public void invalidatePayouts(final U userid) {
-        invalidate(KtCachingRequesterIml.PAYOUTS + userid);
+    public void invalidatePayouts(final U userKey) {
+        invalidate(KtCachingRequesterIml.PAYOUTS + userKey.getUserId());
     }
 
     @Override
-    public void invalidateTrades(final U userid) {
-        invalidate(KtCachingRequesterIml.TRADES + userid);
+    public void invalidateTrades(final U userKey) {
+        invalidate(KtCachingRequesterIml.TRADES + userKey.getUserId());
     }
 
     @Override
-    public void invalidateItemList(final U userid) {
-        invalidate(KtCachingRequesterIml.ITEMS + userid);
+    public void invalidateItemList(final U userKey) {
+        invalidate(KtCachingRequesterIml.ITEMS + userKey.getUserId());
     }
 
     private void invalidate(final String key) {
@@ -112,23 +112,23 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public boolean isValidMessageList(final U userid, final List<Message> messages) {
-        return isValid(KtCachingRequesterIml.MESSAGES + userid, messages);
+    public boolean isValidMessageList(final U userKey, final List<Message> messages) {
+        return isValid(KtCachingRequesterIml.MESSAGES + userKey.getUserId(), messages);
     }
 
     @Override
-    public boolean isValidPayoutList(final U userid, final List<Payout> payouts) {
-        return isValid(KtCachingRequesterIml.PAYOUTS + userid, payouts);
+    public boolean isValidPayoutList(final U userKey, final List<Payout> payouts) {
+        return isValid(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(), payouts);
     }
 
     @Override
-    public boolean isValidTradeList(final U userid, final List<Trade> trades) {
-        return isValid(KtCachingRequesterIml.TRADES + userid, trades);
+    public boolean isValidTradeList(final U userKey, final List<Trade> trades) {
+        return isValid(KtCachingRequesterIml.TRADES + userKey.getUserId(), trades);
     }
 
     @Override
-    public boolean isValidItemList(final U userid, final List<Item> items) {
-        return isValid(KtCachingRequesterIml.ITEMS + userid, items);
+    public boolean isValidItemList(final U userKey, final List<Item> items) {
+        return isValid(KtCachingRequesterIml.ITEMS + userKey.getUserId(), items);
     }
 
     private <T> boolean isValid(final String key, final List<T> historyEntries) {
@@ -172,89 +172,93 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<Permissions> getPermissions(final U userid) {
+    public Result<Permissions> getPermissions(final U userKey) {
         // TODO caching?
-        return this.requester.getPermissions(userid);
+        return this.requester.getPermissions(userKey);
     }
 
     @Override
-    public Result<List<Item>> getItems(final U userid) {
-        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userid, () -> this.requester.getItems(userid));
+    public Result<List<Item>> getItems(final U userKey) {
+        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
+                () -> this.requester.getItems(userKey));
     }
 
     @Override
-    public Result<Item> getItem(final U userid, final String itemid) {
-        return getOrFetch(KtCachingRequesterIml.ITEMS + userid, item -> item.getId().equals(itemid),
-                () -> this.requester.getItem(userid, itemid));
+    public Result<Item> getItem(final U userKey, final String itemid) {
+        return getOrFetch(KtCachingRequesterIml.ITEMS + userKey.getUserId(), item -> item.getId().equals(itemid),
+                () -> this.requester.getItem(userKey, itemid));
     }
 
     @Override
-    public Result<List<Message>> getMessages(final U userid) {
-        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userid, () -> this.requester.getMessages(userid));
+    public Result<List<Message>> getMessages(final U userKey) {
+        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
+                () -> this.requester.getMessages(userKey));
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final U userid) {
-        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userid, () -> this.requester.getPayouts(userid));
+    public Result<List<Payout>> getPayouts(final U userKey) {
+        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
+                () -> this.requester.getPayouts(userKey));
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final U userid, final BUY_SELL type, final String itemid,
+    public Result<WriteResult<Payout>> createPayout(final U userKey, final BUY_SELL type, final String itemid,
             final int amount) {
-        final Result<WriteResult<Payout>> result = this.requester.createPayout(userid, type, itemid, amount);
-        result.addCallback(
-                new InvalidationCallback<WriteResult<Payout>>(this.cache, KtCachingRequesterIml.PAYOUTS + userid));
+        final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type, itemid, amount);
+        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
+                KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
         return result;
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final U userid, final String payoutid) {
-        final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userid, payoutid);
-        result.addCallback(
-                new InvalidationCallback<WriteResult<Payout>>(this.cache, KtCachingRequesterIml.PAYOUTS + userid));
+    public Result<WriteResult<Payout>> cancelPayout(final U userKey, final String payoutid) {
+        final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userKey, payoutid);
+        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
+                KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
         return result;
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final U userid, final String payoutid) {
-        final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userid, payoutid);
-        result.addCallback(
-                new InvalidationCallback<WriteResult<Payout>>(this.cache, KtCachingRequesterIml.PAYOUTS + userid));
+    public Result<WriteResult<Payout>> takeoutPayout(final U userKey, final String payoutid) {
+        final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userKey, payoutid);
+        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
+                KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
         return result;
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final U userid, final String channel_name, final String socketId) {
-        return this.requester.authorizePusher(userid, channel_name, socketId);
+    public Result<PusherResult> authorizePusher(final U userKey, final String channel_name, final String socketId) {
+        return this.requester.authorizePusher(userKey, channel_name, socketId);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final U userid) {
-        return getAllOrFetch(KtCachingRequesterIml.TRADES + userid, () -> this.requester.getTrades(userid));
+    public Result<List<Trade>> getTrades(final U userKey) {
+        return getAllOrFetch(KtCachingRequesterIml.TRADES + userKey.getUserId(),
+                () -> this.requester.getTrades(userKey));
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final U userid, final BUY_SELL mode, final String item,
+    public Result<WriteResult<Trade>> createTrade(final U userKey, final BUY_SELL mode, final String item,
             final int amount, final String pricePerItem) {
-        final Result<WriteResult<Trade>> result = this.requester.createTrade(userid, mode, item, amount, pricePerItem);
-        result.addCallback(
-                new InvalidationCallback<WriteResult<Trade>>(this.cache, KtCachingRequesterIml.TRADES + userid));
+        final Result<WriteResult<Trade>> result = this.requester.createTrade(userKey, mode, item, amount, pricePerItem);
+        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
+                KtCachingRequesterIml.TRADES + userKey.getUserId()));
         return result;
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final U userid, final long tradeId) {
-        final Result<WriteResult<Trade>> result = this.requester.cancelTrade(userid, tradeId);
-        result.addCallback(
-                new InvalidationCallback<WriteResult<Trade>>(this.cache, KtCachingRequesterIml.TRADES + userid));
+    public Result<WriteResult<Trade>> cancelTrade(final U userKey, final long tradeId) {
+        final Result<WriteResult<Trade>> result = this.requester.cancelTrade(userKey, tradeId);
+        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
+                KtCachingRequesterIml.TRADES + userKey.getUserId()));
         return result;
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final U userid, final long tradeId) {
-        final Result<WriteResult<Trade>> result = this.requester.takeoutTrade(userid, tradeId);
-        result.addCallback(
-                new InvalidationCallback<WriteResult<Trade>>(this.cache, KtCachingRequesterIml.TRADES + userid));
+    public Result<WriteResult<Trade>> takeoutTrade(final U userKey, final long tradeId) {
+        final Result<WriteResult<Trade>> result = this.requester.takeoutTrade(userKey, tradeId);
+        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
+                KtCachingRequesterIml.TRADES + userKey.getUserId()));
         return result;
     }
 
