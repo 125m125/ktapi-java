@@ -1,6 +1,6 @@
 package de._125m125.kt.ktapi_java.websocket.requests;
 
-import de._125m125.kt.ktapi_java.core.entities.User;
+import de._125m125.kt.ktapi_java.core.users.TokenUser;
 
 public class SubscriptionRequestData {
     private final String  channel;
@@ -9,13 +9,13 @@ public class SubscriptionRequestData {
     private final String  tkn;
     private final boolean selfCreated;
 
-    public SubscriptionRequestData(final String channel, final User user, final boolean selfCreated) {
+    public SubscriptionRequestData(final String channel, final TokenUser user, final boolean selfCreated) {
         this.channel = channel;
         this.selfCreated = selfCreated;
         if (user != null) {
-            this.uid = user.getUid();
-            this.tid = user.getTid();
-            this.tkn = user.getTkn();
+            this.uid = user.getUserId();
+            this.tid = user.getTokenId();
+            this.tkn = user.getToken();
         } else {
             this.uid = null;
             this.tid = null;

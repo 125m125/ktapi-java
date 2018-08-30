@@ -6,12 +6,12 @@ import java.util.List;
 import com.google.gson.Gson;
 
 import de._125m125.kt.ktapi_java.core.KtCachingRequester;
-import de._125m125.kt.ktapi_java.core.KtUserStore;
 import de._125m125.kt.ktapi_java.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi_java.core.entities.Notification;
-import de._125m125.kt.ktapi_java.core.entities.User;
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
 import de._125m125.kt.ktapi_java.core.results.Callback;
+import de._125m125.kt.ktapi_java.core.users.KtUserStore;
+import de._125m125.kt.ktapi_java.core.users.TokenUser;
+import de._125m125.kt.ktapi_java.core.users.TokenUserKey;
 import de._125m125.kt.ktapi_java.pusher.KtPusherAuthorizer;
 import de._125m125.kt.ktapi_java.pusher.PusherKt;
 import de._125m125.kt.ktapi_java.retrofit.KtRetrofit;
@@ -19,12 +19,13 @@ import de._125m125.kt.ktapi_java.retrofitRequester.KtRetrofitRequester;
 
 public class SmartCacheExample {
     public static void main(final String[] args) throws IOException {
-        final User user = new User("1", "1", "1");
-        final KtRetrofitRequester innerRequester = KtRetrofit.createDefaultRequester(new KtUserStore<>(user));
-        final PusherKt<UserKey> pusher = new PusherKt<>(user,
+        final TokenUser user = new TokenUser("1", "1", "1");
+        final KtRetrofitRequester<TokenUserKey> innerRequester = KtRetrofit
+                .createDefaultRequester(new KtUserStore(user));
+        final PusherKt pusher = new PusherKt(user,
                 unescapedData -> new Gson().fromJson(unescapedData, Notification.class),
-                new KtPusherAuthorizer<>(user, innerRequester));
-        final KtCachingRequester<UserKey> cachingRequester = new KtCachingRequesterIml<>(innerRequester, pusher);
+                new KtPusherAuthorizer<>(user.getKey(), innerRequester));
+        final KtCachingRequester<TokenUserKey> cachingRequester = new KtCachingRequesterIml<>(innerRequester, pusher);
 
         cachingRequester.getHistory("-1", 10, 0).addCallback(new Callback<List<HistoryEntry>>() {
 

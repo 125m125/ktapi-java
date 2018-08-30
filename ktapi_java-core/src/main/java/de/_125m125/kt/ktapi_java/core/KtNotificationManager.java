@@ -1,11 +1,11 @@
 package de._125m125.kt.ktapi_java.core;
 
-import de._125m125.kt.ktapi_java.core.entities.UserKey;
+import de._125m125.kt.ktapi_java.core.users.UserKey;
 
 /**
  * The Interface KtNotificationManager.
  */
-public interface KtNotificationManager<T extends UserKey> {
+public interface KtNotificationManager<T extends UserKey<?>> {
 
     /**
      * Subscribe to updates for messages.
@@ -18,7 +18,7 @@ public interface KtNotificationManager<T extends UserKey> {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToMessages(NotificationListener listener, T user, boolean selfCreated);
+    public void subscribeToMessages(NotificationListener listener, T userKey, boolean selfCreated);
 
     /**
      * Subscribe to updates for trades of the user.
@@ -31,7 +31,7 @@ public interface KtNotificationManager<T extends UserKey> {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToTrades(NotificationListener listener, T user, boolean selfCreated);
+    public void subscribeToTrades(NotificationListener listener, T userKey, boolean selfCreated);
 
     /**
      * Subscribe to updates for the itemlist.
@@ -44,7 +44,7 @@ public interface KtNotificationManager<T extends UserKey> {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToItems(NotificationListener listener, T user, boolean selfCreated);
+    public void subscribeToItems(NotificationListener listener, T userKey, boolean selfCreated);
 
     /**
      * Subscribe to updates for payouts.
@@ -57,7 +57,7 @@ public interface KtNotificationManager<T extends UserKey> {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public void subscribeToPayouts(NotificationListener listener, T user, boolean selfCreated);
+    public void subscribeToPayouts(NotificationListener listener, T userKey, boolean selfCreated);
 
     /**
      * Subscribe to updates for orderbooks.
@@ -108,11 +108,12 @@ public interface KtNotificationManager<T extends UserKey> {
      *            true to listen only to self-created notifications, false to
      *            only listen to non-self-created notification
      */
-    public default void subscribeToAll(final NotificationListener listener, final T user, final boolean selfCreated) {
-        subscribeToItems(listener, user, selfCreated);
-        subscribeToMessages(listener, user, selfCreated);
-        subscribeToPayouts(listener, user, selfCreated);
-        subscribeToTrades(listener, user, selfCreated);
+    public default void subscribeToAll(final NotificationListener listener, final T userKey,
+            final boolean selfCreated) {
+        subscribeToItems(listener, userKey, selfCreated);
+        subscribeToMessages(listener, userKey, selfCreated);
+        subscribeToPayouts(listener, userKey, selfCreated);
+        subscribeToTrades(listener, userKey, selfCreated);
     }
 
     /**
