@@ -22,6 +22,7 @@
         <module>ktapi_java-core</module>
         <module>ktapi_java-okhttpWebsocket</module>
         <module>ktapi_java-pusher</module>
+        <module>ktapi_java-report</module>
         <module>ktapi_java-retrofit</module>
         <module>ktapi_java-retrofitRequester</module>
         <module>ktapi_java-retrofitUnivosityCsvparser</module>
@@ -41,6 +42,11 @@
             <dependency>
                 <groupId>de._125m125.kt</groupId>
                 <artifactId>ktapi_java-core</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de._125m125.kt</groupId>
+                <artifactId>ktapi_java-okhttpWebsocket</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -66,6 +72,11 @@
             <dependency>
                 <groupId>de._125m125.kt</groupId>
                 <artifactId>ktapi_java-simple</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de._125m125.kt</groupId>
+                <artifactId>ktapi_java-smartCache</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -147,6 +158,25 @@
                     <sortModules>true</sortModules>
                     <nrOfIndentSpace>4</nrOfIndentSpace>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.2</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
