@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>de._125m125.kt</groupId>
-    <artifactId>ktapi_java</artifactId>
+    <groupId>de.125m125.kt</groupId>
+    <artifactId>ktapi</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>ktapi_java</name>
+    <name>ktapi</name>
     <description>API implementation for Kadcontrade</description>
     <url>https://kt.125m125.de</url>
     <licenses>
@@ -19,20 +19,20 @@
         <maven>3.0</maven>
     </prerequisites>
     <modules>
-        <module>ktapi_java-core</module>
-        <module>ktapi_java-okhttpWebsocket</module>
-        <module>ktapi_java-pusher</module>
-        <module>ktapi_java-report</module>
-        <module>ktapi_java-retrofit</module>
-        <module>ktapi_java-retrofitRequester</module>
-        <module>ktapi_java-retrofitUnivosityCsvparser</module>
-        <module>ktapi_java-smartCache</module>
-        <module>ktapi_java-websocket</module>
+        <module>ktapi-core</module>
+        <module>ktapi-okhttpWebsocket</module>
+        <module>ktapi-pusher</module>
+        <module>ktapi-report</module>
+        <module>ktapi-retrofit</module>
+        <module>ktapi-retrofitRequester</module>
+        <module>ktapi-retrofitUnivosityCsvparser</module>
+        <module>ktapi-smartCache</module>
+        <module>ktapi-websocket</module>
     </modules>
     <scm>
-        <connection>scm:git:git://github.com/125m125/ktapi-java.git</connection>
-        <developerConnection>scm:git:git@github.com:125m125/ktapi-java.git</developerConnection>
-        <url>https://github.com/125m125/ktapi-java</url>
+        <connection>scm:git:git://github.com/125m125/ktapi.git</connection>
+        <developerConnection>scm:git:git@github.com:125m125/ktapi.git</developerConnection>
+        <url>https://github.com/125m125/ktapi</url>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,48 +40,48 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-core</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-core</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-okhttpWebsocket</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-okhttpWebsocket</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-pusher</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-pusher</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-retrofit</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-retrofit</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-retrofitRequester</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-retrofitRequester</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-retrofitUnivosityTsvparser</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-simple</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-simple</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-smartCache</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-smartCache</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de._125m125.kt</groupId>
-                <artifactId>ktapi_java-websocket</artifactId>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-websocket</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
