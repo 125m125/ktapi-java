@@ -269,6 +269,11 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
                 KtCachingRequesterIml.TRADES + userKey.getUserId()));
         return result;
     }
+    
+    @Override
+    public Result<Long> ping() {
+        return this.requester.ping();
+    }
 
     private <T> Result<List<T>> getOrFetch(final String key, final int start, final int end,
             final Supplier<Result<List<T>>> fetcher) {

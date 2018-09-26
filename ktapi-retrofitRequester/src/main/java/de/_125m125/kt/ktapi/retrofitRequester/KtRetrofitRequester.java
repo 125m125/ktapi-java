@@ -193,4 +193,8 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
                 this.errorConverter);
     }
 
+    @Override
+    public Result<Long> ping() {
+        return new RetrofitResult<>(this.client.ping(), this.errorConverter);
+    }
 }
