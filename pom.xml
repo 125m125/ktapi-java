@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.125m125.kt</groupId>
     <artifactId>ktapi</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ktapi</name>
     <description>API implementation for Kadcontrade</description>
@@ -60,47 +60,42 @@
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-core</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-okhttpWebsocket</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-pusher</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-retrofit</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-retrofitRequester</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>
-                <version>0.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-simple</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-smartCache</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-websocket</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

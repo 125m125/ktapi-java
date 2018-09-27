@@ -4,7 +4,7 @@
     <parent>
         <artifactId>ktapi</artifactId>
         <groupId>de.125m125.kt</groupId>
-        <version>0.0.1</version>
+        <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>ktapi-okhttpWebsocket</artifactId>
     <dependencies>
