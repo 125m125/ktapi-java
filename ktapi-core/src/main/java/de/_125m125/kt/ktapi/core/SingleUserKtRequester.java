@@ -82,18 +82,15 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
         return super.getPayouts(this.userKey);
     }
 
-    @Override
     public Result<WriteResult<Payout>> createPayout(final PAYOUT_TYPE type, final String itemid, 
             final String amount) {
         return super.createPayout(type, itemid, amount);
     }
 
-    @Override
     public Result<WriteResult<Payout>> cancelPayout(final long payoutid) {
         return super.cancelPayout(payoutid);
     }
 
-    @Override
     public Result<WriteResult<Payout>> takeoutPayout(final long payoutid) {
         return super.takeoutPayout(payoutid);
     }
