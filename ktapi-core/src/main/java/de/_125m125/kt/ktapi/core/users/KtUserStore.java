@@ -20,6 +20,9 @@ public class KtUserStore {
 
     @SuppressWarnings("unchecked")
     public <T extends User<T>> T get(final UserKey<T> key) {
+        if (key == null) {
+            return null;
+        }
         return (T) this.users.get(key.getIdentifier());
     }
 
@@ -47,7 +50,8 @@ public class KtUserStore {
             }
         }
         if (key.startsWith(IdUserKey.class.getTypeName())) {
-            final String userId = key.substring(IdUserKey.class.getTypeName().length() + 1, key.length() - 1);
+            final String userId = key.substring(IdUserKey.class.getTypeName().length() + 1,
+                    key.length() - 1);
             return getFromUserId(userId, type);
         }
         return null;
@@ -58,7 +62,8 @@ public class KtUserStore {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends User<T>> T getFromUserId(final String userId, final Class<? extends UserKey<T>> type) {
+    public <T extends User<T>> T getFromUserId(final String userId,
+            final Class<? extends UserKey<T>> type) {
         return (T) this.users.values().stream().filter(u -> userId.equals(u.getUserId()))
                 .filter(u -> type.isAssignableFrom(u.getKey().getClass())).findAny().orElse(null);
     }
