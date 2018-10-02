@@ -58,7 +58,7 @@ public class KtRetrofitRequesterTest {
                 .setResource("/de/_125m125/kt/ktapi/responses/payout/PayoutCreationSuccess.json");
 
         final Result<WriteResult<Payout>> result = this.uut
-                .createPayout(new TokenUserKey("8", "16"), PAYOUT_TYPE.DELIVERY, "4", 1);
+                .createPayout(new TokenUserKey("8", "16"), PAYOUT_TYPE.DELIVERY, "4", "1");
 
         assertEquals(true, result.isSuccessful());
         assertEquals(200, result.getStatus());

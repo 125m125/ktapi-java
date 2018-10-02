@@ -308,19 +308,19 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
 
     @Override
     public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
-            final String itemid, final int amount) {
+            final String itemid, final String amount) {
         checkUser(userKey);
         return super.createPayout(userKey, type, itemid, amount);
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
         checkUser(userKey);
         return super.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
         checkUser(userKey);
         return super.takeoutPayout(userKey, payoutid);
     }

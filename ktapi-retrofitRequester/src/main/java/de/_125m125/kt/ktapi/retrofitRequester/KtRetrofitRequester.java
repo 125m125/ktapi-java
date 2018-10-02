@@ -140,20 +140,20 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
 
     @Override
     public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
-            final String itemid, final int amount) {
+            final String itemid, final String amount) {
         return new RetrofitResult<>(this.client.createPayout(userKey.getUserId(), type.getComName(),
                 itemid, amount, userKey.getIdentifier()), this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
         return new RetrofitResult<>(
                 this.client.cancelPayout(userKey.getUserId(), payoutid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
         return new RetrofitResult<>(
                 this.client.takeoutPayout(userKey.getUserId(), payoutid, userKey.getIdentifier()),
                 this.errorConverter);

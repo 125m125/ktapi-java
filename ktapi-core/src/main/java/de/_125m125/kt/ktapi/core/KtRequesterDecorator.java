@@ -72,7 +72,7 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
 
     @Override
     public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
-            final String itemid, final int amount) {
+            final String itemid, final String amount) {
         return this.requester.createPayout(userKey, type, itemid, amount);
     }
 
@@ -82,12 +82,12 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
         return this.requester.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
         return this.requester.takeoutPayout(userKey, payoutid);
     }
 

@@ -36,11 +36,11 @@ public interface KtRequester<T extends UserKey<?>> extends Closeable {
     public Result<List<Payout>> getPayouts(T userKey);
 
     public Result<WriteResult<Payout>> createPayout(T userKey, PAYOUT_TYPE type, String itemid,
-            int amount);
+            String amount);
 
-    public Result<WriteResult<Payout>> cancelPayout(T userKey, String payoutid);
+    public Result<WriteResult<Payout>> cancelPayout(T userKey, long payoutid);
 
-    public Result<WriteResult<Payout>> takeoutPayout(T userKey, String payoutid);
+    public Result<WriteResult<Payout>> takeoutPayout(T userKey, long payoutid);
 
     public Result<PusherResult> authorizePusher(T userKey, String channel_name, String socketId);
 

@@ -209,7 +209,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
 
     @Override
     public Result<WriteResult<Payout>> createPayout(final U userKey, final PAYOUT_TYPE type,
-            final String itemid, final int amount) {
+            final String itemid, final String amount) {
         final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
                 itemid, amount);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
@@ -218,7 +218,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final U userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final U userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userKey, payoutid);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
                 KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
@@ -226,7 +226,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final U userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final U userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userKey, payoutid);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
                 KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
