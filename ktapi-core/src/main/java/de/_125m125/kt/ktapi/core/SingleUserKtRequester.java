@@ -335,6 +335,7 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
         return super.cancelPayout(userKey, payoutid);
     }
 
+    @Override
     public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
         checkUser(userKey);
         return super.takeoutPayout(userKey, payoutid);
