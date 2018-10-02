@@ -82,7 +82,7 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
         return super.getPayouts(this.userKey);
     }
 
-    public Result<WriteResult<Payout>> createPayout(final PAYOUT_TYPE type, final String itemid, 
+    public Result<WriteResult<Payout>> createPayout(final PAYOUT_TYPE type, final String itemid,
             final String amount) {
         return super.createPayout(this.userKey, type, itemid, amount);
     }
