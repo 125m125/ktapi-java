@@ -90,12 +90,11 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      * @param limit
      *            the maximum number of entries
      * @param summarize
-     *            true if remaining orders should be summarized if exceeding the
-     *            limit
+     *            true if remaining orders should be summarized if exceeding the limit
      * @return the order book
      */
-    public Result<List<OrderBookEntry>> getOrderBook(final Item material, final int limit, final BUY_SELL_BOTH mode,
-            final boolean summarize) {
+    public Result<List<OrderBookEntry>> getOrderBook(final Item material, final int limit,
+            final BUY_SELL_BOTH mode, final boolean summarize) {
         return this.getOrderBook(material.getId(), limit, mode, summarize);
     }
 
@@ -107,13 +106,12 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      * @param limit
      *            the maximum number of entries
      * @param summarize
-     *            true if remaining orders should be summarized if exceeding the
-     *            limit
+     *            true if remaining orders should be summarized if exceeding the limit
      * @return the order book
      */
     @Override
-    public Result<List<OrderBookEntry>> getOrderBook(final String material, final int limit, final BUY_SELL_BOTH mode,
-            final boolean summarize) {
+    public Result<List<OrderBookEntry>> getOrderBook(final String material, final int limit,
+            final BUY_SELL_BOTH mode, final boolean summarize) {
         return super.getOrderBook(material, limit, mode, summarize);
     }
 
@@ -126,7 +124,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      *            the maximum number of entries
      * @return the statistics
      */
-    public Result<List<HistoryEntry>> getHistory(final Item material, final int limit, final int offset) {
+    public Result<List<HistoryEntry>> getHistory(final Item material, final int limit,
+            final int offset) {
         return this.getHistory(material.getId(), limit, offset);
     }
 
@@ -140,7 +139,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      * @return the statistics
      */
     @Override
-    public Result<List<HistoryEntry>> getHistory(final String material, final int limit, final int offset) {
+    public Result<List<HistoryEntry>> getHistory(final String material, final int limit,
+            final int offset) {
         return super.getHistory(material, limit, offset);
     }
 
@@ -157,8 +157,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      *            the price per item
      * @return the result
      */
-    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item, final int count,
-            final String price) {
+    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item,
+            final int count, final String price) {
         return this.createTrade(buySell, item.getId(), count, price);
     }
 
@@ -173,7 +173,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      *            the price per item
      * @return the result
      */
-    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item, final String price) {
+    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item,
+            final String price) {
         return this.createTrade(buySell, item.getId(), (int) item.getAmount(), price);
     }
 
@@ -197,8 +198,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      * @return the result
      */
     public Result<WriteResult<Trade>> fulfillTrade(final Trade trade) {
-        return this.createTrade(trade.getBuySell().getOpposite(), trade.getMaterialId(), trade.getAmount(),
-                SingleUserKtRequester.NUMBER_FORMAT.format(trade.getPrice()));
+        return this.createTrade(trade.getBuySell().getOpposite(), trade.getMaterialId(),
+                trade.getAmount(), SingleUserKtRequester.NUMBER_FORMAT.format(trade.getPrice()));
     }
 
     /**
@@ -214,8 +215,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
      *            the price per item
      * @return the result
      */
-    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final String item, final int count,
-            final String price) {
+    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final String item,
+            final int count, final String price) {
         return super.createTrade(this.userKey, buySell, item, count, price);
     }
 
@@ -263,9 +264,10 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
         return super.takeoutTrade(this.userKey, tradeid);
     }
 
-    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item, final int amount,
-            final double price) {
-        return this.createTrade(buySell, item, amount, SingleUserKtRequester.NUMBER_FORMAT.format(price));
+    public Result<WriteResult<Trade>> createTrade(final BUY_SELL buySell, final Item item,
+            final int amount, final double price) {
+        return this.createTrade(buySell, item, amount,
+                SingleUserKtRequester.NUMBER_FORMAT.format(price));
     }
 
     private void checkUser(final T user) {
@@ -305,8 +307,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T userKey, final BUY_SELL type, final String itemid,
-            final int amount) {
+    public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
+            final String itemid, final int amount) {
         checkUser(userKey);
         return super.createPayout(userKey, type, itemid, amount);
     }
@@ -324,7 +326,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name, final String socketId) {
+    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name,
+            final String socketId) {
         checkUser(userKey);
         return super.authorizePusher(userKey, channel_name, socketId);
     }
@@ -336,8 +339,8 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode, final String item,
-            final int amount, final String pricePerItem) {
+    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode,
+            final String item, final int amount, final String pricePerItem) {
         checkUser(userKey);
         return super.createTrade(userKey, mode, item, amount, pricePerItem);
     }

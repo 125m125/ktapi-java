@@ -65,7 +65,7 @@ public interface KtRetrofitClient {
     @POST("users/{userid}/payouts")
     @FormUrlEncoded
     Call<WriteResult<Payout>> createPayout(@Path("userid") String userid,
-            @Field("type") BUY_SELL type, @Field("item") String itemid, @Field("amount") int amount,
+            @Field("type") String type, @Field("item") String itemid, @Field("amount") int amount,
             @Header("userKey") String String);
 
     @POST("users/{userid}/payouts/{payoutid}/cancel")

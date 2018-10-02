@@ -1,0 +1,19 @@
+{
+    "success": true,
+    "code": 201,
+    "message": "payoutSuccess",
+    "humanReadableMessage": "Auszahlungsanfrage erfolgreich erstellt.",
+    "data": {
+        "id": 2209615434,
+        "uid": 1510910885,
+        "itemOrStock": "ITEM",
+        "material": "4",
+        "amount": 1,
+        "state": "OPEN",
+        "date": "Oct 2, 2018 4:19:19 PM",
+        "message": "",
+        "itemName": "Cobblestone(4)",
+        "payoutType": "lieferung",
+        "TSV_HEADER": "id\tmaterial\tmaterialName\tamount\tstate\tpayoutType\tdate\tmessage"
+    }
+}

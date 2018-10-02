@@ -5,6 +5,7 @@ import java.util.List;
 import de._125m125.kt.ktapi.core.BUY_SELL;
 import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
 import de._125m125.kt.ktapi.core.KtRequester;
+import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.Message;
@@ -138,10 +139,10 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T userKey, final BUY_SELL type,
+    public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
             final String itemid, final int amount) {
-        return new RetrofitResult<>(this.client.createPayout(userKey.getUserId(), type, itemid,
-                amount, userKey.getIdentifier()), this.errorConverter);
+        return new RetrofitResult<>(this.client.createPayout(userKey.getUserId(), type.getComName(),
+                itemid, amount, userKey.getIdentifier()), this.errorConverter);
     }
 
     @Override

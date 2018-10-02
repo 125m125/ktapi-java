@@ -14,6 +14,7 @@ import de._125m125.kt.ktapi.core.KtCachingRequester;
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.NotificationListener;
+import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.Message;
@@ -207,7 +208,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final U userKey, final BUY_SELL type,
+    public Result<WriteResult<Payout>> createPayout(final U userKey, final PAYOUT_TYPE type,
             final String itemid, final int amount) {
         final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
                 itemid, amount);
