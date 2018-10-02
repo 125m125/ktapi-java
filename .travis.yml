@@ -3,11 +3,12 @@ jdk:
 - oraclejdk8
 
 before_install:
-  - sudo apt-get install jq
-  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+- sudo apt-get install jq
+- wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest
+  | jq -r .assets[0].browser_download_url)
 
 after_success:
-  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
+- java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
 
 deploy:
   provider: releases
@@ -20,3 +21,6 @@ deploy:
     repo: 125m125/ktapi-java
     tags: true
 
+env:
+  global:
+    secure: OhVdOWtvbK3s7q8ANC/OdVx7b3/4iJGNwU+a35khglYEuAb0oFWIEkc8Tq7R7YCSsl3807p6m2Fzv/IYv4h/BD71oJBAp3h0RZhGWsZRvwAFhpaWaC9wLqicokFNn2Ilt1thqL5/3qV9bjZPG0Pmpt8L27peZ1RXeaWSq6XfEkszId/IeOALSGdhe1Sk0UJfvmcqv01f/0YNf/y/1FI2Oc2mEjctXjF7/qAjsxiFzxmwxxW70t3lXsLF5cX70mH4ouYJqiVQi5EQBiusuieaXdJXrzi3CXNt//XyMqEV+mGevWa5rIB2lm6FG/SO3EWzepf/Pm/VYuhLEWPz5rgNwTUiWqXstgyIhP+Dbmw6uQQxK6x2jeYXLu1ZEFCXzcHAKCZStrCHcJPhJvRTVxp9InbpBWGVguW86cZXAZ7xh574zLDKQffxgZo54ZykLS5YqEW4qsT8sqCTHySC7Maqrqd0q+n4YuSTGyOJPrfl3JvkDQMSk/bU4hqpwdrHRCHd1v8ByLIkvFZjzjPB4V1HgY6p7D52Bx53yNY442wr+aZgScup/bK4sad9xf+m9aF6hdkWJU8fk539t5nT5N/HhjyIh2h0s6+dIa5htnwBdFT2395PfLwBeAhDv7RP2OZ743Dj1NzyqtdbK2/6pHaKW2R67eG6cSLhynanwi1MRcc=
