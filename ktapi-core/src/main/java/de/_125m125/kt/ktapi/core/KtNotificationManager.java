@@ -15,10 +15,11 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen only to self-created notifications, false to
-     *            only listen to non-self-created notification
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
      */
-    public void subscribeToMessages(NotificationListener listener, T userKey, boolean selfCreated);
+    public NotificationListener subscribeToMessages(NotificationListener listener, T userKey,
+            boolean selfCreated);
 
     /**
      * Subscribe to updates for trades of the user.
@@ -28,10 +29,11 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen only to self-created notifications, false to
-     *            only listen to non-self-created notification
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
      */
-    public void subscribeToTrades(NotificationListener listener, T userKey, boolean selfCreated);
+    public NotificationListener subscribeToTrades(NotificationListener listener, T userKey,
+            boolean selfCreated);
 
     /**
      * Subscribe to updates for the itemlist.
@@ -41,10 +43,11 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen only to self-created notifications, false to
-     *            only listen to non-self-created notification
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
      */
-    public void subscribeToItems(NotificationListener listener, T userKey, boolean selfCreated);
+    public NotificationListener subscribeToItems(NotificationListener listener, T userKey,
+            boolean selfCreated);
 
     /**
      * Subscribe to updates for payouts.
@@ -54,10 +57,11 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param user
      *            the user
      * @param selfCreated
-     *            true to listen only to self-created notifications, false to
-     *            only listen to non-self-created notification
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
      */
-    public void subscribeToPayouts(NotificationListener listener, T userKey, boolean selfCreated);
+    public NotificationListener subscribeToPayouts(NotificationListener listener, T userKey,
+            boolean selfCreated);
 
     /**
      * Subscribe to updates for orderbooks.
@@ -65,7 +69,7 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param listener
      *            the listener
      */
-    public void subscribeToOrderbook(NotificationListener listener);
+    public NotificationListener subscribeToOrderbook(NotificationListener listener);
 
     // /**
     // * Subscribe to updates for the orderbook of a specific item.
@@ -75,7 +79,7 @@ public interface KtNotificationManager<T extends UserKey<?>> {
     // * @param item
     // * the id of the item
     // */
-    // public void subscribeToOrderbook(NotificationListener listener, String
+    // public NotificationListener subscribeToOrderbook(NotificationListener listener, String
     // item);
 
     /**
@@ -84,7 +88,7 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param listener
      *            the listener
      */
-    public void subscribeToHistory(NotificationListener listener);
+    public NotificationListener subscribeToHistory(NotificationListener listener);
 
     // /**
     // * Subscribe to updates for historic values of a specific item.
@@ -94,7 +98,7 @@ public interface KtNotificationManager<T extends UserKey<?>> {
     // * @param item
     // * the id of the item
     // */
-    // public void subscribeToHistory(NotificationListener listener, String
+    // public NotificationListener subscribeToHistory(NotificationListener listener, String
     // item);
 
     /**
@@ -105,15 +109,16 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param u
      *            the u
      * @param selfCreated
-     *            true to listen only to self-created notifications, false to
-     *            only listen to non-self-created notification
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
      */
-    public default void subscribeToAll(final NotificationListener listener, final T userKey,
-            final boolean selfCreated) {
+    public default NotificationListener subscribeToAll(final NotificationListener listener,
+            final T userKey, final boolean selfCreated) {
         subscribeToItems(listener, userKey, selfCreated);
         subscribeToMessages(listener, userKey, selfCreated);
         subscribeToPayouts(listener, userKey, selfCreated);
         subscribeToTrades(listener, userKey, selfCreated);
+        return listener;
     }
 
     /**
@@ -122,11 +127,26 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      * @param listener
      *            the listener
      */
-    public default void subscribeToAll(final NotificationListener listener) {
+    public default NotificationListener subscribeToAll(final NotificationListener listener) {
         subscribeToHistory(listener);
         subscribeToOrderbook(listener);
+        return listener;
     }
 
+    /**
+     * Unsubscribe the NotificationListener from all updates it is surrently subscribed to. The
+     * underlying Notificationmanager may still receive event messages from the server, but will not
+     * forward them to this listener anymore and won't prevent the garbage collector from collecting
+     * it.
+     * 
+     * @param listener
+     */
+    public void unsubscribe(NotificationListener listener);
+
+    /**
+     * Disconnects this NotificationManager from their remote event source. All listeners will stop
+     * receiving events and no new listeners can be registered after this method returns.
+     */
     public void disconnect();
 
 }

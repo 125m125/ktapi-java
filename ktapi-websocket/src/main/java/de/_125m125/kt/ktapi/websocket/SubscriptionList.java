@@ -46,4 +46,9 @@ public class SubscriptionList {
         return this.owner;
     }
 
+    public void removeListener(final NotificationListener listener) {
+        this.otherListeners.remove(listener);
+        this.selfListeners.remove(listener);
+    }
+
 }

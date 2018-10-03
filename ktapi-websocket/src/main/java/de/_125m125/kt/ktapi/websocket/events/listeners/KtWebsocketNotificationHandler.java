@@ -49,6 +49,7 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
             SubscriptionList unkeyedList = null;
             final UpdateNotification notificationMessage = (UpdateNotification) e.getMessage();
             synchronized (this.subscriptions) {
+                System.out.println(this.subscriptions);
                 final Map<String, SubscriptionList> sourceMap = this.subscriptions
                         .get(notificationMessage.getSource());
                 if (sourceMap != null) {
@@ -69,63 +70,63 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public void subscribeToMessages(final NotificationListener listener, final T userKey,
-            final boolean selfCreated) {
+    public NotificationListener subscribeToMessages(final NotificationListener listener,
+            final T userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = new SubscriptionRequestData("rMessages",
                 this.userStore.get(userKey), selfCreated);
-        subscribe(request, "messages", userKey.getUserId(), userKey, listener);
+        return subscribe(request, "messages", userKey.getUserId(), userKey, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public void subscribeToTrades(final NotificationListener listener, final T userKey,
-            final boolean selfCreated) {
+    public NotificationListener subscribeToTrades(final NotificationListener listener,
+            final T userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = new SubscriptionRequestData("rOrders",
                 this.userStore.get(userKey), selfCreated);
-        subscribe(request, "trades", userKey.getUserId(), userKey, listener);
+        return subscribe(request, "trades", userKey.getUserId(), userKey, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public void subscribeToItems(final NotificationListener listener, final T userKey,
-            final boolean selfCreated) {
+    public NotificationListener subscribeToItems(final NotificationListener listener,
+            final T userKey, final boolean selfCreated) {
         System.out.println(this.userStore.get(userKey));
         final SubscriptionRequestData request = new SubscriptionRequestData("rItems",
                 this.userStore.get(userKey), selfCreated);
-        subscribe(request, "items", userKey.getUserId(), userKey, listener);
+        return subscribe(request, "items", userKey.getUserId(), userKey, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public void subscribeToPayouts(final NotificationListener listener, final T userKey,
-            final boolean selfCreated) {
+    public NotificationListener subscribeToPayouts(final NotificationListener listener,
+            final T userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = new SubscriptionRequestData("rPayouts",
                 this.userStore.get(userKey), selfCreated);
-        subscribe(request, "payouts", userKey.getUserId(), userKey, listener);
+        return subscribe(request, "payouts", userKey.getUserId(), userKey, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToOrderbook(de._125m125.kt.ktapi_java.core.NotificationListener)
      */
     @Override
-    public void subscribeToOrderbook(final NotificationListener listener) {
+    public NotificationListener subscribeToOrderbook(final NotificationListener listener) {
         final SubscriptionRequestData request = new SubscriptionRequestData("orderbook");
-        subscribe(request, "orderbook", null, null, listener);
+        return subscribe(request, "orderbook", null, null, listener);
     }
 
     /* (non-Javadoc)
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToHistory(de._125m125.kt.ktapi_java.core.NotificationListener)
      */
     @Override
-    public void subscribeToHistory(final NotificationListener listener) {
+    public NotificationListener subscribeToHistory(final NotificationListener listener) {
         final SubscriptionRequestData request = new SubscriptionRequestData("history");
-        subscribe(request, "history", null, null, listener);
+        return subscribe(request, "history", null, null, listener);
     }
 
     /**
@@ -144,8 +145,9 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      *            the listener that should be notified on new events
      * @return the response message from the server
      */
-    public void subscribe(final SubscriptionRequestData request, final String source,
-            final String key, final T owner, final NotificationListener listener) {
+    public NotificationListener subscribe(final SubscriptionRequestData request,
+            final String source, final String key, final T owner,
+            final NotificationListener listener) {
         KtWebsocketManager manager = this.manager;
         if (manager == null) {
             synchronized (this) {
@@ -159,6 +161,7 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         final RequestMessage requestMessage = RequestMessage.builder().addContent(request).build();
         this.manager.sendRequest(requestMessage);
         requestMessage.getResult().addCallback(responseMessage -> {
+            System.out.println(responseMessage);
             if (responseMessage.success()) {
                 SubscriptionList subList;
                 synchronized (this.subscriptions) {
@@ -169,6 +172,7 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
                 subList.addListener(listener, request.isSelfCreated());
             }
         });
+        return listener;
     }
 
     /* (non-Javadoc)
@@ -177,5 +181,13 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
     @Override
     public void disconnect() {
         this.manager.stop();
+    }
+
+    @Override
+    public void unsubscribe(final NotificationListener listener) {
+        synchronized (this.subscriptions) {
+            this.subscriptions.values()
+                    .forEach(m -> m.values().forEach(sl -> sl.removeListener(listener)));
+        }
     }
 }
