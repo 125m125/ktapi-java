@@ -124,4 +124,64 @@ public class KtWebsocketNotificationHandlerTest {
 
         assertEquals(null, un[0]);
     }
+
+    @Test
+    public void testMessageNotifications() {
+        this.store.add(this.unknownUser);
+
+        final TestListener tl = new TestListener();
+        this.uut.subscribeToMessages(tl, this.knownUser.getKey(), false);
+        final TestListener tl2 = new TestListener();
+        this.uut.subscribeToMessages(tl2, this.knownUser.getKey(), true);
+        final TestListener tl3 = new TestListener();
+        this.uut.subscribeToMessages(tl3, this.unknownUser.getKey(), true);
+        final TestListener tl4 = new TestListener();
+        this.uut.subscribeToMessages(tl4, this.knownUser.getKey(), false);
+
+        final Map<String, String> details = new HashMap<>();
+        details.put("source", "messages");
+        details.put("key", "1");
+        details.put("channel", "rMessages");
+        final UpdateNotification updateNotification = new UpdateNotification(false, 1, "1",
+                details);
+
+        this.uut.onMessageReceived(
+                new MessageReceivedEvent(new WebsocketStatus(true, true), updateNotification));
+
+        assertEquals(updateNotification, tl.getLastNotifications().get(0));
+        assertEquals(1, tl.getLastNotifications().size());
+        assertEquals(0, tl2.getLastNotifications().size());
+        assertEquals(0, tl3.getLastNotifications().size());
+        assertEquals(updateNotification, tl4.getLastNotifications().get(0));
+        assertEquals(1, tl4.getLastNotifications().size());
+    }
+
+    @Test
+    public void testItemNotifications() {
+        this.store.add(this.unknownUser);
+
+        final TestListener tl = new TestListener();
+        this.uut.subscribeToItems(tl, this.knownUser.getKey(), false);
+        final TestListener tl2 = new TestListener();
+        this.uut.subscribeToItems(tl2, this.knownUser.getKey(), true);
+        final TestListener tl3 = new TestListener();
+        this.uut.subscribeToItems(tl3, this.unknownUser.getKey(), true);
+        final TestListener tl4 = new TestListener();
+        this.uut.subscribeToItems(tl4, this.knownUser.getKey(), false);
+
+        final Map<String, String> details = new HashMap<>();
+        details.put("source", "items");
+        details.put("key", "1");
+        details.put("channel", "rItems");
+        final UpdateNotification updateNotification = new UpdateNotification(true, 1, "1", details);
+
+        this.uut.onMessageReceived(
+                new MessageReceivedEvent(new WebsocketStatus(true, true), updateNotification));
+
+        assertEquals(0, tl.getLastNotifications().size());
+        assertEquals(updateNotification, tl2.getLastNotifications().get(0));
+        assertEquals(1, tl2.getLastNotifications().size());
+        assertEquals(0, tl3.getLastNotifications().size());
+        assertEquals(0, tl4.getLastNotifications().size());
+    }
 }

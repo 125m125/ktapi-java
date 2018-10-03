@@ -49,7 +49,6 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
             SubscriptionList unkeyedList = null;
             final UpdateNotification notificationMessage = (UpdateNotification) e.getMessage();
             synchronized (this.subscriptions) {
-                System.out.println(this.subscriptions);
                 final Map<String, SubscriptionList> sourceMap = this.subscriptions
                         .get(notificationMessage.getSource());
                 if (sourceMap != null) {
@@ -161,7 +160,6 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         final RequestMessage requestMessage = RequestMessage.builder().addContent(request).build();
         this.manager.sendRequest(requestMessage);
         requestMessage.getResult().addCallback(responseMessage -> {
-            System.out.println(responseMessage);
             if (responseMessage.success()) {
                 SubscriptionList subList;
                 synchronized (this.subscriptions) {

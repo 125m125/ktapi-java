@@ -61,7 +61,8 @@ public class KtWebsocketManager implements Closeable {
 
         public <T extends WebsocketEvent> Builder addListener(final Class<T> clazz,
                 final Consumer<? super T> consumer) {
-            this.listeners.computeIfAbsent(clazz, c -> new ArrayList<>()).add(o -> consumer.accept(clazz.cast(o)));
+            this.listeners.computeIfAbsent(clazz, c -> new ArrayList<>())
+                    .add(o -> consumer.accept(clazz.cast(o)));
             return this;
         }
 
@@ -74,12 +75,14 @@ public class KtWebsocketManager implements Closeable {
                 }
                 final Parameter[] parameters = m.getParameters();
                 if (parameters.length != 1) {
-                    throw new IllegalArgumentException("Method " + m.getName() + " should have exactly one argument");
+                    throw new IllegalArgumentException(
+                            "Method " + m.getName() + " should have exactly one argument");
                 }
                 final Parameter p = parameters[0];
                 if (!WebsocketEvent.class.isAssignableFrom(p.getType())) {
-                    throw new IllegalArgumentException("The argument for " + listener.getClass().getName() + "#"
-                            + m.getName() + " does not extend WebsocketEvent");
+                    throw new IllegalArgumentException(
+                            "The argument for " + listener.getClass().getName() + "#" + m.getName()
+                                    + " does not extend WebsocketEvent");
                 }
                 addListener((Class<? extends WebsocketEvent>) p.getType(), t -> {
                     try {
@@ -112,7 +115,8 @@ public class KtWebsocketManager implements Closeable {
         }
 
         public KtWebsocketManager build() {
-            final KtWebsocketManager manager = new KtWebsocketManager(this.listeners, this.parsers, this.websocket);
+            final KtWebsocketManager manager = new KtWebsocketManager(this.listeners, this.parsers,
+                    this.websocket);
             this.websocket.setManager(manager);
             manager.fireEvent(new WebsocketManagerCreatedEvent(manager));
             return manager;
@@ -134,7 +138,8 @@ public class KtWebsocketManager implements Closeable {
 
     private final Map<Integer, RequestMessage>                                 awaitedResponses = new ConcurrentHashMap<>();
 
-    public KtWebsocketManager(final Map<Class<? extends WebsocketEvent>, List<Consumer<Object>>> listeners,
+    public KtWebsocketManager(
+            final Map<Class<? extends WebsocketEvent>, List<Consumer<Object>>> listeners,
             final List<WebsocketMessageParser<?>> parsers, final KtWebsocket websocket) {
         super();
         this.listeners = listeners;
@@ -148,7 +153,8 @@ public class KtWebsocketManager implements Closeable {
             return;
         }
         for (final Consumer<Object> consumer : consumers) {
-            if (e instanceof CancelableWebsocketEvent && ((CancelableWebsocketEvent) e).isCancelled()) {
+            if (e instanceof CancelableWebsocketEvent
+                    && ((CancelableWebsocketEvent) e).isCancelled()) {
                 break;
             }
             consumer.accept(e);
@@ -156,8 +162,10 @@ public class KtWebsocketManager implements Closeable {
     }
 
     public void sendMessage(final RequestMessage requestMessage) throws MessageSendException {
+        System.out.println("sending " + requestMessage.getMessage());
         // notify observers about attempted message sending
-        final BeforeMessageSendEvent bmse = new BeforeMessageSendEvent(generateStatus(), requestMessage);
+        final BeforeMessageSendEvent bmse = new BeforeMessageSendEvent(generateStatus(),
+                requestMessage);
         fireEvent(bmse);
         if (bmse.isCancelled()) {
             if (bmse.getCancelState() == CancelState.HARD) {
@@ -166,19 +174,22 @@ public class KtWebsocketManager implements Closeable {
             return;
         }
         // remember id and consumer, if message expects a response
-        requestMessage.getRequestId().ifPresent(rid -> this.awaitedResponses.put(rid, requestMessage));
+        requestMessage.getRequestId()
+                .ifPresent(rid -> this.awaitedResponses.put(rid, requestMessage));
         try {
             this.websocket.sendMessage(requestMessage.getMessage());
         } catch (final IOException e) {
             // notify observers about failed message sending
-            final MessageDeliveryFailedEvent mdfe = new MessageDeliveryFailedEvent(generateStatus(), requestMessage, e);
+            final MessageDeliveryFailedEvent mdfe = new MessageDeliveryFailedEvent(generateStatus(),
+                    requestMessage, e);
             fireEvent(mdfe);
             // if a listener handled the exception, we don't have to forward it
             if (mdfe.isCancelled()) {
                 return;
             }
             // notify caller or callback about failure
-            requestMessage.getResult().setResponse(new ResponseMessage("message delivery failed", e));
+            requestMessage.getResult()
+                    .setResponse(new ResponseMessage("message delivery failed", e));
             requestMessage.getRequestId().ifPresent(this.awaitedResponses::remove);
             return;
         }
@@ -187,25 +198,26 @@ public class KtWebsocketManager implements Closeable {
     }
 
     public void sendRequest(final RequestMessage requestMessage) throws MessageSendException {
-        System.out.println("sending " + requestMessage.getMessage());
         if (requestMessage.getRequestId().isPresent()) {
             sendMessage(requestMessage);
         } else {
-            sendMessage(new RequestMessage.RequestMessageBuilder(requestMessage).expectResponse().build());
+            sendMessage(new RequestMessage.RequestMessageBuilder(requestMessage).expectResponse()
+                    .build());
         }
     }
 
     public void receiveMessage(final String rawMessage) {
         System.out.println("received " + rawMessage);
         final Optional<JsonObject> json = tryParse(rawMessage);
-        final Optional<WebsocketMessageParser<?>> parser = this.parsers.stream().filter(p -> p.parses(rawMessage, json))
-                .findFirst();
+        final Optional<WebsocketMessageParser<?>> parser = this.parsers.stream()
+                .filter(p -> p.parses(rawMessage, json)).findFirst();
         if (parser.isPresent()) {
             final Object parsedResponse = parser.get().parse(rawMessage, json);
             if (parsedResponse instanceof ResponseMessage) {
                 final ResponseMessage responseMessage = (ResponseMessage) parsedResponse;
-                responseMessage.getRequestId().map(this.awaitedResponses::remove).map(RequestMessage::getResult)
-                        .filter(r -> !r.isDone()).ifPresent(r -> r.setResponse(responseMessage));
+                responseMessage.getRequestId().map(this.awaitedResponses::remove)
+                        .map(RequestMessage::getResult).filter(r -> !r.isDone())
+                        .ifPresent(r -> r.setResponse(responseMessage));
             }
             fireEvent(new MessageReceivedEvent(generateStatus(), parsedResponse));
         } else {
@@ -253,7 +265,8 @@ public class KtWebsocketManager implements Closeable {
     }
 
     private void cancelAwaitedResponses() {
-        final Iterator<Entry<Integer, RequestMessage>> iterator = this.awaitedResponses.entrySet().iterator();
+        final Iterator<Entry<Integer, RequestMessage>> iterator = this.awaitedResponses.entrySet()
+                .iterator();
         while (iterator.hasNext()) {
             final WebsocketResult result = iterator.next().getValue().getResult();
             if (!result.isDone()) {
