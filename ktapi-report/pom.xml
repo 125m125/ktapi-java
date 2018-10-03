@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.125m125.kt</groupId>
         <artifactId>ktapi</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.2</version>
     </parent>
     <artifactId>ktapi-report</artifactId>
     <packaging>pom</packaging>
