@@ -65,16 +65,16 @@ public interface KtRetrofitClient {
     @POST("users/{userid}/payouts")
     @FormUrlEncoded
     Call<WriteResult<Payout>> createPayout(@Path("userid") String userid,
-            @Field("type") BUY_SELL type, @Field("item") String itemid, @Field("amount") int amount,
-            @Header("userKey") String String);
+            @Field("type") String type, @Field("item") String itemid,
+            @Field("amount") String amount, @Header("userKey") String String);
 
     @POST("users/{userid}/payouts/{payoutid}/cancel")
     Call<WriteResult<Payout>> cancelPayout(@Path("userid") String userid,
-            @Path("payoutid") String payoutid, @Header("userKey") String String);
+            @Path("payoutid") long payoutid, @Header("userKey") String String);
 
     @POST("users/{userid}/payouts/{payoutid}/takout")
     Call<WriteResult<Payout>> takeoutPayout(@Path("userid") String userid,
-            @Path("payoutid") String payoutid, @Header("userKey") String String);
+            @Path("payoutid") long payoutid, @Header("userKey") String String);
 
     @POST("pusher/authenticate")
     @FormUrlEncoded

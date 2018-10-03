@@ -23,7 +23,8 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<List<HistoryEntry>> getHistory(final String itemid, final int limit, final int offset) {
+    public Result<List<HistoryEntry>> getHistory(final String itemid, final int limit,
+            final int offset) {
         return this.requester.getHistory(itemid, limit, offset);
     }
 
@@ -33,13 +34,14 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit, final BUY_SELL_BOTH mode,
-            final boolean summarizeRemaining) {
+    public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit,
+            final BUY_SELL_BOTH mode, final boolean summarizeRemaining) {
         return this.requester.getOrderBook(itemid, limit, mode, summarizeRemaining);
     }
 
     @Override
-    public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid, final BUY_SELL_BOTH mode) {
+    public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid,
+            final BUY_SELL_BOTH mode) {
         return this.requester.getBestOrderBookEntries(itemid, mode);
     }
 
@@ -69,8 +71,8 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T userKey, final BUY_SELL type, final String itemid,
-            final int amount) {
+    public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
+            final String itemid, final String amount) {
         return this.requester.createPayout(userKey, type, itemid, amount);
     }
 
@@ -80,17 +82,18 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
         return this.requester.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
         return this.requester.takeoutPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name, final String socketId) {
+    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name,
+            final String socketId) {
         return this.requester.authorizePusher(userKey, channel_name, socketId);
     }
 
@@ -100,8 +103,8 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode, final String item,
-            final int amount, final String pricePerItem) {
+    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode,
+            final String item, final int amount, final String pricePerItem) {
         return this.requester.createTrade(userKey, mode, item, amount, pricePerItem);
     }
 
