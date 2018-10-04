@@ -22,6 +22,14 @@ public class Example {
 
         Thread.sleep(100);
         System.out.println("subscribing...");
+        manager.subscribeToItems(System.out::println, user.getKey(), false)
+                .whenComplete((listener, throwable) -> {
+                    if (throwable != null) {
+                        System.out.println("Subscription failed: " + throwable.getMessage());
+                    } else {
+                        System.out.println("Subscription succeeded");
+                    }
+                });
         manager.subscribeToAll(System.out::println);
         manager.subscribeToAll(System.out::println, user.getKey(), true);
 

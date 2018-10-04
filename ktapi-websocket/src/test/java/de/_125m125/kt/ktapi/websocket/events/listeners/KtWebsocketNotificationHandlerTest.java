@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -107,10 +108,11 @@ public class KtWebsocketNotificationHandlerTest {
     }
 
     @Test
-    public void testUnsubscribedLambdaDoesNotReceiveNotifications() {
+    public void testUnsubscribedLambdaDoesNotReceiveNotifications() throws Exception {
         final Notification[] un = new Notification[1];
-        final NotificationListener subscribeToHistory = this.uut.subscribeToHistory(u -> un[0] = u);
-        this.uut.unsubscribe(subscribeToHistory);
+        final CompletableFuture<NotificationListener> subscribeToHistory = this.uut
+                .subscribeToHistory(u -> un[0] = u);
+        this.uut.unsubscribe(subscribeToHistory.get());
 
         final Map<String, String> details = new HashMap<>();
         details.put("source", "history");

@@ -2,6 +2,7 @@ package de._125m125.kt.ktapi.websocket.events.listeners;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.NotificationListener;
@@ -12,6 +13,7 @@ import de._125m125.kt.ktapi.websocket.SubscriptionList;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketEventListening;
 import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
+import de._125m125.kt.ktapi.websocket.exceptions.SubscriptionRefusedException;
 import de._125m125.kt.ktapi.websocket.requests.RequestMessage;
 import de._125m125.kt.ktapi.websocket.requests.SubscriptionRequestData;
 import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
@@ -69,8 +71,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public NotificationListener subscribeToMessages(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
+    public CompletableFuture<NotificationListener> subscribeToMessages(
+            final NotificationListener listener, final T userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = new SubscriptionRequestData("rMessages",
                 this.userStore.get(userKey), selfCreated);
         return subscribe(request, "messages", userKey.getUserId(), userKey, listener);
@@ -80,8 +82,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public NotificationListener subscribeToTrades(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
+    public CompletableFuture<NotificationListener> subscribeToTrades(
+            final NotificationListener listener, final T userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = new SubscriptionRequestData("rOrders",
                 this.userStore.get(userKey), selfCreated);
         return subscribe(request, "trades", userKey.getUserId(), userKey, listener);
@@ -91,8 +93,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public NotificationListener subscribeToItems(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
+    public CompletableFuture<NotificationListener> subscribeToItems(
+            final NotificationListener listener, final T userKey, final boolean selfCreated) {
         System.out.println(this.userStore.get(userKey));
         final SubscriptionRequestData request = new SubscriptionRequestData("rItems",
                 this.userStore.get(userKey), selfCreated);
@@ -103,8 +105,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
      */
     @Override
-    public NotificationListener subscribeToPayouts(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
+    public CompletableFuture<NotificationListener> subscribeToPayouts(
+            final NotificationListener listener, final T userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = new SubscriptionRequestData("rPayouts",
                 this.userStore.get(userKey), selfCreated);
         return subscribe(request, "payouts", userKey.getUserId(), userKey, listener);
@@ -114,7 +116,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToOrderbook(de._125m125.kt.ktapi_java.core.NotificationListener)
      */
     @Override
-    public NotificationListener subscribeToOrderbook(final NotificationListener listener) {
+    public CompletableFuture<NotificationListener> subscribeToOrderbook(
+            final NotificationListener listener) {
         final SubscriptionRequestData request = new SubscriptionRequestData("orderbook");
         return subscribe(request, "orderbook", null, null, listener);
     }
@@ -123,7 +126,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToHistory(de._125m125.kt.ktapi_java.core.NotificationListener)
      */
     @Override
-    public NotificationListener subscribeToHistory(final NotificationListener listener) {
+    public CompletableFuture<NotificationListener> subscribeToHistory(
+            final NotificationListener listener) {
         final SubscriptionRequestData request = new SubscriptionRequestData("history");
         return subscribe(request, "history", null, null, listener);
     }
@@ -144,33 +148,45 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      *            the listener that should be notified on new events
      * @return the response message from the server
      */
-    public NotificationListener subscribe(final SubscriptionRequestData request,
+    public CompletableFuture<NotificationListener> subscribe(final SubscriptionRequestData request,
             final String source, final String key, final T owner,
             final NotificationListener listener) {
-        KtWebsocketManager manager = this.manager;
-        if (manager == null) {
-            synchronized (this) {
-                manager = this.manager;
-            }
-        }
-        if (manager == null) {
-            throw new IllegalStateException(
-                    "the notification manager first has to be assigned to a KtWebsocketmanager");
-        }
-        final RequestMessage requestMessage = RequestMessage.builder().addContent(request).build();
-        this.manager.sendRequest(requestMessage);
-        requestMessage.getResult().addCallback(responseMessage -> {
-            if (responseMessage.success()) {
-                SubscriptionList subList;
-                synchronized (this.subscriptions) {
-                    subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>())
-                            .computeIfAbsent(key,
-                                    n -> new SubscriptionList(this.userStore.get(owner)));
+        final CompletableFuture<NotificationListener> result = new CompletableFuture<>();
+        try {
+            KtWebsocketManager manager = this.manager;
+            if (manager == null) {
+                synchronized (this) {
+                    manager = this.manager;
                 }
-                subList.addListener(listener, request.isSelfCreated());
             }
-        });
-        return listener;
+            if (manager == null) {
+                throw new IllegalStateException(
+                        "the notification manager first has to be assigned to a KtWebsocketmanager");
+            }
+            final RequestMessage requestMessage = RequestMessage.builder().addContent(request)
+                    .build();
+            this.manager.sendRequest(requestMessage);
+            requestMessage.getResult().addCallback(responseMessage -> {
+                if (responseMessage.success()) {
+                    SubscriptionList subList;
+                    synchronized (this.subscriptions) {
+                        subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>())
+                                .computeIfAbsent(key,
+                                        n -> new SubscriptionList(this.userStore.get(owner)));
+                    }
+                    subList.addListener(listener, request.isSelfCreated());
+                    result.complete(listener);
+                } else {
+                    final Throwable exception = responseMessage.getErrorCause()
+                            .orElseGet(() -> new SubscriptionRefusedException(
+                                    responseMessage.getError().orElse("unknown")));
+                    result.completeExceptionally(exception);
+                }
+            });
+        } catch (final Throwable th) {
+            result.completeExceptionally(th);
+        }
+        return result;
     }
 
     /* (non-Javadoc)

@@ -3,6 +3,7 @@ package de._125m125.kt.ktapi.pusher;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.StampedLock;
 
@@ -79,33 +80,39 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         arg1.printStackTrace();
     }
 
-    public NotificationListener subscribe(final String channel, final String eventName,
+    public CompletableFuture<NotificationListener> subscribe(final String channel,
+            final String eventName,
             final NotificationListener listener) {
-        final boolean subscribe;
-        final Set<NotificationListener> receivers;
-        final long writeLock = this.listenersLock.writeLock();
+        final CompletableFuture<NotificationListener> result = new CompletableFuture<>();
         try {
-            subscribe = !this.listeners.containsKey(channel);
-            receivers = this.listeners.computeIfAbsent(channel, e -> new CopyOnWriteArraySet<>());
-        } finally {
-            this.listenersLock.unlock(writeLock);
-        }
-        receivers.add(listener);
-        if (subscribe) {
-            if (channel.startsWith("private-")) {
-                this.pusher.subscribePrivate(channel, this, eventName);
-            } else {
-                this.pusher.subscribe(channel, this, eventName);
+            final boolean subscribe;
+            final Set<NotificationListener> receivers;
+            final long writeLock = this.listenersLock.writeLock();
+            try {
+                subscribe = !this.listeners.containsKey(channel);
+                receivers = this.listeners.computeIfAbsent(channel,
+                        e -> new CopyOnWriteArraySet<>());
+            } finally {
+                this.listenersLock.unlock(writeLock);
             }
+            receivers.add(listener);
+            if (subscribe) {
+                if (channel.startsWith("private-")) {
+                    this.pusher.subscribePrivate(channel, this, eventName);
+                } else {
+                    this.pusher.subscribe(channel, this, eventName);
+                }
+            }
+            result.complete(listener);
+        } catch (final Throwable t) {
+            result.completeExceptionally(t);
         }
-        return listener;
+        return result;
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
-     */
     @Override
-    public NotificationListener subscribeToMessages(final NotificationListener listener,
+    public CompletableFuture<NotificationListener> subscribeToMessages(
+            final NotificationListener listener,
             final TokenUserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
@@ -119,11 +126,9 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         }
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
-     */
     @Override
-    public NotificationListener subscribeToTrades(final NotificationListener listener,
+    public CompletableFuture<NotificationListener> subscribeToTrades(
+            final NotificationListener listener,
             final TokenUserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
@@ -137,11 +142,9 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         }
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
-     */
     @Override
-    public NotificationListener subscribeToItems(final NotificationListener listener,
+    public CompletableFuture<NotificationListener> subscribeToItems(
+            final NotificationListener listener,
             final TokenUserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
@@ -155,11 +158,9 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         }
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
-     */
     @Override
-    public NotificationListener subscribeToPayouts(final NotificationListener listener,
+    public CompletableFuture<NotificationListener> subscribeToPayouts(
+            final NotificationListener listener,
             final TokenUserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
@@ -173,29 +174,23 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
         }
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToOrderbook(de._125m125.kt.ktapi_java.pusher.NotificationListener)
-     */
     @Override
-    public NotificationListener subscribeToOrderbook(final NotificationListener listener) {
+    public CompletableFuture<NotificationListener> subscribeToOrderbook(
+            final NotificationListener listener) {
         final String channelName = "orderbook";
         return subscribe(channelName, "update", listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToHistory(de._125m125.kt.ktapi_java.pusher.NotificationListener)
-     */
     @Override
-    public NotificationListener subscribeToHistory(final NotificationListener listener) {
+    public CompletableFuture<NotificationListener> subscribeToHistory(
+            final NotificationListener listener) {
         final String channelName = "history";
         return subscribe(channelName, "update", listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.pusher.KtNotificationManager#subscribeToAll(de._125m125.kt.ktapi_java.pusher.NotificationListener, de._125m125.kt.ktapi_java.core.objects.User, boolean)
-     */
     @Override
-    public NotificationListener subscribeToAll(final NotificationListener listener,
+    public CompletableFuture<NotificationListener>[] subscribeToAll(
+            final NotificationListener listener,
             final TokenUserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(

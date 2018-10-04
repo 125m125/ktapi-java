@@ -1,5 +1,7 @@
 package de._125m125.kt.ktapi.core;
 
+import java.util.concurrent.CompletableFuture;
+
 import de._125m125.kt.ktapi.core.users.UserKey;
 
 /**
@@ -12,27 +14,35 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
-     * @param user
-     *            the user
+     * @param userKey
+     *            the user key
      * @param selfCreated
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
      */
-    public NotificationListener subscribeToMessages(NotificationListener listener, T userKey,
+    public CompletableFuture<NotificationListener> subscribeToMessages(
+            NotificationListener listener, T userKey,
             boolean selfCreated);
 
     /**
-     * Subscribe to updates for trades of the user.
+     * Subscribe to updates for trades of the key for the user.
      *
      * @param listener
      *            the listener
-     * @param user
-     *            the user
+     * @param userKey
+     *            the key for the user
      * @param selfCreated
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
      */
-    public NotificationListener subscribeToTrades(NotificationListener listener, T userKey,
+    public CompletableFuture<NotificationListener> subscribeToTrades(NotificationListener listener,
+            T userKey,
             boolean selfCreated);
 
     /**
@@ -40,13 +50,17 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
-     * @param user
-     *            the user
+     * @param userKey
+     *            the key for the user
      * @param selfCreated
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
      */
-    public NotificationListener subscribeToItems(NotificationListener listener, T userKey,
+    public CompletableFuture<NotificationListener> subscribeToItems(NotificationListener listener,
+            T userKey,
             boolean selfCreated);
 
     /**
@@ -54,13 +68,14 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
-     * @param user
-     *            the user
+     * @param userKey
+     *            the key for the user
      * @param selfCreated
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
      */
-    public NotificationListener subscribeToPayouts(NotificationListener listener, T userKey,
+    public CompletableFuture<NotificationListener> subscribeToPayouts(NotificationListener listener,
+            T userKey,
             boolean selfCreated);
 
     /**
@@ -68,8 +83,12 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
      */
-    public NotificationListener subscribeToOrderbook(NotificationListener listener);
+    public CompletableFuture<NotificationListener> subscribeToOrderbook(
+            NotificationListener listener);
 
     // /**
     // * Subscribe to updates for the orderbook of a specific item.
@@ -87,8 +106,12 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
      */
-    public NotificationListener subscribeToHistory(NotificationListener listener);
+    public CompletableFuture<NotificationListener> subscribeToHistory(
+            NotificationListener listener);
 
     // /**
     // * Subscribe to updates for historic values of a specific item.
@@ -106,19 +129,25 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
-     * @param u
-     *            the u
+     * @param userKey
+     *            the userKey
      * @param selfCreated
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
+     * @return an array of CompletableFutures, where each entry is the result of one subscription.
+     *         Index 0: items, index 1: messages, index 2: payouts, index 3: orders. All futures
+     *         will return the same listener.
      */
-    public default NotificationListener subscribeToAll(final NotificationListener listener,
+    public default CompletableFuture<NotificationListener>[] subscribeToAll(
+            final NotificationListener listener,
             final T userKey, final boolean selfCreated) {
-        subscribeToItems(listener, userKey, selfCreated);
-        subscribeToMessages(listener, userKey, selfCreated);
-        subscribeToPayouts(listener, userKey, selfCreated);
-        subscribeToTrades(listener, userKey, selfCreated);
-        return listener;
+        @SuppressWarnings("unchecked")
+        final CompletableFuture<NotificationListener>[] results = new CompletableFuture[4];
+        results[0] = subscribeToItems(listener, userKey, selfCreated);
+        results[1] = subscribeToMessages(listener, userKey, selfCreated);
+        results[2] = subscribeToPayouts(listener, userKey, selfCreated);
+        results[3] = subscribeToTrades(listener, userKey, selfCreated);
+        return results;
     }
 
     /**
@@ -126,22 +155,32 @@ public interface KtNotificationManager<T extends UserKey<?>> {
      *
      * @param listener
      *            the listener
+     * @return an array of CompletableFutures, where each entry is the result of one subscription.
+     *         Index 0: history, index 1: orderbook. All futures will return the same listener.
      */
-    public default NotificationListener subscribeToAll(final NotificationListener listener) {
-        subscribeToHistory(listener);
-        subscribeToOrderbook(listener);
-        return listener;
+    public default CompletableFuture<NotificationListener>[] subscribeToAll(
+            final NotificationListener listener) {
+        @SuppressWarnings("unchecked")
+        final CompletableFuture<NotificationListener>[] results = new CompletableFuture[4];
+        results[0] = subscribeToHistory(listener);
+        results[1] = subscribeToOrderbook(listener);
+        return results;
     }
 
     /**
-     * Unsubscribe the NotificationListener from all updates it is surrently subscribed to. The
+     * Unsubscribe the NotificationListener from all updates it is currently subscribed to. The
      * underlying Notificationmanager may still receive event messages from the server, but will not
      * forward them to this listener anymore and won't prevent the garbage collector from collecting
      * it.
      * 
      * @param listener
+     *            the listener that should be unsubscribed
      */
     public void unsubscribe(NotificationListener listener);
+
+    public default void unsubscribe(final CompletableFuture<NotificationListener> listener) {
+        listener.thenAccept(this::unsubscribe);
+    }
 
     /**
      * Disconnects this NotificationManager from their remote event source. All listeners will stop
