@@ -1,7 +1,9 @@
 package de._125m125.kt.ktapi.websocket.events.listeners;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
+import de._125m125.kt.ktapi.core.users.TokenUser;
 import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
 import de._125m125.kt.ktapi.websocket.SubscriptionList;
@@ -33,11 +36,20 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
      * that the client is interested in all events on this channel.
      */
     private final Map<String, Map<String, SubscriptionList>> subscriptions = new HashMap<>();
+    private final Set<ChannelIdentifier>                     knownUsers    = new HashSet<>();
+    private VerificationMode                                 mode;
 
     private final KtUserStore                                userStore;
 
     public KtWebsocketNotificationHandler(final KtUserStore userStore) {
+        this(userStore, VerificationMode.UNKNOWN_TKN);
+    }
+
+    public KtWebsocketNotificationHandler(final KtUserStore userStore,
+            final VerificationMode mode) {
         this.userStore = userStore;
+        this.mode = mode;
+
     }
 
     @WebsocketEventListening
@@ -161,6 +173,11 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
                 throw new IllegalStateException(
                         "the notification manager first has to be assigned to a KtWebsocketmanager");
             }
+            final ChannelIdentifier userKey = new ChannelIdentifier(request);
+            if (this.knownUsers.contains(userKey)) {
+                addListener(request, source, key, listener, result, userKey);
+                return result;
+            }
             final RequestMessage requestMessage = RequestMessage.builder().addContent(request)
                     .build();
             KtWebsocketNotificationHandler.logger.trace("adding listener {} to {}.{}", listener,
@@ -168,17 +185,7 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
             this.manager.sendRequest(requestMessage);
             requestMessage.getResult().addCallback(responseMessage -> {
                 if (responseMessage.success()) {
-                    SubscriptionList subList;
-                    synchronized (this.subscriptions) {
-                        subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>())
-                                .computeIfAbsent(key, n -> new SubscriptionList());
-                    }
-                    subList.addListener(listener, request.isSelfCreated());
-                    result.complete(listener);
-                    KtWebsocketNotificationHandler.logger.info(
-                            "successfully added listener {} to {}.{}", listener, source, key);
-                    KtWebsocketNotificationHandler.logger.debug("new listener map: {}",
-                            this.subscriptions);
+                    addListener(request, source, key, listener, result, userKey);
                 } else {
                     final Throwable exception = responseMessage.getErrorCause()
                             .orElseGet(() -> new SubscriptionRefusedException(
@@ -197,6 +204,24 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         return result;
     }
 
+    private void addListener(final SubscriptionRequestData request, final String source,
+            final String key, final NotificationListener listener,
+            final CompletableFuture<NotificationListener> result, final ChannelIdentifier userKey) {
+        final SubscriptionList subList;
+        synchronized (this.subscriptions) {
+            subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>())
+                    .computeIfAbsent(key, n -> new SubscriptionList());
+        }
+        subList.addListener(listener, request.isSelfCreated());
+        if (!VerificationMode.ALWAYS.equals(this.mode)) {
+            this.knownUsers.add(userKey);
+        }
+        result.complete(listener);
+        KtWebsocketNotificationHandler.logger.info("successfully added listener {} to {}.{}",
+                listener, source, key);
+        KtWebsocketNotificationHandler.logger.debug("new listener map: {}", this.subscriptions);
+    }
+
     @Override
     public void disconnect() {
         KtWebsocketNotificationHandler.logger.info("disconnecting...");
@@ -212,5 +237,92 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
             KtWebsocketNotificationHandler.logger.info("unsubscribed listener {}", listener);
             KtWebsocketNotificationHandler.logger.debug("new listener map: {}", this.subscriptions);
         }
+    }
+
+    private class ChannelIdentifier {
+        private final String    channel;
+        private final TokenUser user;
+
+        public ChannelIdentifier(final String channel, final TokenUser user) {
+            super();
+            this.channel = channel;
+            this.user = user;
+        }
+
+        public ChannelIdentifier(final SubscriptionRequestData request) {
+            this(request.getChannel(),
+                    new TokenUser(request.getUid(), request.getTid(), request.getTkn()));
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((this.channel == null) ? 0 : this.channel.hashCode());
+            switch (KtWebsocketNotificationHandler.this.mode) {
+            case UNKNOWN_UID:
+                result = prime * result
+                        + ((this.user == null) ? 0 : this.user.getUserId().hashCode());
+                break;
+            case UNKNOWN_TKN:
+                result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
+                break;
+            case ALWAYS:
+                return 0;
+            }
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            @SuppressWarnings("unchecked")
+            final ChannelIdentifier other = (ChannelIdentifier) obj;
+            if (!getOuterType().equals(other.getOuterType())) {
+                return false;
+            }
+            if (this.channel == null) {
+                if (other.channel != null) {
+                    return false;
+                }
+            } else if (!this.channel.equals(other.channel)) {
+                return false;
+            }
+            if (this.user == null) {
+                if (other.user != null) {
+                    return false;
+                }
+            } else {
+                switch (KtWebsocketNotificationHandler.this.mode) {
+                case UNKNOWN_UID:
+                    if (!this.user.getUserId().equals(other.user.getUserId())) {
+                        return false;
+                    }
+                    break;
+                case UNKNOWN_TKN:
+                    if (!this.user.equals(other.user)) {
+                        return false;
+                    }
+                    break;
+                case ALWAYS:
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private KtWebsocketNotificationHandler<T> getOuterType() {
+            return KtWebsocketNotificationHandler.this;
+        }
+
     }
 }
