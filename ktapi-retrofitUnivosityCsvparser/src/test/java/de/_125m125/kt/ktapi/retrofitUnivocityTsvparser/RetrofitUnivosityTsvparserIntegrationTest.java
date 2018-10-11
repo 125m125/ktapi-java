@@ -62,7 +62,6 @@ public class RetrofitUnivosityTsvparserIntegrationTest {
     }
 
     private Type getTradeListType() throws Exception {
-        System.out.println(Arrays.toString(RetrofitUnivosityTsvparserIntegrationTest.class.getMethods()));
         return RetrofitUnivosityTsvparserIntegrationTest.class.getMethod("typeHelper").getGenericReturnType();
     }
 

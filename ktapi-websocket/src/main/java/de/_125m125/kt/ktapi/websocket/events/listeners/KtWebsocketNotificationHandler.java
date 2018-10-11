@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
@@ -20,6 +23,8 @@ import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 
 public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         implements KtNotificationManager<T> {
+    private static final Logger                              logger        = LoggerFactory
+            .getLogger(KtWebsocketNotificationHandler.class);
 
     private KtWebsocketManager                               manager;
 
@@ -47,6 +52,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
     @WebsocketEventListening
     public void onMessageReceived(final MessageReceivedEvent e) {
         if (e.getMessage() instanceof UpdateNotification) {
+            KtWebsocketNotificationHandler.logger.trace("Received UpdateNotification {}",
+                    e.getMessage());
             SubscriptionList keyList = null;
             SubscriptionList unkeyedList = null;
             final UpdateNotification notificationMessage = (UpdateNotification) e.getMessage();
@@ -60,16 +67,21 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
             }
             if (keyList != null) {
                 keyList.notifyListeners(notificationMessage);
+            } else {
+                KtWebsocketNotificationHandler.logger.debug(
+                        "No listeners found for notifications on {}.*",
+                        notificationMessage.getSource());
             }
             if (unkeyedList != null) {
                 unkeyedList.notifyListeners(notificationMessage);
+            } else {
+                KtWebsocketNotificationHandler.logger.debug(
+                        "No listeners found for notifications on {}.{}",
+                        notificationMessage.getSource(), notificationMessage.getKey());
             }
         }
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToMessages(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
-     */
     @Override
     public CompletableFuture<NotificationListener> subscribeToMessages(
             final NotificationListener listener, final T userKey, final boolean selfCreated) {
@@ -78,9 +90,6 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         return subscribe(request, "messages", userKey.getUserId(), userKey, listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToTrades(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
-     */
     @Override
     public CompletableFuture<NotificationListener> subscribeToTrades(
             final NotificationListener listener, final T userKey, final boolean selfCreated) {
@@ -89,21 +98,14 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         return subscribe(request, "trades", userKey.getUserId(), userKey, listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToItems(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
-     */
     @Override
     public CompletableFuture<NotificationListener> subscribeToItems(
             final NotificationListener listener, final T userKey, final boolean selfCreated) {
-        System.out.println(this.userStore.get(userKey));
         final SubscriptionRequestData request = new SubscriptionRequestData("rItems",
                 this.userStore.get(userKey), selfCreated);
         return subscribe(request, "items", userKey.getUserId(), userKey, listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToPayouts(de._125m125.kt.ktapi_java.core.NotificationListener, de._125m125.kt.ktapi_java.core.entities.userKey, boolean)
-     */
     @Override
     public CompletableFuture<NotificationListener> subscribeToPayouts(
             final NotificationListener listener, final T userKey, final boolean selfCreated) {
@@ -112,9 +114,6 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         return subscribe(request, "payouts", userKey.getUserId(), userKey, listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToOrderbook(de._125m125.kt.ktapi_java.core.NotificationListener)
-     */
     @Override
     public CompletableFuture<NotificationListener> subscribeToOrderbook(
             final NotificationListener listener) {
@@ -122,9 +121,6 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         return subscribe(request, "orderbook", null, null, listener);
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#subscribeToHistory(de._125m125.kt.ktapi_java.core.NotificationListener)
-     */
     @Override
     public CompletableFuture<NotificationListener> subscribeToHistory(
             final NotificationListener listener) {
@@ -160,41 +156,52 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
                 }
             }
             if (manager == null) {
+                KtWebsocketNotificationHandler.logger.error(
+                        "tried to subscribe to events before NofiticationListener was fully initialized");
                 throw new IllegalStateException(
                         "the notification manager first has to be assigned to a KtWebsocketmanager");
             }
             final RequestMessage requestMessage = RequestMessage.builder().addContent(request)
                     .build();
+            KtWebsocketNotificationHandler.logger.trace("adding listener {} to {}.{}", listener,
+                    source, key);
             this.manager.sendRequest(requestMessage);
             requestMessage.getResult().addCallback(responseMessage -> {
                 if (responseMessage.success()) {
                     SubscriptionList subList;
                     synchronized (this.subscriptions) {
                         subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>())
-                                .computeIfAbsent(key,
-                                        n -> new SubscriptionList(this.userStore.get(owner)));
+                                .computeIfAbsent(key, n -> new SubscriptionList());
                     }
                     subList.addListener(listener, request.isSelfCreated());
                     result.complete(listener);
+                    KtWebsocketNotificationHandler.logger.info(
+                            "successfully added listener {} to {}.{}", listener, source, key);
+                    KtWebsocketNotificationHandler.logger.debug("new listener map: {}",
+                            this.subscriptions);
                 } else {
                     final Throwable exception = responseMessage.getErrorCause()
                             .orElseGet(() -> new SubscriptionRefusedException(
                                     responseMessage.getError().orElse("unknown")));
                     result.completeExceptionally(exception);
+                    KtWebsocketNotificationHandler.logger.warn("failed to add listener {} to {}.{}",
+                            listener, source, key, exception);
                 }
             });
         } catch (final Throwable th) {
+            KtWebsocketNotificationHandler.logger.warn(
+                    "unexpected exception while trying to add listener {} to {}.{}", listener,
+                    source, key, th);
             result.completeExceptionally(th);
         }
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see de._125m125.kt.ktapi_java.core.KtNotificationManager#disconnect()
-     */
     @Override
     public void disconnect() {
+        KtWebsocketNotificationHandler.logger.info("disconnecting...");
         this.manager.stop();
+        KtWebsocketNotificationHandler.logger.info("disconnected");
     }
 
     @Override
@@ -202,6 +209,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         synchronized (this.subscriptions) {
             this.subscriptions.values()
                     .forEach(m -> m.values().forEach(sl -> sl.removeListener(listener)));
+            KtWebsocketNotificationHandler.logger.info("unsubscribed listener {}", listener);
+            KtWebsocketNotificationHandler.logger.debug("new listener map: {}", this.subscriptions);
         }
     }
 }

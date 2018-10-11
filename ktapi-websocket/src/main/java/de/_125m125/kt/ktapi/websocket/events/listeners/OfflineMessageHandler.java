@@ -2,6 +2,10 @@ package de._125m125.kt.ktapi.websocket.events.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
 import de._125m125.kt.ktapi.websocket.events.BeforeMessageSendEvent;
@@ -11,6 +15,8 @@ import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
 import de._125m125.kt.ktapi.websocket.requests.RequestMessage;
 
 public class OfflineMessageHandler {
+    private static final Logger        logger          = LoggerFactory
+            .getLogger(OfflineMessageHandler.class);
 
     private KtWebsocketManager         manager;
 
@@ -26,7 +32,10 @@ public class OfflineMessageHandler {
 
     @WebsocketEventListening
     public void beforeMessageSend(final BeforeMessageSendEvent e) {
-        if (!e.getWebsocketStatus().isConnected()) {
+        if (!e.getWebsocketStatus().isConnected() && e.getMessage().getRequestId().isPresent()) {
+            OfflineMessageHandler.logger
+                    .info("intercepting message {} since websocket is not connected",
+                            e.getMessage().getRequestId().get());
             synchronized (this.waitingRequests) {
                 this.waitingRequests.add(e.getMessage());
             }
@@ -42,6 +51,10 @@ public class OfflineMessageHandler {
                 oldMessages = new ArrayList<>(this.waitingRequests);
                 this.waitingRequests.clear();
             }
+            OfflineMessageHandler.logger.info(
+                    "resending messages {}",
+                    oldMessages.stream().map(m -> m.getRequestId().get().toString())
+                            .collect(Collectors.joining(",", "[", "]")));
             oldMessages.forEach(this.manager::sendMessage);
         }, "ResendCapturedOfflineMessageThread").start();
     }
