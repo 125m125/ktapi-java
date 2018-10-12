@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-sudo apt-get install libxml-xpath-perl
+#sudo apt-get install libxml-xpath-perl
 # get latest version of codacy reporter from sonatype
-latest=$(curl "https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/maven-metadata.xml" | xpath -e "/metadata/versioning/release/text()")
+#latest=$(curl "https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/maven-metadata.xml" | xpath -e "/metadata/versioning/release/text()")
+latest="5.0.310"
 
 echo Downloading latest version $latest of codacy reporter from sonatype 
 # download laterst assembly jar 
