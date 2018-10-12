@@ -13,6 +13,7 @@ before_install:
 
 after_success:
   - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
+  - bash <(curl -s https://codecov.io/bash)
 
 deploy:
   provider: releases
