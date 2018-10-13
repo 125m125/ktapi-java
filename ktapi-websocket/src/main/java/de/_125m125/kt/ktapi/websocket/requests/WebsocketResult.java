@@ -23,7 +23,8 @@ public class WebsocketResult {
         }
     }
 
-    public ResponseMessage get(final long maxWait, final TimeUnit unit) throws InterruptedException, TimeoutException {
+    public ResponseMessage get(final long maxWait, final TimeUnit unit)
+            throws InterruptedException, TimeoutException {
         try {
             return this.result.get(maxWait, unit);
         } catch (final ExecutionException e) {
@@ -32,14 +33,7 @@ public class WebsocketResult {
     }
 
     public synchronized void addCallback(final Consumer<ResponseMessage> consumer) {
-        if (this.result.isDone()) {
-            try {
-                consumer.accept(this.result.get());
-            } catch (InterruptedException | ExecutionException e) {
-                consumer.accept(new ResponseMessage("retrieval of result failed", e));
-            }
-        }
-        new Thread(() -> this.result.thenAccept(consumer::accept));
+        this.result.thenAccept(consumer::accept);
     }
 
     public synchronized void setResponse(final ResponseMessage responseMessage) {

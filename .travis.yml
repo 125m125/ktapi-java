@@ -2,6 +2,19 @@ language: java
 jdk:
 - oraclejdk8
 
+env:
+  global:
+    secure: OndpjH7MwhDqDcZn8jFTZv9EVJN8IAqzrXMSjPl3z5h3V9kXfTfG+dcYwZN+DAtxnznQkJCDfK9yIpHvoH1D1qwHqjWNBzUGCgvl6wSXADptxBOWedrcCEcTp18IPsPVfZq5O+sZ/PgZnl/Z2ZuNUJUFeTgMeycgVM3J0LdArKJgRWXQlKiLWwUbnvUY4AO7jpH1SsTugZozfcK/VjHmrOCnqi05jEH50Myclwien97r59/BgYrrxruoQgFjmV4otT+OV2TmHUm2M2KaMY3mNGfUtRlgYqeehNBGYiVBVpHGHNQf7yYPda1MB6xCibler0E+KxENkXiJH3ZHpOhVaP2mpk9q2ErBIJcH+cFilIVtx7o5lEC+BQY2Epw8/WlvHfrtX7+ewP8KSoEjQL8WRErUOjbQphBsxlgqios6x/p1qjuoE+SY/2hj6Q7tCJHDLuAkl4xgwSRmomTZlA3TGj1QQPqXtu3olz2HrAJ8/iAjQUn1H6r17vOVSZip9UBRPlV1/3DQcTCaMV1Y43AI5FuiD/jWm5foqz5u8Gg97G1bzxKnaED+Cyob8Ua5a2csPHYstv91tsMC6nP4dNlBrMw9G2pSQ/10YJ44Rix1Dr56m+7dt1Z6IO2bc9PsbaasbkSv3aVlJIGknAORjytd4veQtk3Fj70qZHbUaBlpd/I=
+
+sudo: required
+
+before_install:
+  - ".travis/before-install.sh"
+
+after_success:
+  - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
+  - bash <(curl -s https://codecov.io/bash)
+
 deploy:
   provider: releases
   api_key:

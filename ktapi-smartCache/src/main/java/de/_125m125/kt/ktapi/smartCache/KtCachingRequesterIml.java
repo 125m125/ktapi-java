@@ -14,6 +14,7 @@ import de._125m125.kt.ktapi.core.KtCachingRequester;
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.NotificationListener;
+import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.Message;
@@ -47,6 +48,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
 
     private final Map<String, CacheData<?>> cache;
     private final KtRequester<U>            requester;
+    private KtNotificationManager<U>        ktNotificationManager;
     private final TimestampedObjectFactory  factory;
 
     public KtCachingRequesterIml(final KtRequester<U> requester,
@@ -57,13 +59,10 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     public KtCachingRequesterIml(final KtRequester<U> requester,
             final KtNotificationManager<U> ktNotificationManager,
             final TimestampedObjectFactory factory) {
+        this.ktNotificationManager = ktNotificationManager;
         this.cache = new ConcurrentHashMap<>();
         this.requester = requester;
         this.factory = factory != null ? factory : new TimestampedObjectFactory();
-
-        // ktNotificationManager.subscribeToAll(this, false);
-        // ktNotificationManager.subscribeToAll(this, true);
-        ktNotificationManager.subscribeToAll(this);
     }
 
     @Override
@@ -152,12 +151,14 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     @Override
     public Result<List<HistoryEntry>> getHistory(final String itemid, final int limit,
             final int offset) {
+        this.ktNotificationManager.subscribeToHistory(this);
         return getOrFetch(KtCachingRequesterIml.HISTORY + itemid, offset, offset + limit,
                 () -> this.requester.getHistory(itemid, limit, offset));
     }
 
     @Override
     public Result<HistoryEntry> getLatestHistory(final String itemid) {
+        this.ktNotificationManager.subscribeToHistory(this);
         return this.getOrFetch(KtCachingRequesterIml.HISTORY + itemid, 0,
                 () -> this.requester.getLatestHistory(itemid));
     }
@@ -184,31 +185,39 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
 
     @Override
     public Result<List<Item>> getItems(final U userKey) {
-        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
+        this.ktNotificationManager.subscribeToItems(this, userKey, false);
+        this.ktNotificationManager.subscribeToItems(this, userKey, true);
+        return getAllOrFetch(KtCachingRequesterIml.ITEMS + userKey.getUserId(),
                 () -> this.requester.getItems(userKey));
     }
 
     @Override
     public Result<Item> getItem(final U userKey, final String itemid) {
+        this.ktNotificationManager.subscribeToItems(this, userKey, false);
+        this.ktNotificationManager.subscribeToItems(this, userKey, true);
         return getOrFetch(KtCachingRequesterIml.ITEMS + userKey.getUserId(),
                 item -> item.getId().equals(itemid), () -> this.requester.getItem(userKey, itemid));
     }
 
     @Override
     public Result<List<Message>> getMessages(final U userKey) {
-        return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
+        this.ktNotificationManager.subscribeToMessages(this, userKey, false);
+        this.ktNotificationManager.subscribeToMessages(this, userKey, true);
+        return getAllOrFetch(KtCachingRequesterIml.MESSAGES + userKey.getUserId(),
                 () -> this.requester.getMessages(userKey));
     }
 
     @Override
     public Result<List<Payout>> getPayouts(final U userKey) {
+        this.ktNotificationManager.subscribeToPayouts(this, userKey, false);
+        this.ktNotificationManager.subscribeToPayouts(this, userKey, true);
         return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
                 () -> this.requester.getPayouts(userKey));
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final U userKey, final BUY_SELL type,
-            final String itemid, final int amount) {
+    public Result<WriteResult<Payout>> createPayout(final U userKey, final PAYOUT_TYPE type,
+            final String itemid, final String amount) {
         final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
                 itemid, amount);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
@@ -217,7 +226,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final U userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final U userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userKey, payoutid);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
                 KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
@@ -225,7 +234,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final U userKey, final String payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final U userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userKey, payoutid);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
                 KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
@@ -240,6 +249,8 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
 
     @Override
     public Result<List<Trade>> getTrades(final U userKey) {
+        this.ktNotificationManager.subscribeToTrades(this, userKey, false);
+        this.ktNotificationManager.subscribeToTrades(this, userKey, true);
         return getAllOrFetch(KtCachingRequesterIml.TRADES + userKey.getUserId(),
                 () -> this.requester.getTrades(userKey));
     }

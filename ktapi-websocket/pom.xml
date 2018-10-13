@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>ktapi</artifactId>
         <groupId>de.125m125.kt</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <artifactId>ktapi</artifactId>
+        <version>0.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>ktapi-websocket</artifactId>
     <dependencies>
@@ -16,6 +16,22 @@
         <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
         </dependency>
     </dependencies>
 </project>
