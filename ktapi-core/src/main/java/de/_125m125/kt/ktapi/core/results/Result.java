@@ -76,8 +76,9 @@ public abstract class Result<T> {
         return this.successful;
     }
 
-    public void addCallback(final Callback<T> callback) {
+    public Result<T> addCallback(final Callback<T> callback) {
         new CallbackResult<>(this, callback);
+        return this;
     }
 
     public void await() throws InterruptedException {
