@@ -7,9 +7,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface Callback<T> {
-    public static <T> Callback<T> of(final Optional<Function<Integer, Consumer<T>>> success,
+    public static <T> Callback<T> ofCurried(final Optional<Function<Integer, Consumer<T>>> success,
             final Optional<Function<Integer, Function<String, Consumer<String>>>> failure,
             final Optional<Consumer<Throwable>> error) {
+        Objects.requireNonNull(success);
+        Objects.requireNonNull(failure);
+        Objects.requireNonNull(error);
+        return of(success.map(f -> (s, t) -> f.apply(s).accept(t)),
+                failure.map(f -> (i, m, h) -> f.apply(i).apply(m).accept(h)), error);
+    }
+
+    public static <T> Callback<T> of(final Optional<BiConsumer<Integer, T>> success,
+            final Optional<TriConsumer<Integer, String, String>> failure, final Optional<Consumer<Throwable>> error) {
         Objects.requireNonNull(success);
         Objects.requireNonNull(failure);
         Objects.requireNonNull(error);
@@ -17,12 +26,12 @@ public interface Callback<T> {
 
             @Override
             public void onSuccess(final int status, final T result) {
-                success.ifPresent(s -> s.apply(status).accept(result));
+                success.ifPresent(s -> s.accept(status, result));
             }
 
             @Override
             public void onFailure(final int status, final String message, final String humanReadableMessage) {
-                failure.ifPresent(f -> f.apply(status).apply(message).accept(humanReadableMessage));
+                failure.ifPresent(f -> f.accept(status, message, humanReadableMessage));
             }
 
             @Override
@@ -33,24 +42,19 @@ public interface Callback<T> {
     }
 
     public static <T> Callback<T> successCallback(final Function<Integer, Consumer<T>> success) {
-        return of(Optional.of(success), Optional.empty(), Optional.empty());
+        return ofCurried(Optional.of(success), Optional.empty(), Optional.empty());
     }
 
     public static <T> Callback<T> successCallback(final BiConsumer<Integer, T> success) {
-        Objects.requireNonNull(success);
-        final Function<Integer, Consumer<T>> curriedSuccess = i -> t -> success.accept(i, t);
-        return of(Optional.of(curriedSuccess), Optional.empty(), Optional.empty());
+        return of(Optional.of(success), Optional.empty(), Optional.empty());
     }
 
     public static <T> Callback<T> failureCallback(final Function<Integer, Function<String, Consumer<String>>> failure) {
-        return of(Optional.empty(), Optional.of(failure), Optional.empty());
+        return ofCurried(Optional.empty(), Optional.of(failure), Optional.empty());
     }
 
     public static <T> Callback<T> failureCallback(final TriConsumer<Integer, String, String> failure) {
-        Objects.requireNonNull(failure);
-        final Function<Integer, Function<String, Consumer<String>>> curriedFailure = i -> m -> h -> failure.accept(i, m,
-                h);
-        return of(Optional.empty(), Optional.of(curriedFailure), Optional.empty());
+        return of(Optional.empty(), Optional.of(failure), Optional.empty());
     }
 
     public static <T> Callback<T> errorCallback(final Consumer<Throwable> error) {
@@ -114,7 +118,6 @@ public interface Callback<T> {
          */
         default TriConsumer<T, U, V> andThen(final TriConsumer<? super T, ? super U, ? super V> after) {
             Objects.requireNonNull(after);
-
             return (t, u, v) -> {
                 accept(t, u, v);
                 after.accept(t, u, v);

@@ -51,6 +51,8 @@ public class Example {
         });
 
         requester.ping().addCallback(Callback.successCallback(s -> r -> System.out.println(r)))
+                .addCallback(Callback.failureCallback(s -> s < 500 ? m -> h -> System.out.println("Client error: " + h)
+                        : m -> h -> System.out.println("Server error: " + h)))
                 .addCallback(Callback.errorCallback(Throwable::printStackTrace));
     }
 }
