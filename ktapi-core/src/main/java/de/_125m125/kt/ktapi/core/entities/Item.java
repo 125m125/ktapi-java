@@ -1,18 +1,20 @@
 package de._125m125.kt.ktapi.core.entities;
 
+import java.util.Objects;
+
 public class Item {
     private String id;
     private String name;
     private double amount;
 
-    public Item() {
+    protected Item() {
         super();
     }
 
     public Item(final String id, final String name, final double amount) {
         super();
-        this.id = id;
-        this.name = name;
+        this.id = Objects.requireNonNull(id);
+        this.name = Objects.requireNonNull(name);
         this.amount = amount;
     }
 

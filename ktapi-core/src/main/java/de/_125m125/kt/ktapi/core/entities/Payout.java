@@ -1,5 +1,7 @@
 package de._125m125.kt.ktapi.core.entities;
 
+import java.util.Objects;
+
 public class Payout {
     private long   id;
     private String material;
@@ -10,7 +12,7 @@ public class Payout {
     private String date;
     private String message;
 
-    public Payout() {
+    protected Payout() {
         super();
     }
 
@@ -18,13 +20,13 @@ public class Payout {
             final String state, final String payoutType, final String date, final String message) {
         super();
         this.id = id;
-        this.material = material;
-        this.materialName = materialName;
+        this.material = Objects.requireNonNull(material);
+        this.materialName = materialName != null ? materialName : material;
         this.amount = amount;
-        this.state = state;
-        this.payoutType = payoutType;
-        this.date = date;
-        this.message = message;
+        this.state = Objects.requireNonNull(state);
+        this.payoutType = Objects.requireNonNull(payoutType);
+        this.date = Objects.requireNonNull(date);
+        this.message = message != null ? message : "";
     }
 
     public long getId() {
