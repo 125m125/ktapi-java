@@ -32,13 +32,13 @@ public class RetrofitResult<T> extends Result<T> {
                                     "unknown : " + e1.toString(), "An unknown Error occurred");
                         }
                     }
-                    setErrorResult(errorResponse);
+                    setFailureResult(errorResponse);
                 }
             }
 
             @Override
             public void onFailure(final Call<T> call, final Throwable t) {
-                setErrorResult(new ErrorResponse(-1, t.toString(), t.getLocalizedMessage()));
+                setFailureResult(new ErrorResponse(-1, t.toString(), t.getLocalizedMessage()));
             }
         });
     }

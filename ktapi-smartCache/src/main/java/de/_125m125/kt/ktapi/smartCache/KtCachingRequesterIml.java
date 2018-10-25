@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -53,7 +54,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
 
     public KtCachingRequesterIml(final KtRequester<U> requester,
             final KtNotificationManager<U> ktNotificationManager) {
-        this(requester, ktNotificationManager, new TimestampedObjectFactory());
+        this(requester, ktNotificationManager, null);
     }
 
     public KtCachingRequesterIml(final KtRequester<U> requester,
@@ -280,7 +281,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
                 KtCachingRequesterIml.TRADES + userKey.getUserId()));
         return result;
     }
-    
+
     @Override
     public Result<Long> ping() {
         return this.requester.ping();
@@ -295,28 +296,8 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
         if (all.isPresent()) {
             return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, all.get());
         } else {
-            final Result<List<T>> result = fetcher.get();
-            final ExposedResult<List<T>> returnResult = new ExposedResult<>();
-            result.addCallback(new Callback<List<T>>() {
-                @Override
-                public void onSuccess(final int status, final List<T> result) {
-                    final TimestampedList<T> timestampedList = cacheEntry.set(result, start,
-                            start + result.size());
-                    returnResult.setSuccessResult(status, timestampedList);
-                }
-
-                @Override
-                public void onFailure(final int status, final String message,
-                        final String humanReadableMessage) {
-                    returnResult.setErrorResult(status, message, humanReadableMessage);
-                }
-
-                @Override
-                public void onError(final Throwable t) {
-                    returnResult.setFailureResult(t);
-                }
-            });
-            return returnResult;
+            return new ExposedResult<>(fetcher,
+                    (status, result) -> cacheEntry.set(result, start, start + result.size()));
         }
     }
 
@@ -331,27 +312,8 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
                     KtCachingRequesterIml.this.factory.create(all.get(),
                             cacheEntry.getLastInvalidationTime(), true));
         } else {
-            final Result<T> result = fetcher.get();
-            final ExposedResult<T> returnResult = new ExposedResult<>();
-            result.addCallback(new Callback<T>() {
-                @Override
-                public void onSuccess(final int status, final T result) {
-                    returnResult.setSuccessResult(status, KtCachingRequesterIml.this.factory
-                            .create(result, cacheEntry.getLastInvalidationTime(), false));
-                }
-
-                @Override
-                public void onFailure(final int status, final String message,
-                        final String humanReadableMessage) {
-                    returnResult.setErrorResult(status, message, humanReadableMessage);
-                }
-
-                @Override
-                public void onError(final Throwable t) {
-                    returnResult.setFailureResult(t);
-                }
-            });
-            return returnResult;
+            return new ExposedResult<>(fetcher, (status,result)->KtCachingRequesterIml.this.factory
+                    .create(result, cacheEntry.getLastInvalidationTime(), false));
         }
     }
 
@@ -366,26 +328,10 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
                     KtCachingRequesterIml.this.factory.create(all.get(),
                             cacheEntry.getLastInvalidationTime(), true));
         } else {
-            final Result<T> result = fetcher.get();
-            final ExposedResult<T> returnResult = new ExposedResult<>();
-            result.addCallback(new Callback<T>() {
-                @Override
-                public void onSuccess(final int status, final T result) {
-                    returnResult.setSuccessResult(status, KtCachingRequesterIml.this.factory
-                            .create(result, cacheEntry.getLastInvalidationTime(), false));
-                }
-
-                @Override
-                public void onFailure(final int status, final String message,
-                        final String humanReadableMessage) {
-                    returnResult.setErrorResult(status, message, humanReadableMessage);
-                }
-
-                @Override
-                public void onError(final Throwable t) {
-                    returnResult.setFailureResult(t);
-                }
-            });
+            final ExposedResult<T> returnResult = new ExposedResult<>(fetcher,
+                    (status, result) -> KtCachingRequesterIml.this.factory.create(result,
+                            cacheEntry.getLastInvalidationTime(),
+                            false));
             return returnResult;
         }
     }
@@ -399,46 +345,32 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
         if (all.isPresent()) {
             return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, all.get());
         } else {
-            final Result<List<T>> result = fetcher.get();
-            final ExposedResult<List<T>> returnResult = new ExposedResult<>();
-            result.addCallback(new Callback<List<T>>() {
-                @Override
-                public void onSuccess(final int status, final List<T> result) {
-                    final TimestampedList<T> timestampedList = cacheEntry.set(result, 0,
-                            result.size());
-                    returnResult.setSuccessResult(status, timestampedList);
-                }
-
-                @Override
-                public void onFailure(final int status, final String message,
-                        final String humanReadableMessage) {
-                    returnResult.setErrorResult(status, message, humanReadableMessage);
-                }
-
-                @Override
-                public void onError(final Throwable t) {
-                    returnResult.setFailureResult(t);
-                }
-            });
-            return returnResult;
+            return new ExposedResult<>(fetcher, (status,result)->cacheEntry.set(result, 0,
+                    result.size()));
         }
     }
 
     protected static class ExposedResult<T> extends Result<T> {
+
+        public ExposedResult(final Supplier<Result<T>> fetcher, final BiFunction<Integer, T, T> success) {
+            fetcher.get().addCallback(Callback.of(Optional.of((s, t) -> this.setSuccessResult(s, success.apply(s, t))),
+                    Optional.of(this::setFailureResult), Optional.of(this::setErrorResult)));
+        }
+
         @Override
         protected void setSuccessResult(final int status, final T content) {
             super.setSuccessResult(status, content);
         }
 
         @Override
-        protected void setFailureResult(final Throwable t) {
-            super.setFailureResult(t);
+        protected void setErrorResult(final Throwable t) {
+            super.setErrorResult(t);
         }
 
         @Override
-        protected void setErrorResult(final int status, final String errorMessage,
+        protected void setFailureResult(final int status, final String errorMessage,
                 final String humanReadableErrorMessage) {
-            super.setErrorResult(status, errorMessage, humanReadableErrorMessage);
+            super.setFailureResult(status, errorMessage, humanReadableErrorMessage);
         }
     }
 
