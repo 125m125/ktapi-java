@@ -14,7 +14,7 @@ public class Example {
     public static void main(final String[] args) throws InterruptedException {
         final TokenUser user = new TokenUser("1d0tat5", "3tdsgkl", "38r9l9i94qpdl");
         final KtOkHttpWebsocket ws = new KtOkHttpWebsocket("wss://kt.125m125.de/api/websocket");
-        final KtNotificationManager<TokenUserKey> manager = new KtWebsocketNotificationHandler<>(
+        final KtNotificationManager<TokenUserKey, ?> manager = new KtWebsocketNotificationHandler<>(
                 new KtUserStore(user));
         KtWebsocketManager.builder(ws).addDefaultParsers().addListener(new OfflineMessageHandler())
                 .addListener(new SessionHandler()).addListener(manager)

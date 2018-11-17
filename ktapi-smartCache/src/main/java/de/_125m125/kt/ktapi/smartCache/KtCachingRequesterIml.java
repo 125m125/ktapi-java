@@ -48,16 +48,16 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
 
     private final Map<String, CacheData<?>> cache;
     private final KtRequester<U>            requester;
-    private KtNotificationManager<U>        ktNotificationManager;
+    private KtNotificationManager<U, ?>     ktNotificationManager;
     private final TimestampedObjectFactory  factory;
 
     public KtCachingRequesterIml(final KtRequester<U> requester,
-            final KtNotificationManager<U> ktNotificationManager) {
+            final KtNotificationManager<U, ?> ktNotificationManager) {
         this(requester, ktNotificationManager, new TimestampedObjectFactory());
     }
 
     public KtCachingRequesterIml(final KtRequester<U> requester,
-            final KtNotificationManager<U> ktNotificationManager,
+            final KtNotificationManager<U, ?> ktNotificationManager,
             final TimestampedObjectFactory factory) {
         this.ktNotificationManager = ktNotificationManager;
         this.cache = new ConcurrentHashMap<>();

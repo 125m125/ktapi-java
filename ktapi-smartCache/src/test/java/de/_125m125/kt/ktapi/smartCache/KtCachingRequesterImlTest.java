@@ -42,14 +42,14 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 public class KtCachingRequesterImlTest {
 
     @Mock
-    private KtRequester<TokenUserKey>           requester;
+    private KtRequester<TokenUserKey>              requester;
     @Mock
-    private KtNotificationManager<TokenUserKey> notificationmanager;
+    private KtNotificationManager<TokenUserKey, ?> notificationmanager;
 
     @InjectMocks
-    private KtCachingRequesterIml<TokenUserKey> uut;
+    private KtCachingRequesterIml<TokenUserKey>    uut;
 
-    private Map<String, CacheData<?>>           cache;
+    private Map<String, CacheData<?>>              cache;
 
     @Before
     @SuppressWarnings("unchecked")
