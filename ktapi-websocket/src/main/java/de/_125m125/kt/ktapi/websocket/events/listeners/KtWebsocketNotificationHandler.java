@@ -36,6 +36,7 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
         super(KtWebsocketNotificationHandler.logger, userStore, mode);
     }
 
+    @Override
     @WebsocketEventListening
     public void onMessageReceived(final MessageReceivedEvent e) {
         if (e.getMessage() instanceof UpdateNotification) {
@@ -43,7 +44,8 @@ public class KtWebsocketNotificationHandler<T extends TokenUserKey>
                     e.getMessage());
             SubscriptionList keyList = null;
             SubscriptionList unkeyedList = null;
-            final UpdateNotification notificationMessage = (UpdateNotification) e.getMessage();
+            final UpdateNotification<?> notificationMessage = (UpdateNotification<?>) e
+                    .getMessage();
             synchronized (this.subscriptions) {
                 final Map<String, SubscriptionList> sourceMap = this.subscriptions
                         .get(notificationMessage.getSource());
