@@ -21,13 +21,11 @@ public class SubscriptionRequestDataFactory {
      *            the self created
      * @return the subscription request data
      */
-    @SuppressWarnings("unchecked")
-    public <T extends User<T>> SubscriptionRequestData<T> createSubscriptionRequestData(
-            final String channel, final T user, final boolean selfCreated) {
+    public SubscriptionRequestData createSubscriptionRequestData(final String channel,
+            final User user, final boolean selfCreated) {
         if (user instanceof TokenUser) {
-            return (SubscriptionRequestData<T>) new TokenSubscriptionRequestData<>(channel,
-                    ((Class<? extends TokenUser>) user.getClass()).cast(user), selfCreated);
+            return new TokenSubscriptionRequestData(channel, (TokenUser) user, selfCreated);
         }
-        return new SubscriptionRequestData<>(channel, user, selfCreated);
+        return new SubscriptionRequestData(channel, user, selfCreated);
     }
 }

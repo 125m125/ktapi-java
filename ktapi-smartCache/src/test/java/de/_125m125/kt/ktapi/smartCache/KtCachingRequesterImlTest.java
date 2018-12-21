@@ -34,7 +34,6 @@ import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
-import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedHistoryEntry;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 
@@ -42,14 +41,14 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 public class KtCachingRequesterImlTest {
 
     @Mock
-    private KtRequester<TokenUserKey>              requester;
+    private KtRequester               requester;
     @Mock
-    private KtNotificationManager<TokenUserKey, ?> notificationmanager;
+    private KtNotificationManager<?>  notificationmanager;
 
     @InjectMocks
-    private KtCachingRequesterIml<TokenUserKey>    uut;
+    private KtCachingRequesterIml     uut;
 
-    private Map<String, CacheData<?>>              cache;
+    private Map<String, CacheData<?>> cache;
 
     @Before
     @SuppressWarnings("unchecked")

@@ -15,7 +15,7 @@ import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
-public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDecorator<T> {
+public class SingleUserKtRequester extends KtRequesterDecorator {
 
     private static final NumberFormat NUMBER_FORMAT;
     static {
@@ -24,16 +24,16 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
         SingleUserKtRequester.NUMBER_FORMAT.setGroupingUsed(false);
     }
 
-    private final String wrongUserErrorStart;
-    private final T      userKey;
+    private final String  wrongUserErrorStart;
+    private final UserKey userKey;
 
-    public SingleUserKtRequester(final T userKey, final KtRequester<T> requester) {
+    public SingleUserKtRequester(final UserKey userKey, final KtRequester requester) {
         super(requester);
         this.userKey = userKey;
         this.wrongUserErrorStart = "This requester only supports " + this.userKey + " but got ";
     }
 
-    public T getUser() {
+    public UserKey getUser() {
         return this.userKey;
     }
 
@@ -283,89 +283,89 @@ public class SingleUserKtRequester<T extends UserKey<?>> extends KtRequesterDeco
                 SingleUserKtRequester.NUMBER_FORMAT.format(price));
     }
 
-    private void checkUser(final T user) {
+    private void checkUser(final UserKey user) {
         if (!user.equals(this.userKey)) {
             throw new IllegalArgumentException(this.wrongUserErrorStart + user);
         }
     }
 
     @Override
-    public Result<Permissions> getPermissions(final T userKey) {
+    public Result<Permissions> getPermissions(final UserKey userKey) {
         checkUser(userKey);
         return super.getPermissions(userKey);
     }
 
     @Override
-    public Result<List<Item>> getItems(final T userKey) {
+    public Result<List<Item>> getItems(final UserKey userKey) {
         checkUser(userKey);
         return super.getItems(userKey);
     }
 
     @Override
-    public Result<Item> getItem(final T userKey, final String itemid) {
+    public Result<Item> getItem(final UserKey userKey, final String itemid) {
         checkUser(userKey);
         return super.getItem(userKey, itemid);
     }
 
     @Override
-    public Result<List<Message>> getMessages(final T userKey) {
+    public Result<List<Message>> getMessages(final UserKey userKey) {
         checkUser(userKey);
         return super.getMessages(userKey);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final T userKey) {
+    public Result<List<Payout>> getPayouts(final UserKey userKey) {
         checkUser(userKey);
         return super.getPayouts(userKey);
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
             final String itemid, final String amount) {
         checkUser(userKey);
         return super.createPayout(userKey, type, itemid, amount);
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         checkUser(userKey);
         return super.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         checkUser(userKey);
         return super.takeoutPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
             final String socketId) {
         checkUser(userKey);
         return super.authorizePusher(userKey, channel_name, socketId);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final T userKey) {
+    public Result<List<Trade>> getTrades(final UserKey userKey) {
         checkUser(userKey);
         return super.getTrades(userKey);
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
             final String item, final int amount, final String pricePerItem) {
         checkUser(userKey);
         return super.createTrade(userKey, mode, item, amount, pricePerItem);
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final T userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         checkUser(userKey);
         return super.cancelTrade(userKey, tradeId);
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final T userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         checkUser(userKey);
         return super.takeoutTrade(userKey, tradeId);
     }

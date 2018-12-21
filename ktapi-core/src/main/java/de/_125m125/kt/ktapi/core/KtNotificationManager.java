@@ -7,7 +7,7 @@ import de._125m125.kt.ktapi.core.users.UserKey;
 /**
  * The Interface KtNotificationManager.
  */
-public interface KtNotificationManager<T extends UserKey<?>, U> {
+public interface KtNotificationManager<U> {
 
     /**
      * Subscribe to updates for messages.
@@ -23,7 +23,7 @@ public interface KtNotificationManager<T extends UserKey<?>, U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
-    public CompletableFuture<U> subscribeToMessages(NotificationListener listener, T userKey,
+    public CompletableFuture<U> subscribeToMessages(NotificationListener listener, UserKey userKey,
             boolean selfCreated);
 
     /**
@@ -40,7 +40,7 @@ public interface KtNotificationManager<T extends UserKey<?>, U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
-    public CompletableFuture<U> subscribeToTrades(NotificationListener listener, T userKey,
+    public CompletableFuture<U> subscribeToTrades(NotificationListener listener, UserKey userKey,
             boolean selfCreated);
 
     /**
@@ -57,7 +57,7 @@ public interface KtNotificationManager<T extends UserKey<?>, U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
-    public CompletableFuture<U> subscribeToItems(NotificationListener listener, T userKey,
+    public CompletableFuture<U> subscribeToItems(NotificationListener listener, UserKey userKey,
             boolean selfCreated);
 
     /**
@@ -71,7 +71,7 @@ public interface KtNotificationManager<T extends UserKey<?>, U> {
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
      */
-    public CompletableFuture<U> subscribeToPayouts(NotificationListener listener, T userKey,
+    public CompletableFuture<U> subscribeToPayouts(NotificationListener listener, UserKey userKey,
             boolean selfCreated);
 
     /**
@@ -133,7 +133,7 @@ public interface KtNotificationManager<T extends UserKey<?>, U> {
      *         will return the same listener.
      */
     public default CompletableFuture<U>[] subscribeToAll(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
+            final UserKey userKey, final boolean selfCreated) {
         @SuppressWarnings("unchecked")
         final CompletableFuture<U>[] results = new CompletableFuture[4];
         results[0] = subscribeToItems(listener, userKey, selfCreated);

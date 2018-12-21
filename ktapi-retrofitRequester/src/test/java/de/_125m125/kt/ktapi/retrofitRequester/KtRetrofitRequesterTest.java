@@ -32,14 +32,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class KtRetrofitRequesterTest {
 
-    private static final String               BASE_URL = "https://does.not.exist";
-    private FakeInterceptor                   fakeInterceptor;
-    private KtRetrofitRequester<TokenUserKey> uut;
+    private static final String BASE_URL = "https://does.not.exist";
+    private FakeInterceptor     fakeInterceptor;
+    private KtRetrofitRequester uut;
 
     @Before
     public void beforeKtRetrofitRequesterTest() throws Exception {
         this.fakeInterceptor = new FakeInterceptor();
-        this.uut = new KtRetrofitRequester<>(KtRetrofitRequesterTest.BASE_URL,
+        this.uut = new KtRetrofitRequester(KtRetrofitRequesterTest.BASE_URL,
                 new ClientModifier[] { c -> c.addInterceptor(this.fakeInterceptor) },
                 new RetrofitModifier[] {
                         r -> r.addConverterFactory(GsonConverterFactory.create()) },

@@ -13,7 +13,6 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
-import de._125m125.kt.ktapi.core.users.User;
 import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketEventListening;
@@ -27,8 +26,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends UserKey<T>>
-        extends AbstractKtWebsocketNotificationHandler<T, K, Disposable> {
+public class ReactiveKtWebsocketNotificationHandler
+        extends AbstractKtWebsocketNotificationHandler<Disposable> {
     private static final Logger                    logger  = LoggerFactory
             .getLogger(ReactiveKtWebsocketNotificationHandler.class);
     protected final Subject<UpdateNotification<?>> subject = PublishSubject
@@ -52,7 +51,7 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
     }
 
     @Override
-    protected void addListener(final SubscriptionRequestData<T> request, final String source,
+    protected void addListener(final SubscriptionRequestData request, final String source,
             final String key, final NotificationListener listener,
             final CompletableFuture<Disposable> result) {
         Observable<UpdateNotification<?>> filter = this.subject
@@ -92,8 +91,8 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
         return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class);
     }
 
-    public Observable<Item> getItemObservable(final K user) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class, user);
+    public Observable<Item> getItemObservable(final UserKey userkey) {
+        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class, userkey);
     }
 
     public Observable<Item> getItemObservable(final String itemId) {
@@ -101,8 +100,8 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
                 .filter(i -> itemId.equals(i.getId()));
     }
 
-    public Observable<Item> getItemObservable(final K user, final String itemId) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class, user)
+    public Observable<Item> getItemObservable(final UserKey userkey, final String itemId) {
+        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class, userkey)
                 .filter(i -> itemId.equals(i.getId()));
     }
 
@@ -110,8 +109,9 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
         return getObservable(AbstractKtWebsocketNotificationHandler.MESSAGES, Message.class);
     }
 
-    public Observable<Message> getMessageObservable(final K user) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.MESSAGES, Message.class, user);
+    public Observable<Message> getMessageObservable(final UserKey userkey) {
+        return getObservable(AbstractKtWebsocketNotificationHandler.MESSAGES, Message.class,
+                userkey);
     }
 
     public Observable<OrderBookEntry> getOrderbookObservable() {
@@ -127,8 +127,8 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
         return getObservable(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class);
     }
 
-    public Observable<Payout> getPayoutObservable(final K user) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class, user);
+    public Observable<Payout> getPayoutObservable(final UserKey userkey) {
+        return getObservable(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class, userkey);
     }
 
     public Observable<Payout> getPayoutObservable(final long payoutId) {
@@ -141,8 +141,8 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
         return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class);
     }
 
-    public Observable<Trade> getTradeObservable(final K user) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class, user);
+    public Observable<Trade> getTradeObservable(final UserKey userkey) {
+        return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class, userkey);
     }
 
     public Observable<Trade> getTradeObservable(final long tradeId) {
@@ -159,12 +159,13 @@ public class ReactiveKtWebsocketNotificationHandler<T extends User<T>, K extends
                 .flatMap(n -> Observable.fromArray(n.getChangedEntries())).map(t::cast);
     }
 
-    private <U> Observable<U> getObservable(final String type, final Class<U> t, final K user) {
+    private <U> Observable<U> getObservable(final String type, final Class<U> t,
+            final UserKey userkey) {
         if (AbstractKtWebsocketNotificationHandler.types.get(type) != t) {
             throw new IllegalArgumentException("type " + type + " does not map to " + t);
         }
         return this.subject.filter(n -> type.equals(n.getSource()))
-                .filter(n -> user.getUserId().equals(n.getKey()))
+                .filter(n -> userkey.getUserId().equals(n.getKey()))
                 .flatMap(n -> Observable.fromArray(n.getChangedEntries())).map(t::cast);
     }
 

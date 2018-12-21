@@ -2,17 +2,16 @@ package de._125m125.kt.ktapi.websocket.requests.subscription;
 
 import com.google.gson.annotations.Expose;
 
-import de._125m125.kt.ktapi.core.users.AbstractTokenUser;
+import de._125m125.kt.ktapi.core.users.TokenUser;
 
-public class TokenSubscriptionRequestData<T extends AbstractTokenUser<T>>
-        extends SubscriptionRequestData<T> {
+public class TokenSubscriptionRequestData extends SubscriptionRequestData {
 
     @Expose
     private final String tid;
     @Expose
     private final String tkn;
 
-    public TokenSubscriptionRequestData(final String channel, final T user,
+    public TokenSubscriptionRequestData(final String channel, final TokenUser user,
             final boolean selfCreated) {
         super(channel, user, selfCreated);
         if (user != null) {

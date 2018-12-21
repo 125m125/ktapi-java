@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 
 import de._125m125.kt.ktapi.core.users.User;
 
-public class SubscriptionRequestData<T extends User<T>> {
+public class SubscriptionRequestData {
     @Expose
     private final String  channel;
     @Expose
@@ -12,9 +12,10 @@ public class SubscriptionRequestData<T extends User<T>> {
     @Expose
     private final boolean selfCreated;
 
-    private final T       user;
+    private final User    user;
 
-    public SubscriptionRequestData(final String channel, final T user, final boolean selfCreated) {
+    public SubscriptionRequestData(final String channel, final User user,
+            final boolean selfCreated) {
         this.channel = channel;
         this.user = user;
         this.selfCreated = selfCreated;
@@ -41,7 +42,7 @@ public class SubscriptionRequestData<T extends User<T>> {
         return this.selfCreated;
     }
 
-    public T getUser() {
+    public User getUser() {
         return this.user;
     }
 }

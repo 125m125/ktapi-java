@@ -10,29 +10,29 @@ import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
-public interface KtCachingRequester<T extends UserKey<?>> extends KtRequester<T> {
+public interface KtCachingRequester extends KtRequester {
     public void invalidateHistory(String itemid);
 
     public void invalidateOrderBook(String itemid);
 
-    public void invalidateMessages(T userKey);
+    public void invalidateMessages(UserKey userKey);
 
-    public void invalidatePayouts(T userKey);
+    public void invalidatePayouts(UserKey userKey);
 
-    public void invalidateTrades(T userKey);
+    public void invalidateTrades(UserKey userKey);
 
-    public void invalidateItemList(T userKey);
+    public void invalidateItemList(UserKey userKey);
 
     public boolean isValidHistory(String itemid, List<HistoryEntry> historyEntries);
 
     public boolean isValidOrderBook(String itemid, List<OrderBookEntry> orderBook);
 
-    public boolean isValidMessageList(T userKey, List<Message> messages);
+    public boolean isValidMessageList(UserKey userKey, List<Message> messages);
 
-    public boolean isValidPayoutList(T userKey, List<Payout> payouts);
+    public boolean isValidPayoutList(UserKey userKey, List<Payout> payouts);
 
-    public boolean isValidTradeList(T userKey, List<Trade> trades);
+    public boolean isValidTradeList(UserKey userKey, List<Trade> trades);
 
-    public boolean isValidItemList(T userKey, List<Item> items);
+    public boolean isValidItemList(UserKey userKey, List<Item> items);
 
 }

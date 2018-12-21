@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
-import de._125m125.kt.ktapi.core.users.User;
-import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.websocket.SubscriptionList;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketEventListening;
@@ -18,8 +16,8 @@ import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestD
 import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestDataFactory;
 import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 
-public class KtWebsocketNotificationHandler<T extends User<T>, K extends UserKey<T>>
-        extends AbstractKtWebsocketNotificationHandler<T, K, NotificationListener> {
+public class KtWebsocketNotificationHandler
+        extends AbstractKtWebsocketNotificationHandler<NotificationListener> {
     private static final Logger                              logger        = LoggerFactory
             .getLogger(KtWebsocketNotificationHandler.class);
 
@@ -79,7 +77,7 @@ public class KtWebsocketNotificationHandler<T extends User<T>, K extends UserKey
     }
 
     @Override
-    protected void addListener(final SubscriptionRequestData<T> request, final String source,
+    protected void addListener(final SubscriptionRequestData request, final String source,
             final String key, final NotificationListener listener,
             final CompletableFuture<NotificationListener> result) {
         final SubscriptionList subList;

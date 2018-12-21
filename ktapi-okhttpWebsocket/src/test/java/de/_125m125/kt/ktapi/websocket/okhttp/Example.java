@@ -2,10 +2,9 @@ package de._125m125.kt.ktapi.websocket.okhttp;
 
 import java.io.File;
 
+import de._125m125.kt.ktapi.core.users.CertificateUser;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
-import de._125m125.kt.ktapi.core.users.TokenUser;
 import de._125m125.kt.ktapi.core.users.User;
-import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.retrofitRequester.builderModifier.ClientCertificateAdder;
 import de._125m125.kt.ktapi.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
@@ -19,16 +18,16 @@ import okhttp3.OkHttpClient.Builder;
 
 public class Example {
     public static void main(final String[] args) throws InterruptedException {
-        final ClientModifier createUnchecked = ClientCertificateAdder.createUnchecked(new File(
-                "/home/fabian/workspace/kadcontradev2/../certificateHelper/certificate2.p12"),
-                "a".toCharArray());
+        final ClientModifier createUnchecked = ClientCertificateAdder.createUnchecked(
+                new File("../../certificateHelper/certificate2.p12"), "a".toCharArray());
         final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         final Builder modify = createUnchecked.modify(clientBuilder);
 
-        final TokenUser user = new TokenUser("1d0tat", "3tdsgkl", "38r9l9i94qpdl");
+        final User user = new CertificateUser("1d0tat5", "../../certificateHelper/certificate2.p12",
+                "a".toCharArray());
         final KtOkHttpWebsocket ws = new KtOkHttpWebsocket("wss://kt.125m125.de/api/websocket",
                 modify.build());
-        final AbstractKtWebsocketNotificationHandler<? extends User<?>, ? extends UserKey<?>, ?> manager = new KtWebsocketNotificationHandler<>(
+        final AbstractKtWebsocketNotificationHandler<?> manager = new KtWebsocketNotificationHandler(
                 new KtUserStore(user));
         KtWebsocketManager.builder(ws).addDefaultParsers().addListener(new OfflineMessageHandler())
                 .addListener(new SessionHandler()).addListener(manager)

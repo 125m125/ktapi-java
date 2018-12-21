@@ -2,24 +2,31 @@ package de._125m125.kt.ktapi.core.users;
 
 import java.util.Optional;
 
-public abstract class UserKey<T extends User<T>> {
+public abstract class UserKey {
     private final String userId;
+    private final String typeName;
 
-    public UserKey(final String userid) {
+    public UserKey(final String userid, final Class<? extends User> userType) {
         this.userId = userid;
+        this.typeName = userType.getTypeName() + ":" + getUserId();
     }
 
-    public static Optional<Class<?>> getUserType(final String identifier) {
+    @SuppressWarnings("unchecked")
+    public static Optional<Class<? extends User>> getUserType(final String identifier) {
         final String className = identifier.substring(0, identifier.indexOf(':'));
         try {
-            return Optional.of(Class.forName(className));
+            final Class<?> clazz = Class.forName(className);
+            if (User.class.isAssignableFrom(clazz)) {
+                return Optional.of((Class<? extends User>) clazz);
+            }
+            return Optional.empty();
         } catch (final ClassNotFoundException e) {
             return Optional.empty();
         }
     }
 
     public final String getIdentifier() {
-        return this.getClass().getTypeName() + ":" + this.getUserId() + ":" + getSubIdentifier();
+        return this.typeName + ":" + getSubIdentifier();
     }
 
     public abstract String getSubIdentifier();
@@ -32,12 +39,12 @@ public abstract class UserKey<T extends User<T>> {
         if (getClass() != o.getClass()) {
             return false;
         }
-        return ((UserKey<?>) o).getIdentifier().equals(this.getIdentifier());
+        return ((UserKey) o).getIdentifier().equals(getIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return this.getIdentifier().hashCode();
+        return getIdentifier().hashCode();
     }
 
     public String getUserId() {

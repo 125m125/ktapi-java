@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
@@ -33,27 +32,23 @@ import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
 
     @Rule
-    public MockitoRule                                                           rule        = MockitoJUnit
-            .rule();
+    public MockitoRule                                  rule        = MockitoJUnit.rule();
 
-    protected final TokenUser                                                    knownUser   = new TokenUser(
-            "1", "2", "4");
-    protected final TokenUser                                                    knownUser2  = new TokenUser(
-            "1", "3", "5");
-    protected final TokenUser                                                    knownUser3  = new TokenUser(
-            "2", "3", "4");
-    protected final TokenUser                                                    unknownUser = new TokenUser(
-            "8", "16", "32");
+    protected final TokenUser                           knownUser   = new TokenUser("1", "2", "4");
+    protected final TokenUser                           knownUser2  = new TokenUser("1", "3", "5");
+    protected final TokenUser                           knownUser3  = new TokenUser("2", "3", "4");
+    protected final TokenUser                           unknownUser = new TokenUser("8", "16",
+            "32");
 
     @Mock
-    protected KtWebsocketManager                                                 manager;
+    protected KtWebsocketManager                        manager;
 
     @Mock
-    protected Logger                                                             logger;
+    protected Logger                                    logger;
 
-    protected KtUserStore                                                        store;
+    protected KtUserStore                               store;
 
-    protected AbstractKtWebsocketNotificationHandler<TokenUser, TokenUserKey, T> uut;
+    protected AbstractKtWebsocketNotificationHandler<T> uut;
 
     @Before
     public void beforeKtWebsocketNotificationHandlerTestHelper() {
@@ -75,7 +70,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         this.uut.disconnect();
     }
 
-    protected abstract AbstractKtWebsocketNotificationHandler<TokenUser, TokenUserKey, T> createNotificationListener(
+    protected abstract AbstractKtWebsocketNotificationHandler<T> createNotificationListener(
             KtUserStore store, VerificationMode mode);
 
     @Test

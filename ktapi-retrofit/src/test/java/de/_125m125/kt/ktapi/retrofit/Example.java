@@ -8,13 +8,12 @@ import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.retrofitRequester.KtRetrofitRequester;
 
 public class Example {
     public static void main(final String[] args) throws InterruptedException {
         final TokenUser user = new TokenUser("1", "1", "1");
-        final KtRetrofitRequester<TokenUserKey> requester = KtRetrofit
+        final KtRetrofitRequester requester = KtRetrofit
                 .createDefaultRequester(new KtUserStore(user));
         // final CertificateUser user = new CertificateUser("1", new
         // File("certificate.p12"), new char[] { 'a' });

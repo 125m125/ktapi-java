@@ -2,7 +2,7 @@ package de._125m125.kt.ktapi.core.users;
 
 import java.io.File;
 
-public class CertificateUser extends User<CertificateUser> {
+public class CertificateUser extends User {
     private final File   file;
     private final char[] password;
 
