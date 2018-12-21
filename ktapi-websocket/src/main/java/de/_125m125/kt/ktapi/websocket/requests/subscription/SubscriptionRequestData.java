@@ -1,25 +1,27 @@
-package de._125m125.kt.ktapi.websocket.requests;
+package de._125m125.kt.ktapi.websocket.requests.subscription;
 
-import de._125m125.kt.ktapi.core.users.TokenUser;
+import com.google.gson.annotations.Expose;
 
-public class SubscriptionRequestData {
+import de._125m125.kt.ktapi.core.users.User;
+
+public class SubscriptionRequestData<T extends User<T>> {
+    @Expose
     private final String  channel;
+    @Expose
     private final String  uid;
-    private final String  tid;
-    private final String  tkn;
+    @Expose
     private final boolean selfCreated;
 
-    public SubscriptionRequestData(final String channel, final TokenUser user, final boolean selfCreated) {
+    private final T       user;
+
+    public SubscriptionRequestData(final String channel, final T user, final boolean selfCreated) {
         this.channel = channel;
+        this.user = user;
         this.selfCreated = selfCreated;
         if (user != null) {
             this.uid = user.getUserId();
-            this.tid = user.getTokenId();
-            this.tkn = user.getToken();
         } else {
             this.uid = null;
-            this.tid = null;
-            this.tkn = null;
         }
     }
 
@@ -35,16 +37,11 @@ public class SubscriptionRequestData {
         return this.uid;
     }
 
-    public String getTid() {
-        return this.tid;
-    }
-
-    public String getTkn() {
-        return this.tkn;
-    }
-
     public boolean isSelfCreated() {
         return this.selfCreated;
     }
 
+    public T getUser() {
+        return this.user;
+    }
 }

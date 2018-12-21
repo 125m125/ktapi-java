@@ -34,8 +34,7 @@ public class KtOkHttpWebsocket implements KtWebsocket {
     }
 
     /**
-     * creates a new OkHttpWebsocket with the specified target url and a
-     * provided client. <br>
+     * creates a new OkHttpWebsocket with the specified target url and a provided client. <br>
      * The Client will not be closed when the websocket exits.
      * 
      * @param url
@@ -48,6 +47,7 @@ public class KtOkHttpWebsocket implements KtWebsocket {
         if (client != null) {
             this.client = client;
             this.externalClient = true;
+            System.out.println("hi");
         } else {
             this.client = new OkHttpClient();
             this.externalClient = false;
@@ -103,7 +103,8 @@ public class KtOkHttpWebsocket implements KtWebsocket {
         }
 
         @Override
-        public void onFailure(final WebSocket webSocket, final Throwable t, final Response response) {
+        public void onFailure(final WebSocket webSocket, final Throwable t,
+                final Response response) {
             t.printStackTrace();
             new Thread(KtOkHttpWebsocket.this.manager::websocketDisconnected).start();
         }

@@ -17,18 +17,19 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
-import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.core.users.TokenUserKey;
+import de._125m125.kt.ktapi.core.users.User;
+import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketEventListening;
 import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
 import de._125m125.kt.ktapi.websocket.exceptions.SubscriptionRefusedException;
 import de._125m125.kt.ktapi.websocket.requests.RequestMessage;
-import de._125m125.kt.ktapi.websocket.requests.SubscriptionRequestData;
+import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestData;
+import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestDataFactory;
 
-public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUserKey, U>
-        implements KtNotificationManager<T, U> {
+public abstract class AbstractKtWebsocketNotificationHandler<T extends User<T>, K extends UserKey<T>, U>
+        implements KtNotificationManager<K, U> {
 
     public static final String                HISTORY   = "history";
     public static final String                ITEMS     = "items";
@@ -54,17 +55,20 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
                 .put(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class);
     }
 
-    private final Logger                 logger;
-    private KtWebsocketManager           manager;
-    private final Set<ChannelIdentifier> knownUsers = new HashSet<>();
-    protected KtUserStore                userStore;
-    public final VerificationMode        mode;
+    private final Logger                         logger;
+    protected KtUserStore                        userStore;
+    private KtWebsocketManager                   manager;
+    public final VerificationMode                mode;
+    private final SubscriptionRequestDataFactory subscriptionRequestDataFactory;
+    private final Set<ChannelIdentifier>         knownUsers = new HashSet<>();
 
     public AbstractKtWebsocketNotificationHandler(final Logger logger, final KtUserStore userStore,
-            final VerificationMode mode) {
+            final VerificationMode mode,
+            final SubscriptionRequestDataFactory subscriptionRequestDataFactory) {
         this.logger = logger;
         this.userStore = userStore;
         this.mode = mode;
+        this.subscriptionRequestDataFactory = subscriptionRequestDataFactory;
     }
 
     public KtWebsocketManager getManager() {
@@ -101,8 +105,8 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
      *            the listener that should be notified on new events
      * @return the response message from the server
      */
-    public CompletableFuture<U> subscribe(final SubscriptionRequestData request,
-            final String source, final String key, final T owner,
+    public CompletableFuture<U> subscribe(final SubscriptionRequestData<T> request,
+            final String source, final String key, final K owner,
             final NotificationListener listener) {
         final CompletableFuture<U> result = new CompletableFuture<>();
         try {
@@ -145,8 +149,8 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
         return result;
     }
 
-    protected abstract void addListener(SubscriptionRequestData request, String source, String key,
-            NotificationListener listener, CompletableFuture<U> result);
+    protected abstract void addListener(SubscriptionRequestData<T> request, String source,
+            String key, NotificationListener listener, CompletableFuture<U> result);
 
     protected boolean addKnownUser(final ChannelIdentifier identifier) {
         return this.knownUsers.add(identifier);
@@ -154,43 +158,45 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
 
     @Override
     public CompletableFuture<U> subscribeToMessages(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rMessages",
-                this.userStore.get(userKey), selfCreated);
+            final K userKey, final boolean selfCreated) {
+        final SubscriptionRequestData<T> request = this.subscriptionRequestDataFactory
+                .createSubscriptionRequestData("rMessages", this.userStore.get(userKey),
+                        selfCreated);
         return subscribe(request, AbstractKtWebsocketNotificationHandler.MESSAGES,
                 userKey.getUserId(), userKey, listener);
     }
 
     @Override
     public CompletableFuture<U> subscribeToTrades(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rOrders",
-                this.userStore.get(userKey), selfCreated);
+            final K userKey, final boolean selfCreated) {
+        final SubscriptionRequestData<T> request = this.subscriptionRequestDataFactory
+                .createSubscriptionRequestData("rOrders", this.userStore.get(userKey), selfCreated);
         return subscribe(request, AbstractKtWebsocketNotificationHandler.TRADES,
                 userKey.getUserId(), userKey, listener);
     }
 
     @Override
     public CompletableFuture<U> subscribeToItems(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rItems",
-                this.userStore.get(userKey), selfCreated);
+            final K userKey, final boolean selfCreated) {
+        final SubscriptionRequestData<T> request = this.subscriptionRequestDataFactory
+                .createSubscriptionRequestData("rItems", this.userStore.get(userKey), selfCreated);
         return subscribe(request, AbstractKtWebsocketNotificationHandler.ITEMS, userKey.getUserId(),
                 userKey, listener);
     }
 
     @Override
     public CompletableFuture<U> subscribeToPayouts(final NotificationListener listener,
-            final T userKey, final boolean selfCreated) {
-        final SubscriptionRequestData request = new SubscriptionRequestData("rPayouts",
-                this.userStore.get(userKey), selfCreated);
+            final K userKey, final boolean selfCreated) {
+        final SubscriptionRequestData<T> request = this.subscriptionRequestDataFactory
+                .createSubscriptionRequestData("rPayouts", this.userStore.get(userKey),
+                        selfCreated);
         return subscribe(request, AbstractKtWebsocketNotificationHandler.PAYOUTS,
                 userKey.getUserId(), userKey, listener);
     }
 
     @Override
     public CompletableFuture<U> subscribeToOrderbook(final NotificationListener listener) {
-        final SubscriptionRequestData request = new SubscriptionRequestData(
+        final SubscriptionRequestData<T> request = new SubscriptionRequestData<>(
                 AbstractKtWebsocketNotificationHandler.ORDERBOOK);
         return subscribe(request, AbstractKtWebsocketNotificationHandler.ORDERBOOK, null, null,
                 listener);
@@ -198,7 +204,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
 
     @Override
     public CompletableFuture<U> subscribeToHistory(final NotificationListener listener) {
-        final SubscriptionRequestData request = new SubscriptionRequestData(
+        final SubscriptionRequestData<T> request = new SubscriptionRequestData<>(
                 AbstractKtWebsocketNotificationHandler.HISTORY);
         return subscribe(request, AbstractKtWebsocketNotificationHandler.HISTORY, null, null,
                 listener);
@@ -212,18 +218,17 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
     }
 
     protected class ChannelIdentifier {
-        private final String    channel;
-        private final TokenUser user;
+        private final String  channel;
+        private final User<T> user;
 
-        public ChannelIdentifier(final String channel, final TokenUser user) {
+        public ChannelIdentifier(final String channel, final User<T> user) {
             super();
             this.channel = channel;
             this.user = user;
         }
 
-        public ChannelIdentifier(final SubscriptionRequestData request) {
-            this(request.getChannel(),
-                    new TokenUser(request.getUid(), request.getTid(), request.getTkn()));
+        public ChannelIdentifier(final SubscriptionRequestData<T> request) {
+            this(request.getChannel(), request.getUser());
         }
 
         @Override
@@ -292,7 +297,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<T extends TokenUser
             return true;
         }
 
-        private AbstractKtWebsocketNotificationHandler<T, U> getOuterType() {
+        private AbstractKtWebsocketNotificationHandler<T, K, U> getOuterType() {
             return AbstractKtWebsocketNotificationHandler.this;
         }
     }

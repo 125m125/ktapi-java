@@ -1,20 +1,34 @@
 package de._125m125.kt.ktapi.websocket.okhttp;
 
-import de._125m125.kt.ktapi.core.KtNotificationManager;
+import java.io.File;
+
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.core.users.TokenUserKey;
+import de._125m125.kt.ktapi.core.users.User;
+import de._125m125.kt.ktapi.core.users.UserKey;
+import de._125m125.kt.ktapi.retrofitRequester.builderModifier.ClientCertificateAdder;
+import de._125m125.kt.ktapi.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
+import de._125m125.kt.ktapi.websocket.events.listeners.AbstractKtWebsocketNotificationHandler;
 import de._125m125.kt.ktapi.websocket.events.listeners.AutoReconnectionHandler;
 import de._125m125.kt.ktapi.websocket.events.listeners.KtWebsocketNotificationHandler;
 import de._125m125.kt.ktapi.websocket.events.listeners.OfflineMessageHandler;
 import de._125m125.kt.ktapi.websocket.events.listeners.SessionHandler;
+import okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient.Builder;
 
 public class Example {
     public static void main(final String[] args) throws InterruptedException {
-        final TokenUser user = new TokenUser("1d0tat5", "3tdsgkl", "38r9l9i94qpdl");
-        final KtOkHttpWebsocket ws = new KtOkHttpWebsocket("wss://kt.125m125.de/api/websocket");
-        final KtNotificationManager<TokenUserKey, ?> manager = new KtWebsocketNotificationHandler<>(
+        final ClientModifier createUnchecked = ClientCertificateAdder.createUnchecked(new File(
+                "/home/fabian/workspace/kadcontradev2/../certificateHelper/certificate2.p12"),
+                "a".toCharArray());
+        final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        final Builder modify = createUnchecked.modify(clientBuilder);
+
+        final TokenUser user = new TokenUser("1d0tat", "3tdsgkl", "38r9l9i94qpdl");
+        final KtOkHttpWebsocket ws = new KtOkHttpWebsocket("wss://kt.125m125.de/api/websocket",
+                modify.build());
+        final AbstractKtWebsocketNotificationHandler<? extends User<?>, ? extends UserKey<?>, ?> manager = new KtWebsocketNotificationHandler<>(
                 new KtUserStore(user));
         KtWebsocketManager.builder(ws).addDefaultParsers().addListener(new OfflineMessageHandler())
                 .addListener(new SessionHandler()).addListener(manager)

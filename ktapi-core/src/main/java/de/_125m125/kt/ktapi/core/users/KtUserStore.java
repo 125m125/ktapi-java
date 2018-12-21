@@ -14,7 +14,7 @@ public class KtUserStore {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends User<T>> T add(final User<T> user) {
+    public <T extends User<?>> T add(final T user) {
         return (T) this.users.put(user.getKey().getIdentifier(), user);
     }
 

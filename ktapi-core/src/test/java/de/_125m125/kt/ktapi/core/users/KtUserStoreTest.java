@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class KtUserStoreTest {
 
-    private TokenUser       initialUserA;
+    private AbstractTokenUser       initialUserA;
     private CertificateUser initialUserB;
 
     private KtUserStore     uut;
@@ -33,14 +33,14 @@ public class KtUserStoreTest {
 
     @Test
     public void testAddUser() {
-        final TokenUser newUser = new TokenUser("2", "3", "4");
+        final AbstractTokenUser newUser = new TokenUser("2", "3", "4");
         assertNull(this.uut.add(newUser));
         assertEquals(newUser, this.uut.get(newUser.getKey(), TokenUserKey.class));
     }
 
     @Test
     public void testReplaceUser() {
-        final TokenUser newUser = new TokenUser("1", "2", "4");
+        final AbstractTokenUser newUser = new TokenUser("1", "2", "4");
         assertEquals(this.initialUserA, this.uut.add(newUser));
         assertEquals(newUser, this.uut.get(newUser.getKey(), TokenUserKey.class));
     }
@@ -72,9 +72,9 @@ public class KtUserStoreTest {
 
     @Test
     public void testGetByIdUserIdentifierWithMultipleMatches() {
-        final TokenUser user = new TokenUser("1", "3", "4");
+        final AbstractTokenUser user = new TokenUser("1", "3", "4");
         this.uut.add(user);
-        final TokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:1:",
+        final AbstractTokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:1:",
                 TokenUserKey.class);
         assertNotNull(result);
         assertTrue(result.equals(this.initialUserA) || result.equals(user));
@@ -82,7 +82,7 @@ public class KtUserStoreTest {
 
     @Test
     public void testGetUnknownUserByIdUserIdentifier() {
-        final TokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:2:",
+        final AbstractTokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:2:",
                 TokenUserKey.class);
         assertNull(result);
     }

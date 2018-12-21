@@ -17,5 +17,9 @@
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-websocket</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-retrofitRequester</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -33,27 +33,27 @@ import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
 
     @Rule
-    public MockitoRule                                                rule        = MockitoJUnit
+    public MockitoRule                                                           rule        = MockitoJUnit
             .rule();
 
-    protected final TokenUser                                         knownUser   = new TokenUser(
+    protected final TokenUser                                                    knownUser   = new TokenUser(
             "1", "2", "4");
-    protected final TokenUser                                         knownUser2  = new TokenUser(
+    protected final TokenUser                                                    knownUser2  = new TokenUser(
             "1", "3", "5");
-    protected final TokenUser                                         knownUser3  = new TokenUser(
+    protected final TokenUser                                                    knownUser3  = new TokenUser(
             "2", "3", "4");
-    protected final TokenUser                                         unknownUser = new TokenUser(
+    protected final TokenUser                                                    unknownUser = new TokenUser(
             "8", "16", "32");
 
     @Mock
-    protected KtWebsocketManager                                      manager;
+    protected KtWebsocketManager                                                 manager;
 
     @Mock
-    protected Logger                                                  logger;
+    protected Logger                                                             logger;
 
-    protected KtUserStore                                             store;
+    protected KtUserStore                                                        store;
 
-    protected AbstractKtWebsocketNotificationHandler<TokenUserKey, T> uut;
+    protected AbstractKtWebsocketNotificationHandler<TokenUser, TokenUserKey, T> uut;
 
     @Before
     public void beforeKtWebsocketNotificationHandlerTestHelper() {
@@ -75,7 +75,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         this.uut.disconnect();
     }
 
-    protected abstract AbstractKtWebsocketNotificationHandler<TokenUserKey, T> createNotificationListener(
+    protected abstract AbstractKtWebsocketNotificationHandler<TokenUser, TokenUserKey, T> createNotificationListener(
             KtUserStore store, VerificationMode mode);
 
     @Test
@@ -87,7 +87,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         details.put("source", "history");
         details.put("key", "");
         details.put("channel", "history");
-        final UpdateNotification updateNotification = new UpdateNotification(false, 0, "0",
+        final UpdateNotification<?> updateNotification = new UpdateNotification<>(false, 0, "0",
                 details);
 
         this.uut.onMessageReceived(
@@ -106,7 +106,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         details.put("source", "history");
         details.put("key", "");
         details.put("channel", "history");
-        final UpdateNotification updateNotification = new UpdateNotification(false, 0, "0",
+        final UpdateNotification<?> updateNotification = new UpdateNotification<>(false, 0, "0",
                 details);
 
         this.uut.onMessageReceived(
@@ -125,7 +125,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         details.put("source", "history");
         details.put("key", "");
         details.put("channel", "history");
-        final UpdateNotification updateNotification = new UpdateNotification(false, 0, "0",
+        final UpdateNotification<?> updateNotification = new UpdateNotification<>(false, 0, "0",
                 details);
 
         this.uut.onMessageReceived(
@@ -144,7 +144,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         details.put("source", "history");
         details.put("key", "");
         details.put("channel", "history");
-        final UpdateNotification updateNotification = new UpdateNotification(false, 0, "0",
+        final UpdateNotification<?> updateNotification = new UpdateNotification<>(false, 0, "0",
                 details);
 
         this.uut.onMessageReceived(
@@ -170,7 +170,7 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         details.put("source", "messages");
         details.put("key", "1");
         details.put("channel", "rMessages");
-        final UpdateNotification updateNotification = new UpdateNotification(false, 1, "1",
+        final UpdateNotification<?> updateNotification = new UpdateNotification<>(false, 1, "1",
                 details);
 
         this.uut.onMessageReceived(
@@ -201,7 +201,8 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         details.put("source", "items");
         details.put("key", "1");
         details.put("channel", "rItems");
-        final UpdateNotification updateNotification = new UpdateNotification(true, 1, "1", details);
+        final UpdateNotification<?> updateNotification = new UpdateNotification<>(true, 1, "1",
+                details);
 
         this.uut.onMessageReceived(
                 new MessageReceivedEvent(new WebsocketStatus(true, true), updateNotification));

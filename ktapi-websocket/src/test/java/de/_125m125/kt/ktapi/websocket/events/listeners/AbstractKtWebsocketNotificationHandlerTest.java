@@ -30,7 +30,8 @@ import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
 import de._125m125.kt.ktapi.websocket.requests.RequestMessage;
-import de._125m125.kt.ktapi.websocket.requests.SubscriptionRequestData;
+import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestData;
+import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestDataFactory;
 import de._125m125.kt.ktapi.websocket.responses.ResponseMessage;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -39,14 +40,14 @@ import junitparams.naming.TestCaseName;
 @RunWith(JUnitParamsRunner.class)
 public class AbstractKtWebsocketNotificationHandlerTest {
     private static final class AbstrKtWebsocketNotificationHandlerExt
-            extends AbstractKtWebsocketNotificationHandler<TokenUserKey, NotificationListener> {
+            extends AbstractKtWebsocketNotificationHandler<TokenUser, NotificationListener> {
 
         Set<NotificationListener> listeners = new HashSet<>();
 
         private AbstrKtWebsocketNotificationHandlerExt(final Logger logger,
                 final KtUserStore userStore, final VerificationMode mode,
                 final KtWebsocketManager manager) {
-            super(logger, userStore, mode);
+            super(logger, userStore, mode, new SubscriptionRequestDataFactory());
             onWebsocketManagerCreated(new WebsocketManagerCreatedEvent(manager));
         }
 
@@ -59,8 +60,8 @@ public class AbstractKtWebsocketNotificationHandlerTest {
         }
 
         @Override
-        protected void addListener(final SubscriptionRequestData request, final String source,
-                final String key, final NotificationListener listener,
+        protected void addListener(final SubscriptionRequestData<TokenUser> request,
+                final String source, final String key, final NotificationListener listener,
                 final CompletableFuture<NotificationListener> result) {
             this.listeners.add(listener);
             result.complete(listener);
@@ -115,10 +116,10 @@ public class AbstractKtWebsocketNotificationHandlerTest {
     @Parameters(method = "multipleSubscribeParameters")
     @TestCaseName("testMultipleSubscribes: {0}")
     public void testMultipleSubscribes(final String name, final VerificationMode mode,
-            final BiFunction<AbstractKtWebsocketNotificationHandler<TokenUserKey, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> subscribe1,
-            final BiFunction<AbstractKtWebsocketNotificationHandler<TokenUserKey, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> subscribe2,
+            final BiFunction<AbstractKtWebsocketNotificationHandler<TokenUser, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> subscribe1,
+            final BiFunction<AbstractKtWebsocketNotificationHandler<TokenUser, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> subscribe2,
             final boolean success1, final boolean success2, final int requestCount) {
-        final AbstractKtWebsocketNotificationHandler<TokenUserKey, NotificationListener> localUut = new AbstrKtWebsocketNotificationHandlerExt(
+        final AbstractKtWebsocketNotificationHandler<TokenUser, NotificationListener> localUut = new AbstrKtWebsocketNotificationHandlerExt(
                 this.logger, this.store, mode, this.manager);
 
         doAnswer(invocation -> {
@@ -198,12 +199,12 @@ public class AbstractKtWebsocketNotificationHandlerTest {
         };
     }
 
-    private BiFunction<AbstractKtWebsocketNotificationHandler<TokenUserKey, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> createSubscribeMessages(
+    private BiFunction<AbstractKtWebsocketNotificationHandler<TokenUser, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> createSubscribeMessages(
             final TokenUserKey key, final boolean selfCreated) {
         return (k, l) -> k.subscribeToMessages(l, key, selfCreated);
     }
 
-    private BiFunction<AbstractKtWebsocketNotificationHandler<TokenUserKey, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> createSubscribeItems(
+    private BiFunction<AbstractKtWebsocketNotificationHandler<TokenUser, NotificationListener>, TestListener, CompletableFuture<NotificationListener>> createSubscribeItems(
             final TokenUserKey key, final boolean selfCreated) {
         return (k, l) -> k.subscribeToItems(l, key, selfCreated);
     }

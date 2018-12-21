@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
+import de._125m125.kt.ktapi.core.users.TokenUser;
 import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.websocket.events.listeners.AbstractKtWebsocketNotificationHandler;
 import de._125m125.kt.ktapi.websocket.events.listeners.KtWebsocketNotificationHandlerTestHelper;
@@ -19,14 +20,14 @@ public class ReactiveKtWebsocketNotificationHandlerTest
         extends KtWebsocketNotificationHandlerTestHelper<Disposable> {
 
     @Override
-    protected AbstractKtWebsocketNotificationHandler<TokenUserKey, Disposable> createNotificationListener(
+    protected AbstractKtWebsocketNotificationHandler<TokenUser, TokenUserKey, Disposable> createNotificationListener(
             final KtUserStore store, final VerificationMode mode) {
         return new ReactiveKtWebsocketNotificationHandler<>(store, mode);
     }
 
     @Test
     public void testGetPayoutObservableForId() throws Exception {
-        final ReactiveKtWebsocketNotificationHandler<TokenUserKey> uut = new ReactiveKtWebsocketNotificationHandler<>(
+        final ReactiveKtWebsocketNotificationHandler<TokenUser, TokenUserKey> uut = new ReactiveKtWebsocketNotificationHandler<>(
                 this.store, VerificationMode.UNKNOWN_TKN);
         final TestObserver<Payout> subscriber = new TestObserver<>();
         final Map<String, String> details = new HashMap<>();
