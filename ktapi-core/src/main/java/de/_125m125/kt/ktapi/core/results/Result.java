@@ -22,7 +22,7 @@ public abstract class Result<T> {
         this.cdl.countDown();
     }
 
-    protected synchronized void setErrorResult(final int status, final String errorMessage,
+    protected synchronized void setFailureResult(final int status, final String errorMessage,
             final String humanReadableErrorMessage) {
         if (this.cdl.getCount() == 0) {
             throw new IllegalStateException("This result is already populated");
@@ -33,7 +33,7 @@ public abstract class Result<T> {
         this.cdl.countDown();
     }
 
-    protected synchronized void setFailureResult(final Throwable t) {
+    protected synchronized void setErrorResult(final Throwable t) {
         if (this.cdl.getCount() == 0) {
             throw new IllegalStateException("This result is already populated");
         }
@@ -41,7 +41,7 @@ public abstract class Result<T> {
         this.cdl.countDown();
     }
 
-    protected synchronized void setErrorResult(final ErrorResponse errorResponse) {
+    protected synchronized void setFailureResult(final ErrorResponse errorResponse) {
         if (this.cdl.getCount() == 0) {
             throw new IllegalStateException("This result is already populated");
         }
@@ -76,8 +76,9 @@ public abstract class Result<T> {
         return this.successful;
     }
 
-    public void addCallback(final Callback<T> callback) {
+    public Result<T> addCallback(final Callback<T> callback) {
         new CallbackResult<>(this, callback);
+        return this;
     }
 
     public void await() throws InterruptedException {

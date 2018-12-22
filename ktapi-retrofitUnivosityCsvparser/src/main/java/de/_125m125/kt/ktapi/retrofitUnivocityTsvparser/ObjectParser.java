@@ -1,6 +1,8 @@
 package de._125m125.kt.ktapi.retrofitUnivocityTsvparser;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -48,14 +50,17 @@ public class ObjectParser<T> implements RowProcessor {
     @Override
     public void rowProcessed(final String[] row, final ParsingContext context) {
         try {
-            final T result = this.clazz.newInstance();
+            final Constructor<T> constructor = this.clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            final T result = constructor.newInstance();
 
             for (final ParseableField<T> parseableField : this.fields) {
                 parseableField.apply(result, row);
             }
 
             this.parsedResults.add(result);
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+                | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
@@ -83,11 +88,7 @@ public class ObjectParser<T> implements RowProcessor {
         public void apply(final T target, final String[] fields)
                 throws IllegalArgumentException, IllegalAccessException {
             this.field.setAccessible(true);
-            try {
-                this.field.set(target, this.converter.apply(fields[this.colIndex]));
-            } finally {
-                this.field.setAccessible(false);
-            }
+            this.field.set(target, this.converter.apply(fields[this.colIndex]));
         }
     }
 }

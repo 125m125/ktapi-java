@@ -8,7 +8,7 @@ public class Permissions {
     private boolean rItems;
     private boolean rOrders;
 
-    public Permissions() {
+    protected Permissions() {
 
     }
 

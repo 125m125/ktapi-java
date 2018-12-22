@@ -1,5 +1,7 @@
 package de._125m125.kt.ktapi.core.entities;
 
+import java.util.Objects;
+
 import de._125m125.kt.ktapi.core.BUY_SELL;
 
 public class OrderBookEntry {
@@ -7,13 +9,13 @@ public class OrderBookEntry {
     private double price;
     private int    amount;
 
-    public OrderBookEntry() {
+    protected OrderBookEntry() {
         super();
     }
 
     public OrderBookEntry(final String type, final double price, final int amount) {
         super();
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         this.price = price;
         this.amount = amount;
     }

@@ -2,20 +2,21 @@ package de._125m125.kt.ktapi.core.entities;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Message {
     private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     private String                   timestamp;
     private String                   message;
 
-    public Message() {
+    protected Message() {
         super();
     }
 
     public Message(final String timestamp, final String message) {
         super();
-        this.timestamp = timestamp;
-        this.message = message;
+        this.timestamp = Objects.requireNonNull(timestamp);
+        this.message = message != null ? message : "";
     }
 
     public String getTimestamp() {

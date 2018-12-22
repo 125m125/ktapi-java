@@ -1,5 +1,7 @@
 package de._125m125.kt.ktapi.core.entities;
 
+import java.util.Objects;
+
 import de._125m125.kt.ktapi.core.BUY_SELL;
 
 public class Trade {
@@ -14,7 +16,7 @@ public class Trade {
     private int     toTakeI;
     private boolean cancelled;
 
-    public Trade() {
+    protected Trade() {
         super();
     }
 
@@ -24,8 +26,8 @@ public class Trade {
         super();
         this.id = id;
         this.buy = buySell;
-        this.materialId = materialId;
-        this.materialName = materialName;
+        this.materialId = Objects.requireNonNull(materialId);
+        this.materialName = materialName != null ? materialName : materialId;
         this.amount = amount;
         this.price = price;
         this.sold = sold;

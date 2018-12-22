@@ -194,4 +194,8 @@ public class KtRetrofitRequester implements KtRequester {
                 this.errorConverter);
     }
 
+    @Override
+    public Result<Long> ping() {
+        return new RetrofitResult<>(this.client.ping(), this.errorConverter);
+    }
 }

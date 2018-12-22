@@ -2,6 +2,7 @@ package de._125m125.kt.ktapi.core.entities;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class HistoryEntry {
     private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -14,14 +15,14 @@ public class HistoryEntry {
     private double                   unit_volume;
     private double                   dollar_volume;
 
-    public HistoryEntry() {
+    protected HistoryEntry() {
         super();
     }
 
-    public HistoryEntry(final String date, final double open, final double close, final double low, final double high,
+    public HistoryEntry(final String date, final double open, final double close, final Double low, final Double high,
             final double unit_value, final double dollar_value) {
         super();
-        this.date = date;
+        this.date = Objects.requireNonNull(date);
         this.open = open;
         this.close = close;
         this.low = low;

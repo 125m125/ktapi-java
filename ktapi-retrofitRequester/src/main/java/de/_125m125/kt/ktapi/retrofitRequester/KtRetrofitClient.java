@@ -100,4 +100,6 @@ public interface KtRetrofitClient {
     Call<WriteResult<Trade>> takeoutTrade(@Path("user") final String user,
             @Path("orderId") final long orderId, @Header("userKey") String String);
 
+    @GET("ping")
+    Call<Long> ping();
 }

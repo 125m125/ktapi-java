@@ -53,4 +53,6 @@ public interface KtRequester extends Closeable {
     public Result<WriteResult<Trade>> cancelTrade(UserKey userKey, long tradeId);
 
     public Result<WriteResult<Trade>> takeoutTrade(UserKey userKey, long tradeId);
+
+    public Result<Long> ping();
 }

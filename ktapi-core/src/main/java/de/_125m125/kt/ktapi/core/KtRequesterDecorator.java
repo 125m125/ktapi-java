@@ -118,4 +118,9 @@ public class KtRequesterDecorator implements KtRequester {
         return this.requester.takeoutTrade(userKey, tradeId);
     }
 
+    @Override
+    public Result<Long> ping() {
+        return this.requester.ping();
+    }
+
 }
