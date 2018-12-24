@@ -6,7 +6,7 @@
         <artifactId>ktapi</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
-    <artifactId>ktapi-okhttpWebsocket</artifactId>
+    <artifactId>ktapi-okhttpHelper</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -15,11 +15,7 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-okhttpHelper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-websocket</artifactId>
+            <artifactId>ktapi-core</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -18,10 +18,10 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
-import de._125m125.kt.ktapi.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi.retrofitRequester.builderModifier.RetrofitModifier;
+import de._125m125.kt.okhttp.helper.OkHttpClientBuilder;
+import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -34,30 +34,13 @@ public class KtRetrofitRequester implements KtRequester {
     public KtRetrofitRequester(final String url, final ClientModifier[] clientModifiers,
             final RetrofitModifier[] retrofitModifiers,
             final Converter<ResponseBody, ErrorResponse> errorConverter) {
+        this(url, new OkHttpClientBuilder(clientModifiers), retrofitModifiers, errorConverter);
+    }
+
+    public KtRetrofitRequester(final String url, final OkHttpClientBuilder clientBuilder,
+            final RetrofitModifier[] retrofitModifiers, final Converter<ResponseBody, ErrorResponse> errorConverter) {
         this.errorConverter = errorConverter;
 
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (clientModifiers != null) {
-            for (final ClientModifier clientModifier : clientModifiers) {
-                clientBuilder = clientModifier.modify(clientBuilder);
-            }
-        }
-        clientBuilder = clientBuilder.addInterceptor(chain -> {
-            final Request r = chain.request().newBuilder().removeHeader("userKey").build();
-            return chain.proceed(r);
-        });
-        clientBuilder = clientBuilder.addInterceptor((chain) -> {
-            Request request = chain.request();
-            if (request.method().equals("GET")) {
-                return chain.proceed(request);
-            }
-            if (request.header("content-type") != null) {
-                return chain.proceed(request);
-            }
-            request = request.newBuilder()
-                    .addHeader("content-type", "application/x-www-form-urlencoded").build();
-            return chain.proceed(request);
-        });
         this.okHttpClient = clientBuilder.build();
 
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder().baseUrl(url);
@@ -66,14 +49,13 @@ public class KtRetrofitRequester implements KtRequester {
                 retrofitBuilder = retrofitModifier.modify(retrofitBuilder);
             }
         }
-        this.client = retrofitBuilder.client(this.okHttpClient).build()
-                .create(KtRetrofitClient.class);
+        this.client = retrofitBuilder.client(this.getOkHttpClient()).build().create(KtRetrofitClient.class);
     }
 
     @Override
     public void close() {
-        this.okHttpClient.connectionPool().evictAll();
-        this.okHttpClient.dispatcher().executorService().shutdown();
+        this.getOkHttpClient().connectionPool().evictAll();
+        this.getOkHttpClient().dispatcher().executorService().shutdown();
     }
 
     @Override
@@ -197,5 +179,9 @@ public class KtRetrofitRequester implements KtRequester {
     @Override
     public Result<Long> ping() {
         return new RetrofitResult<>(this.client.ping(), this.errorConverter);
+    }
+
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
     }
 }

@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester.builderModifier;
+package de._125m125.kt.okhttp.helper.modifier;
 
 import java.io.File;
 import java.io.FileInputStream;

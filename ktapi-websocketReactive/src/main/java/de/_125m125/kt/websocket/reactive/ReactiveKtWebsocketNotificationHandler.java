@@ -147,8 +147,8 @@ public class ReactiveKtWebsocketNotificationHandler
 
     public Observable<Trade> getTradeObservable(final long tradeId) {
         return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class)
-                .filter(n -> tradeId == n.getId()).takeUntil(n -> n.getAmount() > n.getSold()
-                        || n.getToTakeItems() > 0 || n.getToTakeMoney() > 0);
+                .filter(n -> tradeId == n.getId()).takeUntil(n -> n.getAmount() == n.getSold()
+                        && n.getToTakeItems() == 0 && n.getToTakeMoney() == 0);
     }
 
     private <U> Observable<U> getObservable(final String type, final Class<U> t) {

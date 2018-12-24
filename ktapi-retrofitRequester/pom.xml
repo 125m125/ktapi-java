@@ -18,6 +18,10 @@
             <artifactId>ktapi-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-okhttpHelper</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-gson</artifactId>
             <version>2.5.0</version>
