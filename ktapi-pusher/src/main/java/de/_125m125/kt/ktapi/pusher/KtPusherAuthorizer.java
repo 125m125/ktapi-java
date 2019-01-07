@@ -8,12 +8,12 @@ import de._125m125.kt.ktapi.core.entities.PusherResult;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
-public class KtPusherAuthorizer<T extends UserKey<?>> implements Authorizer {
+public class KtPusherAuthorizer implements Authorizer {
 
-    private final T              userKey;
-    private final KtRequester<T> requester;
+    private final UserKey     userKey;
+    private final KtRequester requester;
 
-    public KtPusherAuthorizer(final T userKey, final KtRequester<T> requester) {
+    public KtPusherAuthorizer(final UserKey userKey, final KtRequester requester) {
         this.userKey = userKey;
         this.requester = requester;
     }

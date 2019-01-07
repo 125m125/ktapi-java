@@ -1,6 +1,8 @@
 package de._125m125.kt.ktapi.core.entities;
 
 public class Permissions {
+    public static final Permissions NO_PERMISSIONS = new Permissions(false, false, false, false, false, false);
+
     private boolean rPayouts;
     private boolean wOrders;
     private boolean rMessages;

@@ -35,8 +35,8 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
 /**
  *
  */
-public class KtCachingRequesterIml<U extends UserKey<?>>
-        implements KtRequester<U>, NotificationListener, KtCachingRequester<U> {
+public class KtCachingRequesterIml
+        implements KtRequester, NotificationListener, KtCachingRequester {
 
     public static final int                 CACHE_HIT_STATUS_CODE = 299;
 
@@ -48,17 +48,17 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     private static final String             HISTORY               = "history-";
 
     private final Map<String, CacheData<?>> cache;
-    private final KtRequester<U>            requester;
-    private KtNotificationManager<U>        ktNotificationManager;
+    private final KtRequester               requester;
+    private final KtNotificationManager<?>  ktNotificationManager;
     private final TimestampedObjectFactory  factory;
 
-    public KtCachingRequesterIml(final KtRequester<U> requester,
-            final KtNotificationManager<U> ktNotificationManager) {
+    public KtCachingRequesterIml(final KtRequester requester,
+            final KtNotificationManager<?> ktNotificationManager) {
         this(requester, ktNotificationManager, null);
     }
 
-    public KtCachingRequesterIml(final KtRequester<U> requester,
-            final KtNotificationManager<U> ktNotificationManager,
+    public KtCachingRequesterIml(final KtRequester requester,
+            final KtNotificationManager<?> ktNotificationManager,
             final TimestampedObjectFactory factory) {
         this.ktNotificationManager = ktNotificationManager;
         this.cache = new ConcurrentHashMap<>();
@@ -77,22 +77,22 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public void invalidateMessages(final U userKey) {
+    public void invalidateMessages(final UserKey userKey) {
         invalidate(KtCachingRequesterIml.MESSAGES + userKey.getUserId());
     }
 
     @Override
-    public void invalidatePayouts(final U userKey) {
+    public void invalidatePayouts(final UserKey userKey) {
         invalidate(KtCachingRequesterIml.PAYOUTS + userKey.getUserId());
     }
 
     @Override
-    public void invalidateTrades(final U userKey) {
+    public void invalidateTrades(final UserKey userKey) {
         invalidate(KtCachingRequesterIml.TRADES + userKey.getUserId());
     }
 
     @Override
-    public void invalidateItemList(final U userKey) {
+    public void invalidateItemList(final UserKey userKey) {
         invalidate(KtCachingRequesterIml.ITEMS + userKey.getUserId());
     }
 
@@ -114,22 +114,22 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public boolean isValidMessageList(final U userKey, final List<Message> messages) {
+    public boolean isValidMessageList(final UserKey userKey, final List<Message> messages) {
         return isValid(KtCachingRequesterIml.MESSAGES + userKey.getUserId(), messages);
     }
 
     @Override
-    public boolean isValidPayoutList(final U userKey, final List<Payout> payouts) {
+    public boolean isValidPayoutList(final UserKey userKey, final List<Payout> payouts) {
         return isValid(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(), payouts);
     }
 
     @Override
-    public boolean isValidTradeList(final U userKey, final List<Trade> trades) {
+    public boolean isValidTradeList(final UserKey userKey, final List<Trade> trades) {
         return isValid(KtCachingRequesterIml.TRADES + userKey.getUserId(), trades);
     }
 
     @Override
-    public boolean isValidItemList(final U userKey, final List<Item> items) {
+    public boolean isValidItemList(final UserKey userKey, final List<Item> items) {
         return isValid(KtCachingRequesterIml.ITEMS + userKey.getUserId(), items);
     }
 
@@ -179,13 +179,13 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<Permissions> getPermissions(final U userKey) {
+    public Result<Permissions> getPermissions(final UserKey userKey) {
         // TODO caching?
         return this.requester.getPermissions(userKey);
     }
 
     @Override
-    public Result<List<Item>> getItems(final U userKey) {
+    public Result<List<Item>> getItems(final UserKey userKey) {
         this.ktNotificationManager.subscribeToItems(this, userKey, false);
         this.ktNotificationManager.subscribeToItems(this, userKey, true);
         return getAllOrFetch(KtCachingRequesterIml.ITEMS + userKey.getUserId(),
@@ -193,7 +193,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<Item> getItem(final U userKey, final String itemid) {
+    public Result<Item> getItem(final UserKey userKey, final String itemid) {
         this.ktNotificationManager.subscribeToItems(this, userKey, false);
         this.ktNotificationManager.subscribeToItems(this, userKey, true);
         return getOrFetch(KtCachingRequesterIml.ITEMS + userKey.getUserId(),
@@ -201,7 +201,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<List<Message>> getMessages(final U userKey) {
+    public Result<List<Message>> getMessages(final UserKey userKey) {
         this.ktNotificationManager.subscribeToMessages(this, userKey, false);
         this.ktNotificationManager.subscribeToMessages(this, userKey, true);
         return getAllOrFetch(KtCachingRequesterIml.MESSAGES + userKey.getUserId(),
@@ -209,7 +209,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final U userKey) {
+    public Result<List<Payout>> getPayouts(final UserKey userKey) {
         this.ktNotificationManager.subscribeToPayouts(this, userKey, false);
         this.ktNotificationManager.subscribeToPayouts(this, userKey, true);
         return getAllOrFetch(KtCachingRequesterIml.PAYOUTS + userKey.getUserId(),
@@ -217,7 +217,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final U userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
             final String itemid, final String amount) {
         final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
                 itemid, amount);
@@ -227,7 +227,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final U userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userKey, payoutid);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
                 KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
@@ -235,7 +235,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final U userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userKey, payoutid);
         result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
                 KtCachingRequesterIml.PAYOUTS + userKey.getUserId()));
@@ -243,13 +243,13 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final U userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
             final String socketId) {
         return this.requester.authorizePusher(userKey, channel_name, socketId);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final U userKey) {
+    public Result<List<Trade>> getTrades(final UserKey userKey) {
         this.ktNotificationManager.subscribeToTrades(this, userKey, false);
         this.ktNotificationManager.subscribeToTrades(this, userKey, true);
         return getAllOrFetch(KtCachingRequesterIml.TRADES + userKey.getUserId(),
@@ -257,7 +257,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final U userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
             final String item, final int amount, final String pricePerItem) {
         final Result<WriteResult<Trade>> result = this.requester.createTrade(userKey, mode, item,
                 amount, pricePerItem);
@@ -267,7 +267,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final U userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         final Result<WriteResult<Trade>> result = this.requester.cancelTrade(userKey, tradeId);
         result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
                 KtCachingRequesterIml.TRADES + userKey.getUserId()));
@@ -275,7 +275,7 @@ public class KtCachingRequesterIml<U extends UserKey<?>>
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final U userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         final Result<WriteResult<Trade>> result = this.requester.takeoutTrade(userKey, tradeId);
         result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
                 KtCachingRequesterIml.TRADES + userKey.getUserId()));

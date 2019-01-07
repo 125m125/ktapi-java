@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester.builderModifier;
+package de._125m125.kt.okhttp.helper.modifier;
 
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient.Builder;
@@ -34,6 +34,11 @@ public class CertificatePinnerAdder implements ClientModifier {
             builder.certificatePinner(this.certificatePinner);
         }
         return builder;
+    }
+
+    @Override
+    public boolean conflictsWith(final ClientModifier modifier) {
+        return modifier instanceof CertificatePinnerAdder;
     }
 
     public static class CertificatePinnerAdderCertificate {

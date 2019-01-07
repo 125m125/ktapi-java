@@ -28,6 +28,7 @@
     </prerequisites>
     <modules>
         <module>ktapi-core</module>
+        <module>ktapi-okHttpHelper</module>
         <module>ktapi-okhttpWebsocket</module>
         <module>ktapi-pusher</module>
         <module>ktapi-report</module>
@@ -36,6 +37,7 @@
         <module>ktapi-retrofitUnivosityCsvparser</module>
         <module>ktapi-smartCache</module>
         <module>ktapi-websocket</module>
+        <module>ktapi-websocketReactive</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/125m125/ktapi.git</connection>
@@ -60,6 +62,11 @@
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-core</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-okhttpHelper</artifactId>
                 <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -98,9 +105,20 @@
                 <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-websocketReactive</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.25</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-testUtils</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

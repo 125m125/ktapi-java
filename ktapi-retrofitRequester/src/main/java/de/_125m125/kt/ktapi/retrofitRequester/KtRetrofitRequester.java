@@ -18,15 +18,15 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
-import de._125m125.kt.ktapi.retrofitRequester.builderModifier.ClientModifier;
 import de._125m125.kt.ktapi.retrofitRequester.builderModifier.RetrofitModifier;
+import de._125m125.kt.okhttp.helper.OkHttpClientBuilder;
+import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
-public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T> {
+public class KtRetrofitRequester implements KtRequester {
     private final KtRetrofitClient                       client;
     private final Converter<ResponseBody, ErrorResponse> errorConverter;
     private final OkHttpClient                           okHttpClient;
@@ -34,30 +34,13 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
     public KtRetrofitRequester(final String url, final ClientModifier[] clientModifiers,
             final RetrofitModifier[] retrofitModifiers,
             final Converter<ResponseBody, ErrorResponse> errorConverter) {
+        this(url, new OkHttpClientBuilder(clientModifiers), retrofitModifiers, errorConverter);
+    }
+
+    public KtRetrofitRequester(final String url, final OkHttpClientBuilder clientBuilder,
+            final RetrofitModifier[] retrofitModifiers, final Converter<ResponseBody, ErrorResponse> errorConverter) {
         this.errorConverter = errorConverter;
 
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (clientModifiers != null) {
-            for (final ClientModifier clientModifier : clientModifiers) {
-                clientBuilder = clientModifier.modify(clientBuilder);
-            }
-        }
-        clientBuilder = clientBuilder.addInterceptor(chain -> {
-            final Request r = chain.request().newBuilder().removeHeader("userKey").build();
-            return chain.proceed(r);
-        });
-        clientBuilder = clientBuilder.addInterceptor((chain) -> {
-            Request request = chain.request();
-            if (request.method().equals("GET")) {
-                return chain.proceed(request);
-            }
-            if (request.header("content-type") != null) {
-                return chain.proceed(request);
-            }
-            request = request.newBuilder()
-                    .addHeader("content-type", "application/x-www-form-urlencoded").build();
-            return chain.proceed(request);
-        });
         this.okHttpClient = clientBuilder.build();
 
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder().baseUrl(url);
@@ -66,14 +49,13 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
                 retrofitBuilder = retrofitModifier.modify(retrofitBuilder);
             }
         }
-        this.client = retrofitBuilder.client(this.okHttpClient).build()
-                .create(KtRetrofitClient.class);
+        this.client = retrofitBuilder.client(this.getOkHttpClient()).build().create(KtRetrofitClient.class);
     }
 
     @Override
     public void close() {
-        this.okHttpClient.connectionPool().evictAll();
-        this.okHttpClient.dispatcher().executorService().shutdown();
+        this.getOkHttpClient().connectionPool().evictAll();
+        this.getOkHttpClient().dispatcher().executorService().shutdown();
     }
 
     @Override
@@ -104,91 +86,91 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
     }
 
     @Override
-    public Result<Permissions> getPermissions(final T userKey) {
+    public Result<Permissions> getPermissions(final UserKey userKey) {
         return new RetrofitResult<>(
                 this.client.getPermissions(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Item>> getItems(final T userKey) {
+    public Result<List<Item>> getItems(final UserKey userKey) {
         return new RetrofitResult<>(
                 this.client.getItems(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<Item> getItem(final T userKey, final String itemid) {
+    public Result<Item> getItem(final UserKey userKey, final String itemid) {
         return new RetrofitResult<>(
                 this.client.getItem(userKey.getUserId(), itemid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Message>> getMessages(final T userKey) {
+    public Result<List<Message>> getMessages(final UserKey userKey) {
         return new RetrofitResult<>(
                 this.client.getMessages(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final T userKey) {
+    public Result<List<Payout>> getPayouts(final UserKey userKey) {
         return new RetrofitResult<>(
                 this.client.getPayouts(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
             final String itemid, final String amount) {
         return new RetrofitResult<>(this.client.createPayout(userKey.getUserId(), type.getComName(),
                 itemid, amount, userKey.getIdentifier()), this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         return new RetrofitResult<>(
                 this.client.cancelPayout(userKey.getUserId(), payoutid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         return new RetrofitResult<>(
                 this.client.takeoutPayout(userKey.getUserId(), payoutid, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
             final String socketId) {
         return new RetrofitResult<>(this.client.authorizePusher(userKey.getUserId(), channel_name,
                 socketId, userKey.getIdentifier()), this.errorConverter);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final T userKey) {
+    public Result<List<Trade>> getTrades(final UserKey userKey) {
         return new RetrofitResult<>(
                 this.client.getTrades(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
             final String item, final int amount, final String pricePerItem) {
         return new RetrofitResult<>(this.client.createTrade(userKey.getUserId(), mode, item, amount,
                 pricePerItem, userKey.getIdentifier()), this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final T userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         return new RetrofitResult<>(
                 this.client.cancelTrade(userKey.getUserId(), tradeId, userKey.getIdentifier()),
                 this.errorConverter);
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final T userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         return new RetrofitResult<>(
                 this.client.takeoutTrade(userKey.getUserId(), tradeId, userKey.getIdentifier()),
                 this.errorConverter);
@@ -197,5 +179,9 @@ public class KtRetrofitRequester<T extends UserKey<?>> implements KtRequester<T>
     @Override
     public Result<Long> ping() {
         return new RetrofitResult<>(this.client.ping(), this.errorConverter);
+    }
+
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
     }
 }

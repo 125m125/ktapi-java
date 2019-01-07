@@ -19,9 +19,10 @@ import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.core.users.TokenUserKey;
+import de._125m125.kt.ktapi.core.users.UserKey;
 
-public class PusherKt implements PrivateChannelEventListener, KtNotificationManager<TokenUserKey> {
+public class PusherKt
+        implements PrivateChannelEventListener, KtNotificationManager<NotificationListener> {
     private final Pusher                                 pusher;
 
     private final Map<String, Set<NotificationListener>> listeners     = new HashMap<>();
@@ -81,8 +82,7 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
     }
 
     public CompletableFuture<NotificationListener> subscribe(final String channel,
-            final String eventName,
-            final NotificationListener listener) {
+            final String eventName, final NotificationListener listener) {
         final CompletableFuture<NotificationListener> result = new CompletableFuture<>();
         try {
             final boolean subscribe;
@@ -112,13 +112,12 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToMessages(
-            final NotificationListener listener,
-            final TokenUserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTid() + "_rMessages";
+        final String channelName = "private-" + user.getUserId() + "_rMessages";
         if (selfCreated) {
             return subscribe(channelName.concat(".selfCreated"), "update", listener);
         } else {
@@ -128,13 +127,12 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToTrades(
-            final NotificationListener listener,
-            final TokenUserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTid() + "_rOrders";
+        final String channelName = "private-" + user.getUserId() + "_rOrders";
         if (selfCreated) {
             return subscribe(channelName.concat(".selfCreated"), "update", listener);
         } else {
@@ -144,13 +142,12 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToItems(
-            final NotificationListener listener,
-            final TokenUserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTid() + "_rItems";
+        final String channelName = "private-" + user.getUserId() + "_rItems";
         if (selfCreated) {
             return subscribe(channelName.concat(".selfCreated"), "update", listener);
         } else {
@@ -160,13 +157,12 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToPayouts(
-            final NotificationListener listener,
-            final TokenUserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
-        final String channelName = "private-" + user.getTid() + "_rPayouts";
+        final String channelName = "private-" + user.getUserId() + "_rPayouts";
         if (selfCreated) {
             return subscribe(channelName.concat(".selfCreated"), "update", listener);
         } else {
@@ -190,8 +186,7 @@ public class PusherKt implements PrivateChannelEventListener, KtNotificationMana
 
     @Override
     public CompletableFuture<NotificationListener>[] subscribeToAll(
-            final NotificationListener listener,
-            final TokenUserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");

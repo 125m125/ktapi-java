@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import com.google.gson.Gson;
 
+import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestData;
 import de._125m125.kt.ktapi.websocket.responses.ResponseMessage;
 
 public class RequestMessage {

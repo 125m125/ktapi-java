@@ -15,10 +15,10 @@ import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
-public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T> {
-    private final KtRequester<T> requester;
+public class KtRequesterDecorator implements KtRequester {
+    private final KtRequester requester;
 
-    public KtRequesterDecorator(final KtRequester<T> requester) {
+    public KtRequesterDecorator(final KtRequester requester) {
         this.requester = requester;
     }
 
@@ -46,32 +46,32 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<Permissions> getPermissions(final T userKey) {
+    public Result<Permissions> getPermissions(final UserKey userKey) {
         return this.requester.getPermissions(userKey);
     }
 
     @Override
-    public Result<List<Item>> getItems(final T userKey) {
+    public Result<List<Item>> getItems(final UserKey userKey) {
         return this.requester.getItems(userKey);
     }
 
     @Override
-    public Result<Item> getItem(final T userKey, final String itemid) {
+    public Result<Item> getItem(final UserKey userKey, final String itemid) {
         return this.requester.getItem(userKey, itemid);
     }
 
     @Override
-    public Result<List<Message>> getMessages(final T userKey) {
+    public Result<List<Message>> getMessages(final UserKey userKey) {
         return this.requester.getMessages(userKey);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final T userKey) {
+    public Result<List<Payout>> getPayouts(final UserKey userKey) {
         return this.requester.getPayouts(userKey);
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final T userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
             final String itemid, final String amount) {
         return this.requester.createPayout(userKey, type, itemid, amount);
     }
@@ -82,39 +82,39 @@ public class KtRequesterDecorator<T extends UserKey<?>> implements KtRequester<T
     }
 
     @Override
-    public Result<WriteResult<Payout>> cancelPayout(final T userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         return this.requester.cancelPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<WriteResult<Payout>> takeoutPayout(final T userKey, final long payoutid) {
+    public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         return this.requester.takeoutPayout(userKey, payoutid);
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final T userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
             final String socketId) {
         return this.requester.authorizePusher(userKey, channel_name, socketId);
     }
 
     @Override
-    public Result<List<Trade>> getTrades(final T userKey) {
+    public Result<List<Trade>> getTrades(final UserKey userKey) {
         return this.requester.getTrades(userKey);
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final T userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
             final String item, final int amount, final String pricePerItem) {
         return this.requester.createTrade(userKey, mode, item, amount, pricePerItem);
     }
 
     @Override
-    public Result<WriteResult<Trade>> cancelTrade(final T userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         return this.requester.cancelTrade(userKey, tradeId);
     }
 
     @Override
-    public Result<WriteResult<Trade>> takeoutTrade(final T userKey, final long tradeId) {
+    public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         return this.requester.takeoutTrade(userKey, tradeId);
     }
 

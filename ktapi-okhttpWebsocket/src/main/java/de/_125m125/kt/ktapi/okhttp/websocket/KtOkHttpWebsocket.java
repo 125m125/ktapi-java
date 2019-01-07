@@ -1,7 +1,8 @@
-package de._125m125.kt.ktapi.websocket.okhttp;
+package de._125m125.kt.ktapi.okhttp.websocket;
 
 import de._125m125.kt.ktapi.websocket.KtWebsocket;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
+import de._125m125.kt.okhttp.helper.OkHttpClientBuilder;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,7 +26,7 @@ public class KtOkHttpWebsocket implements KtWebsocket {
 
     /**
      * creates a new OkHttpWebsocket with the specified target url
-     * 
+     *
      * @param url
      *            the target url used when connection the websocket
      */
@@ -34,22 +35,21 @@ public class KtOkHttpWebsocket implements KtWebsocket {
     }
 
     /**
-     * creates a new OkHttpWebsocket with the specified target url and a
-     * provided client. <br>
+     * creates a new OkHttpWebsocket with the specified target url and a provided client. <br>
      * The Client will not be closed when the websocket exits.
-     * 
+     *
      * @param url
      *            the target url used when connection the websocket
      * @param client
      *            the client that is used for the websocket.
      */
-    public KtOkHttpWebsocket(final String url, final OkHttpClient client) {
+    public KtOkHttpWebsocket(final String url, final OkHttpClientBuilder clientBuilder) {
         this.url = url != null ? url : KtWebsocket.DEFAULT_SERVER_ENDPOINT_URI;
-        if (client != null) {
-            this.client = client;
+        if (clientBuilder != null) {
+            this.client = clientBuilder.build();
             this.externalClient = true;
         } else {
-            this.client = new OkHttpClient();
+            this.client = new OkHttpClientBuilder().build();
             this.externalClient = false;
         }
     }
@@ -103,7 +103,8 @@ public class KtOkHttpWebsocket implements KtWebsocket {
         }
 
         @Override
-        public void onFailure(final WebSocket webSocket, final Throwable t, final Response response) {
+        public void onFailure(final WebSocket webSocket, final Throwable t,
+                final Response response) {
             t.printStackTrace();
             new Thread(KtOkHttpWebsocket.this.manager::websocketDisconnected).start();
         }

@@ -2,16 +2,20 @@ package de._125m125.kt.ktapi.core.users;
 
 import java.io.File;
 
-public class CertificateUserKey extends UserKey<CertificateUser> {
+public class CertificateUserKey extends UserKey {
     private final File file;
 
     public CertificateUserKey(final String userId, final String path) {
-        super(userId);
-        this.file = new File(path);
+        this(userId, new File(path));
     }
 
     public CertificateUserKey(final String userId, final File file) {
-        super(userId);
+        this(userId, file, CertificateUser.class);
+    }
+
+    protected CertificateUserKey(final String userId, final File file,
+            final Class<? extends CertificateUser> clazz) {
+        super(userId, clazz);
         this.file = file;
     }
 

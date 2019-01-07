@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester.builderModifier;
+package de._125m125.kt.okhttp.helper.modifier;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,4 +106,8 @@ public class ClientCertificateAdder implements ClientModifier {
         return builder.sslSocketFactory(this.socketFactory, this.trustManager);
     }
 
+    @Override
+    public boolean conflictsWith(final ClientModifier modifier) {
+        return modifier instanceof ClientCertificateAdder;
+    }
 }

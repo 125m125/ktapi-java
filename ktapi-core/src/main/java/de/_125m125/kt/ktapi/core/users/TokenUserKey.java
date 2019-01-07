@@ -1,10 +1,16 @@
 package de._125m125.kt.ktapi.core.users;
 
-public class TokenUserKey extends UserKey<TokenUser> {
-    private final String tid;
+public class TokenUserKey extends UserKey {
 
-    public TokenUserKey(final String uid, final String tid) {
-        super(uid);
+    protected final String tid;
+
+    public TokenUserKey(final String userid, final String tid) {
+        this(userid, tid, TokenUser.class);
+    }
+
+    protected TokenUserKey(final String userid, final String tid,
+            final Class<? extends TokenUser> clazz) {
+        super(userid, clazz);
         this.tid = tid;
     }
 

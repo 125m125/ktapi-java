@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester.builderModifier;
+package de._125m125.kt.okhttp.helper.modifier;
 
 import java.io.IOException;
 
@@ -35,4 +35,11 @@ public class HeaderAdder implements ClientModifier {
         });
     }
 
+    @Override
+    public boolean conflictsWith(final ClientModifier modifier) {
+        if (!(modifier instanceof HeaderAdder)) {
+            return false;
+        }
+        return this.name.equals(((HeaderAdder) modifier).name);
+    }
 }

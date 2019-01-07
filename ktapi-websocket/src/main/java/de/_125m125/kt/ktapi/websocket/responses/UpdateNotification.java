@@ -4,11 +4,19 @@ import java.util.Map;
 
 import de._125m125.kt.ktapi.core.entities.Notification;
 
-public class UpdateNotification extends Notification {
+public class UpdateNotification<T> extends Notification {
+
+    protected T[] changedEntries;
 
     public UpdateNotification(final boolean selfCreated, final long uid, final String base32Uid,
             final Map<String, String> details) {
+        this(selfCreated, uid, base32Uid, details, null);
+    }
+
+    public UpdateNotification(final boolean selfCreated, final long uid, final String base32Uid,
+            final Map<String, String> details, final T[] changedEntries) {
         super(selfCreated, uid, base32Uid, "update", details);
+        this.changedEntries = changedEntries;
     }
 
     public String getSource() {
@@ -23,4 +31,11 @@ public class UpdateNotification extends Notification {
         return getDetails().get("channel");
     }
 
+    public boolean hasChangedEntries() {
+        return this.changedEntries != null && this.changedEntries.length > 0;
+    }
+
+    public T[] getChangedEntries() {
+        return this.changedEntries;
+    }
 }

@@ -25,72 +25,71 @@ public class KtUserStoreTest {
 
     @Test
     public void testRetrieveInitialUsers() {
-        assertEquals(this.initialUserA,
-                this.uut.get(new TokenUserKey("1", "2"), TokenUserKey.class));
+        assertEquals(this.initialUserA, this.uut.get(new TokenUserKey("1", "2"), TokenUser.class));
         assertEquals(this.initialUserB,
-                this.uut.get(this.initialUserB.getKey(), CertificateUserKey.class));
+                this.uut.get(this.initialUserB.getKey(), CertificateUser.class));
     }
 
     @Test
     public void testAddUser() {
         final TokenUser newUser = new TokenUser("2", "3", "4");
         assertNull(this.uut.add(newUser));
-        assertEquals(newUser, this.uut.get(newUser.getKey(), TokenUserKey.class));
+        assertEquals(newUser, this.uut.get(newUser.getKey(), TokenUser.class));
     }
 
     @Test
     public void testReplaceUser() {
         final TokenUser newUser = new TokenUser("1", "2", "4");
         assertEquals(this.initialUserA, this.uut.add(newUser));
-        assertEquals(newUser, this.uut.get(newUser.getKey(), TokenUserKey.class));
+        assertEquals(newUser, this.uut.get(newUser.getKey(), TokenUser.class));
     }
 
     @Test
     public void testClassIdentifier() {
         final CertificateUser user = new CertificateUser("1", "2", new char[] { 'a' });
-        assertNull(this.uut.get(user.getKey(), CertificateUserKey.class));
+        assertNull(this.uut.get(user.getKey(), CertificateUser.class));
         assertNull(this.uut.add(user));
     }
 
     @Test
     public void testGetByIdentifier() {
-        assertEquals(this.initialUserA, this.uut
-                .get("de._125m125.kt.ktapi.core.users.TokenUserKey:1:2", TokenUserKey.class));
+        assertEquals(this.initialUserA,
+                this.uut.get("de._125m125.kt.ktapi.core.users.TokenUser:1:2", TokenUser.class));
     }
 
     @Test
     public void testGetByIdentifierWithMismatchingType() {
-        assertNull(this.uut.get("de._125m125.kt.ktapi.core.users.TokenUserKey:1:2",
-                CertificateUserKey.class));
+        assertNull(this.uut.get("de._125m125.kt.ktapi.core.users.TokenUser:1:2",
+                CertificateUser.class));
     }
 
     @Test
     public void testGetByIdUserIdentifier() {
         assertEquals(this.initialUserA,
-                this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:1:", TokenUserKey.class));
+                this.uut.get("de._125m125.kt.ktapi.core.users.IdUser:1:", TokenUser.class));
     }
 
     @Test
     public void testGetByIdUserIdentifierWithMultipleMatches() {
         final TokenUser user = new TokenUser("1", "3", "4");
         this.uut.add(user);
-        final TokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:1:",
-                TokenUserKey.class);
+        final TokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUser:1:",
+                TokenUser.class);
         assertNotNull(result);
         assertTrue(result.equals(this.initialUserA) || result.equals(user));
     }
 
     @Test
     public void testGetUnknownUserByIdUserIdentifier() {
-        final TokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:2:",
-                TokenUserKey.class);
+        final TokenUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUser:2:",
+                TokenUser.class);
         assertNull(result);
     }
 
     @Test
     public void testGetUnknownUserKeyByIdUserIdentifier() {
         final IdUser result = this.uut.get("de._125m125.kt.ktapi.core.users.IdUserKey:1:",
-                IdUserKey.class);
+                IdUser.class);
         assertNull(result);
     }
 

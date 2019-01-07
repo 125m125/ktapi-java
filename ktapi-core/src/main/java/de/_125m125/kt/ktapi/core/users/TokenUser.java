@@ -1,19 +1,14 @@
 package de._125m125.kt.ktapi.core.users;
 
-public class TokenUser extends User<TokenUser> {
+public class TokenUser extends User {
 
-    private final String tokenId;
-    private final String token;
+    protected final String tokenId;
+    protected final String token;
 
     public TokenUser(final String userId, final String tokenId, final String token) {
         super(userId);
         this.tokenId = tokenId;
         this.token = token;
-    }
-
-    @Override
-    public TokenUserKey getKey() {
-        return new TokenUserKey(getUserId(), this.tokenId);
     }
 
     public String getTokenId() {
@@ -22,6 +17,11 @@ public class TokenUser extends User<TokenUser> {
 
     public String getToken() {
         return this.token;
+    }
+
+    @Override
+    public TokenUserKey getKey() {
+        return new TokenUserKey(getUserId(), this.tokenId);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package de._125m125.kt.ktapi.core.users;
 
-public abstract class User<T extends User<T>> {
+public abstract class User {
     private final String userId;
 
     public User(final String userId) {
@@ -11,7 +11,7 @@ public abstract class User<T extends User<T>> {
         return this.userId;
     }
 
-    public abstract UserKey<T> getKey();
+    public abstract UserKey getKey();
 
     @Override
     public int hashCode() {
@@ -32,7 +32,6 @@ public abstract class User<T extends User<T>> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        @SuppressWarnings("rawtypes")
         final User other = (User) obj;
         if (this.userId == null) {
             if (other.userId != null) {
