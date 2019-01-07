@@ -2,12 +2,15 @@ package de._125m125.kt.okhttp.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
+import de._125m125.kt.okhttp.helper.modifier.ContentTypeAdder;
+import de._125m125.kt.okhttp.helper.modifier.UserKeyRemover;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 public class OkHttpClientBuilder {
+
     private final List<ClientModifier> modifiers;
     private OkHttpClient               client;
 
@@ -19,6 +22,14 @@ public class OkHttpClientBuilder {
     }
 
     public OkHttpClientBuilder addModifier(final ClientModifier modifier) {
+        Objects.requireNonNull(modifier);
+        if (this.modifiers.contains(modifier)) {
+            return this;
+        }
+        if (hasConflictingModifier(modifier)) {
+            throw new IllegalArgumentException(
+                    "This builder already contains a unique modifier of type " + modifier.getClass());
+        }
         if (this.client != null) {
             throw new IllegalStateException("The client was already build. No more modifiers can be added.");
         }
@@ -26,26 +37,33 @@ public class OkHttpClientBuilder {
         return this;
     }
 
+    public boolean hasConflictingModifier(final ClientModifier modifier) {
+        return this.modifiers.stream().anyMatch(modifier::conflictsWith);
+    }
+
+    public OkHttpClientBuilder recommendedModifiers() {
+        return this;
+    }
+
+    public boolean hasModifier(final Class<? extends ClientModifier> clazz) {
+        return this.modifiers.stream().map(Object::getClass).anyMatch(clazz::equals);
+    }
+
     public OkHttpClient build() {
+        return build(null);
+    }
+
+    public OkHttpClient build(final Object referencer) {
+        if (!hasModifier(UserKeyRemover.class)) {
+            addModifier(new UserKeyRemover());
+        }
+        if (!hasModifier(ContentTypeAdder.class)) {
+            addModifier(new ContentTypeAdder());
+        }
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         for (final ClientModifier clientModifier : this.modifiers) {
             clientBuilder = clientModifier.modify(clientBuilder);
         }
-        clientBuilder = clientBuilder.addInterceptor(chain -> {
-            final Request r = chain.request().newBuilder().removeHeader("userKey").build();
-            return chain.proceed(r);
-        });
-        clientBuilder = clientBuilder.addInterceptor((chain) -> {
-            Request request = chain.request();
-            if (request.method().equals("GET")) {
-                return chain.proceed(request);
-            }
-            if (request.header("content-type") != null) {
-                return chain.proceed(request);
-            }
-            request = request.newBuilder().addHeader("content-type", "application/x-www-form-urlencoded").build();
-            return chain.proceed(request);
-        });
         return this.client = clientBuilder.build();
     }
 }

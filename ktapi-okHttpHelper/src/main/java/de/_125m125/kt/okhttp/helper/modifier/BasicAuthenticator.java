@@ -18,7 +18,7 @@ public class BasicAuthenticator extends HeaderAdder {
         }
         final TokenUser user = userStore.get(header, TokenUser.class);
         if (user == null) {
-            throw new IOException("user is not contained in the KtUserStore");
+            return null;
         }
         return "Basic " + Base64.getEncoder().encodeToString(
                 (user.getTokenId() + ":" + user.getToken()).getBytes(Charset.forName("UTF-8")));

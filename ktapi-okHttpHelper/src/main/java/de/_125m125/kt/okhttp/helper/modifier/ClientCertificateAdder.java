@@ -106,4 +106,8 @@ public class ClientCertificateAdder implements ClientModifier {
         return builder.sslSocketFactory(this.socketFactory, this.trustManager);
     }
 
+    @Override
+    public boolean conflictsWith(final ClientModifier modifier) {
+        return modifier instanceof ClientCertificateAdder;
+    }
 }

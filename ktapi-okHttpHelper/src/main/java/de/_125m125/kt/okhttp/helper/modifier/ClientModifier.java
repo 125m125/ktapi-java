@@ -4,4 +4,8 @@ import okhttp3.OkHttpClient;
 
 public interface ClientModifier {
     public OkHttpClient.Builder modify(OkHttpClient.Builder builder);
+
+    public default boolean conflictsWith(final ClientModifier modifier) {
+        return false;
+    }
 }

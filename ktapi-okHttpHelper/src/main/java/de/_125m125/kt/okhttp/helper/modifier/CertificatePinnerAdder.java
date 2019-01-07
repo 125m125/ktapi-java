@@ -36,6 +36,11 @@ public class CertificatePinnerAdder implements ClientModifier {
         return builder;
     }
 
+    @Override
+    public boolean conflictsWith(final ClientModifier modifier) {
+        return modifier instanceof CertificatePinnerAdder;
+    }
+
     public static class CertificatePinnerAdderCertificate {
         private final String   hostname;
         private final String[] value;

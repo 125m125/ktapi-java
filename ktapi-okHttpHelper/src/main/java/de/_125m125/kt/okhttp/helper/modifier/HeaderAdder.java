@@ -35,4 +35,11 @@ public class HeaderAdder implements ClientModifier {
         });
     }
 
+    @Override
+    public boolean conflictsWith(final ClientModifier modifier) {
+        if (!(modifier instanceof HeaderAdder)) {
+            return false;
+        }
+        return this.name.equals(((HeaderAdder) modifier).name);
+    }
 }
