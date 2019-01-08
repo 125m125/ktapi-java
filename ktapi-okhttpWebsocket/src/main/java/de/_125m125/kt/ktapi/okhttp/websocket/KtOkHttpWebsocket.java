@@ -11,11 +11,11 @@ import okhttp3.WebSocketListener;
 
 public class KtOkHttpWebsocket implements KtWebsocket {
 
-    private final String       url;
-    private final boolean      externalClient;
-    private final OkHttpClient client;
-    private WebSocket          ws;
-    private KtWebsocketManager manager;
+    private final String              url;
+    private final OkHttpClientBuilder clientBuilder;
+    private final OkHttpClient        client;
+    private WebSocket                 ws;
+    private KtWebsocketManager        manager;
 
     /**
      * creates a new OkHttpWebsocket
@@ -46,20 +46,17 @@ public class KtOkHttpWebsocket implements KtWebsocket {
     public KtOkHttpWebsocket(final String url, final OkHttpClientBuilder clientBuilder) {
         this.url = url != null ? url : KtWebsocket.DEFAULT_SERVER_ENDPOINT_URI;
         if (clientBuilder != null) {
-            this.client = clientBuilder.build();
-            this.externalClient = true;
+            this.clientBuilder = clientBuilder;
         } else {
-            this.client = new OkHttpClientBuilder().build();
-            this.externalClient = false;
+            this.clientBuilder = new OkHttpClientBuilder().recommendedModifiers();
         }
+        this.client = clientBuilder.build(this);
     }
 
     @Override
     public synchronized void close() {
         this.ws.close(1000, "client shutting down");
-        if (!this.externalClient) {
-            this.client.dispatcher().executorService().shutdown();
-        }
+        this.clientBuilder.close(this);
     }
 
     @Override

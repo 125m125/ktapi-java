@@ -30,18 +30,22 @@ public class KtRetrofitRequester implements KtRequester {
     private final KtRetrofitClient                       client;
     private final Converter<ResponseBody, ErrorResponse> errorConverter;
     private final OkHttpClient                           okHttpClient;
+    private final OkHttpClientBuilder                    clientBuilder;
 
     public KtRetrofitRequester(final String url, final ClientModifier[] clientModifiers,
             final RetrofitModifier[] retrofitModifiers,
             final Converter<ResponseBody, ErrorResponse> errorConverter) {
-        this(url, new OkHttpClientBuilder(clientModifiers), retrofitModifiers, errorConverter);
+        this(url, new OkHttpClientBuilder(clientModifiers).recommendedModifiers(),
+                retrofitModifiers, errorConverter);
     }
 
     public KtRetrofitRequester(final String url, final OkHttpClientBuilder clientBuilder,
-            final RetrofitModifier[] retrofitModifiers, final Converter<ResponseBody, ErrorResponse> errorConverter) {
+            final RetrofitModifier[] retrofitModifiers,
+            final Converter<ResponseBody, ErrorResponse> errorConverter) {
+        this.clientBuilder = clientBuilder;
         this.errorConverter = errorConverter;
 
-        this.okHttpClient = clientBuilder.build();
+        this.okHttpClient = clientBuilder.build(this);
 
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder().baseUrl(url);
         if (retrofitModifiers != null) {
@@ -49,13 +53,13 @@ public class KtRetrofitRequester implements KtRequester {
                 retrofitBuilder = retrofitModifier.modify(retrofitBuilder);
             }
         }
-        this.client = retrofitBuilder.client(this.getOkHttpClient()).build().create(KtRetrofitClient.class);
+        this.client = retrofitBuilder.client(this.okHttpClient).build()
+                .create(KtRetrofitClient.class);
     }
 
     @Override
     public void close() {
-        this.getOkHttpClient().connectionPool().evictAll();
-        this.getOkHttpClient().dispatcher().executorService().shutdown();
+        this.clientBuilder.close(this);
     }
 
     @Override
@@ -181,7 +185,7 @@ public class KtRetrofitRequester implements KtRequester {
         return new RetrofitResult<>(this.client.ping(), this.errorConverter);
     }
 
-    public OkHttpClient getOkHttpClient() {
-        return okHttpClient;
+    public OkHttpClientBuilder getOkHttpClient() {
+        return this.clientBuilder;
     }
 }

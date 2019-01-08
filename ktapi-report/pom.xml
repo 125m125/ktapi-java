@@ -15,6 +15,10 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-okhttpHelper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-okhttpWebsocket</artifactId>
         </dependency>
         <dependency>
@@ -44,10 +48,6 @@
         <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-websocketReactive</artifactId>
-        </dependency>
-        <dependency>
-        	<groupId>de.125m125.kt</groupId>
-        	<artifactId>ktapi-okhttpHelper</artifactId>
         </dependency>
     </dependencies>
     <build>
