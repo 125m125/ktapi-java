@@ -34,6 +34,7 @@ import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
+import de._125m125.kt.ktapi.smartCache.caches.CacheData;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedHistoryEntry;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 
@@ -60,22 +61,22 @@ public class KtCachingRequesterImlTest {
     public void testinvalidateHistory() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<HistoryEntry> cacheData = mock(CacheData.class);
-        this.cache.put("history--1", cacheData);
+        this.cache.put("history-1", cacheData);
 
         this.uut.invalidateHistory("-1");
 
-        verify(cacheData).invalidate();
+        verify(cacheData).invalidate(null);
     }
 
     @Test
     public void testinvalidateHistory_miss() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<HistoryEntry> cacheData = mock(CacheData.class);
-        this.cache.put("history-1", cacheData);
+        this.cache.put("history1", cacheData);
 
         this.uut.invalidateHistory("-1");
 
-        verify(cacheData, times(0)).invalidate();
+        verify(cacheData, times(0)).invalidate(null);
     }
 
     @Test
@@ -87,11 +88,11 @@ public class KtCachingRequesterImlTest {
     public void testIsValidOrderBook_validHit() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<OrderBookEntry> cacheData = mock(CacheData.class);
-        this.cache.put("orderbook-1", cacheData);
+        this.cache.put("orderbook1", cacheData);
         when(cacheData.getLastInvalidationTime()).thenReturn(10000L);
 
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)),
-                15000L);
+        final List<OrderBookEntry> orderbook = new TimestampedList<>(
+                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -102,11 +103,11 @@ public class KtCachingRequesterImlTest {
     public void testIsValidOrderBook_invalidHit() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<OrderBookEntry> cacheData = mock(CacheData.class);
-        this.cache.put("orderbook-1", cacheData);
+        this.cache.put("orderbook1", cacheData);
         when(cacheData.getLastInvalidationTime()).thenReturn(20000L);
 
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)),
-                15000L);
+        final List<OrderBookEntry> orderbook = new TimestampedList<>(
+                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -117,11 +118,11 @@ public class KtCachingRequesterImlTest {
     public void testIsValidOrderBook_miss() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<OrderBookEntry> cacheData = mock(CacheData.class);
-        this.cache.put("orderbook-2", cacheData);
+        this.cache.put("orderbook2", cacheData);
         when(cacheData.getLastInvalidationTime()).thenReturn(10000L);
 
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)),
-                15000L);
+        final List<OrderBookEntry> orderbook = new TimestampedList<>(
+                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -130,8 +131,8 @@ public class KtCachingRequesterImlTest {
 
     @Test
     public void testIsValidOrderBook_empty() throws Exception {
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)),
-                15000L);
+        final List<OrderBookEntry> orderbook = new TimestampedList<>(
+                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -142,7 +143,7 @@ public class KtCachingRequesterImlTest {
     public void testUpdate_invalidates() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<Message> cacheData = mock(CacheData.class);
-        this.cache.put("messages-3", cacheData);
+        this.cache.put("messages3", cacheData);
 
         final Notification n = mock(Notification.class);
         final Map<String, String> details = new HashMap<>();
@@ -156,22 +157,22 @@ public class KtCachingRequesterImlTest {
 
         this.uut.update(n);
 
-        verify(cacheData).invalidate();
+        verify(cacheData).invalidate(null);
     }
 
     @Test
     public void testGetHistory_hit() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<HistoryEntry> cacheData = mock(CacheData.class);
-        this.cache.put("history-1", cacheData);
-        final Optional<TimestampedList<HistoryEntry>> expected = Optional
-                .of(new TimestampedList<>(Arrays.asList(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1d, 2d)), 1000L, true));
+        this.cache.put("history1", cacheData);
+        final Optional<TimestampedList<HistoryEntry>> expected = Optional.of(new TimestampedList<>(
+                Arrays.asList(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1d, 2d)), 1000L, true));
         when(cacheData.get(5, 6)).thenReturn(expected);
 
         final Result<List<HistoryEntry>> history = this.uut.getHistory("1", 1, 5);
 
         assertEquals(expected.get(), history.getContent());
-        assertEquals(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, history.getStatus());
+        assertEquals(KtCachingRequesterIml.CACHE_HIT_STATUS, history.getStatus());
         verify(this.requester, times(0)).getHistory(any(), anyInt(), anyInt());
     }
 
@@ -179,20 +180,22 @@ public class KtCachingRequesterImlTest {
     public void testGetHistory_miss() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<HistoryEntry> cacheData = mock(CacheData.class);
-        this.cache.put("history-1", cacheData);
+        this.cache.put("history1", cacheData);
         when(cacheData.get(5, 6)).thenReturn(Optional.empty());
 
         @SuppressWarnings("unchecked")
         final Result<List<HistoryEntry>> result = mock(Result.class);
-        final List<HistoryEntry> asList = Arrays.asList(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1d, 2d));
+        final List<HistoryEntry> asList = Arrays
+                .asList(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1d, 2d));
         when(this.requester.getHistory("1", 1, 5)).thenReturn(result);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")
-            final Callback<List<HistoryEntry>> argumentAt = invocation.getArgumentAt(0, Callback.class);
+            final Callback<List<HistoryEntry>> argumentAt = invocation.getArgumentAt(0,
+                    Callback.class);
             argumentAt.onSuccess(200, asList);
             return null;
         }).when(result).addCallback(any());
-        when(cacheData.set(asList, 5, 6)).thenReturn(new TimestampedList<>(asList, 1000));
+        when(cacheData.set(asList, 5)).thenReturn(new TimestampedList<>(asList, 1000));
 
         final Result<List<HistoryEntry>> history = this.uut.getHistory("1", 1, 5);
 
@@ -205,15 +208,15 @@ public class KtCachingRequesterImlTest {
     public void testGetLatestHistory_hit() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<HistoryEntry> cacheData = mock(CacheData.class);
-        this.cache.put("history-1", cacheData);
-        final Optional<HistoryEntry> expected = Optional
-                .of(new TimestampedHistoryEntry(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1d, 2d), 1000L, true));
+        this.cache.put("history1", cacheData);
+        final Optional<HistoryEntry> expected = Optional.of(new TimestampedHistoryEntry(
+                new HistoryEntry("a", 1d, 2d, 1d, 2d, 1d, 2d), 1000L, true));
         when(cacheData.get(0)).thenReturn(expected);
 
         final Result<HistoryEntry> history = this.uut.getLatestHistory("1");
 
         assertEquals(new TimestampedHistoryEntry(expected.get(), 1000, true), history.getContent());
-        assertEquals(KtCachingRequesterIml.CACHE_HIT_STATUS_CODE, history.getStatus());
+        assertEquals(KtCachingRequesterIml.CACHE_HIT_STATUS, history.getStatus());
         assertTrue(history.getContent() instanceof Timestamped);
         assertEquals(true, ((TimestampedHistoryEntry) history.getContent()).wasCacheHit());
         verify(this.requester, times(0)).getLatestHistory(any());
@@ -223,7 +226,7 @@ public class KtCachingRequesterImlTest {
     public void testGetLatestHistory_miss() throws Exception {
         @SuppressWarnings("unchecked")
         final CacheData<HistoryEntry> cacheData = mock(CacheData.class);
-        this.cache.put("history-1", cacheData);
+        this.cache.put("history1", cacheData);
         when(cacheData.get(0)).thenReturn(Optional.empty());
 
         @SuppressWarnings("unchecked")

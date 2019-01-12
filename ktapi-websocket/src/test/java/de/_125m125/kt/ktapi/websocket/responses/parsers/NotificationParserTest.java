@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import de._125m125.kt.ktapi.core.entities.Message;
-import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
+import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 
 public class NotificationParserTest {
 

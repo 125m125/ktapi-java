@@ -8,13 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de._125m125.kt.ktapi.core.NotificationListener;
+import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.websocket.SubscriptionList;
 import de._125m125.kt.ktapi.websocket.events.MessageReceivedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketEventListening;
 import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestData;
 import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestDataFactory;
-import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 
 public class KtWebsocketNotificationHandler
         extends AbstractKtWebsocketNotificationHandler<NotificationListener> {

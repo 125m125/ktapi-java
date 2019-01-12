@@ -3,6 +3,7 @@ package de._125m125.kt.ktapi.smartCache;
 import java.util.Map;
 
 import de._125m125.kt.ktapi.core.results.Callback;
+import de._125m125.kt.ktapi.smartCache.caches.CacheData;
 
 public class InvalidationCallback<T> implements Callback<T> {
 
@@ -16,7 +17,7 @@ public class InvalidationCallback<T> implements Callback<T> {
 
     @Override
     public void onSuccess(final int status, final T result) {
-        invalidate();
+        invalidate(result);
     }
 
     @Override
@@ -24,20 +25,21 @@ public class InvalidationCallback<T> implements Callback<T> {
             final String humanReadableMessage) {
         if (status > 500) {
             // data could have changed
-            invalidate();
+            invalidate(null);
         }
     }
 
     @Override
     public void onError(final Throwable t) {
         // data could have changed
-        invalidate();
+        invalidate(null);
     }
 
-    private void invalidate() {
-        final CacheData<?> cacheData = this.cache.get(this.key);
+    @SuppressWarnings("unchecked")
+    private void invalidate(final T result) {
+        final CacheData<T> cacheData = (CacheData<T>) this.cache.get(this.key);
         if (cacheData != null) {
-            cacheData.invalidate();
+            cacheData.invalidate((T[]) new Object[] { result });
         }
     }
 

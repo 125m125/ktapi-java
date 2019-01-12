@@ -6,11 +6,11 @@ import java.util.Map;
 import org.junit.Test;
 
 import de._125m125.kt.ktapi.core.entities.Payout;
+import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.websocket.events.listeners.AbstractKtWebsocketNotificationHandler;
 import de._125m125.kt.ktapi.websocket.events.listeners.KtWebsocketNotificationHandlerTestHelper;
 import de._125m125.kt.ktapi.websocket.events.listeners.VerificationMode;
-import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 
