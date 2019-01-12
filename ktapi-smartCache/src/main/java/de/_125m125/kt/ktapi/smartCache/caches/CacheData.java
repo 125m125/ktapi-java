@@ -27,12 +27,12 @@ public abstract class CacheData<T> {
         this.clock = clock;
         this.clazz = clazz;
         this.entries = new GrowthList<>();
-        this.lastInvalidationTime = this.clock.millis();
+        updateInvalidationTime();
     }
 
     /**
      * sets the cached entries starting from the given start index
-     * 
+     *
      * @param newEntries
      *            the entries to insert
      * @param start
@@ -55,7 +55,7 @@ public abstract class CacheData<T> {
 
     /**
      * adds the cached entries at the given index, pushing the remaining entries backwards.
-     * 
+     *
      * @param newEntries
      *            the entries to add
      * @param start
@@ -68,7 +68,7 @@ public abstract class CacheData<T> {
      */
     public TimestampedList<T> add(final List<T> newEntries, final int index) {
         synchronized (this.entries) {
-            this.lastInvalidationTime = this.clock.millis();
+            updateInvalidationTime();
             this.entries.addAll(index, newEntries);
             this.allEntries = null;
         }
@@ -82,13 +82,17 @@ public abstract class CacheData<T> {
     public void invalidate(final T[] changedEntries) {
         if (changedEntries == null || changedEntries.length == 0) {
             synchronized (this.entries) {
-                this.lastInvalidationTime = this.clock.millis();
+                updateInvalidationTime();
                 this.entries.clear();
                 this.allEntries = null;
             }
         } else {
             updateEntries(changedEntries);
         }
+    }
+
+    protected void updateInvalidationTime() {
+        this.lastInvalidationTime = this.clock.millis();
     }
 
     protected abstract void updateEntries(T[] changedEntries);

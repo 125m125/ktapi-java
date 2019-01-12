@@ -36,6 +36,7 @@ import de._125m125.kt.ktapi.smartCache.caches.CacheData;
 import de._125m125.kt.ktapi.smartCache.caches.PrependCacheData;
 import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrInvalidateCacheData;
 import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrPrependCacheData;
+import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrPrependOrInvalidateOnEmptyCacheData;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
 
@@ -43,7 +44,7 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
  *
  */
 public class KtCachingRequesterIml
-        implements KtRequester, NotificationListener, KtCachingRequester {
+implements KtRequester, NotificationListener, KtCachingRequester {
 
     private static final Function<String, CacheData<HistoryEntry>> HISTORY_FACTORY  = s -> new PrependCacheData<>(
             HistoryEntry.class);
@@ -53,7 +54,7 @@ public class KtCachingRequesterIml
             Message.class);
     private static final Function<String, CacheData<Payout>>       PAYOUT_FACTORY   = s -> new ReplaceOrPrependCacheData<>(
             Payout.class, Payout::getId);
-    private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new ReplaceOrPrependCacheData<>(
+    private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new ReplaceOrPrependOrInvalidateOnEmptyCacheData<>(
             Trade.class, Trade::getId);
 
     public static final int                                        CACHE_HIT_STATUS = 299;
