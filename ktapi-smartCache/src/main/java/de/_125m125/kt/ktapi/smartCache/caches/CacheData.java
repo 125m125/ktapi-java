@@ -2,8 +2,12 @@ package de._125m125.kt.ktapi.smartCache.caches;
 
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.apache.commons.collections4.list.GrowthList;
@@ -43,13 +47,11 @@ public abstract class CacheData<T> {
      * @throws IllegalArgumentException
      *             if the start index is negative
      */
-    public TimestampedList<T> set(final List<T> newEntries, final int start) {
-        synchronized (this.entries) {
-            for (int i = newEntries.size() - 1; i >= 0; i--) {
-                this.entries.set(i + start, newEntries.get(i));
-            }
-            this.allEntries = null;
+    public synchronized TimestampedList<T> set(final List<T> newEntries, final int start) {
+        for (int i = newEntries.size() - 1; i >= 0; i--) {
+            this.entries.set(i + start, newEntries.get(i));
         }
+        this.allEntries = null;
         return new TimestampedList<>(newEntries, this.lastInvalidationTime, false);
     }
 
@@ -66,13 +68,41 @@ public abstract class CacheData<T> {
      * @throws IllegalArgumentException
      *             if the start index is negative
      */
-    public TimestampedList<T> add(final List<T> newEntries, final int index) {
-        synchronized (this.entries) {
-            updateInvalidationTime();
-            this.entries.addAll(index, newEntries);
-            this.allEntries = null;
-        }
+    public synchronized TimestampedList<T> add(final List<T> newEntries, final int index) {
+        updateInvalidationTime();
+        this.entries.addAll(index, newEntries);
+        this.allEntries = null;
         return new TimestampedList<>(newEntries, this.lastInvalidationTime, false);
+    }
+
+    public Collection<T> replace(final List<T> replacements, final Function<T, Object> keyMapper) {
+        final Map<Object, T> entries = new LinkedHashMap<>(replacements.size() * 2);
+        for (final T t : replacements) {
+            entries.put(keyMapper.apply(t), t);
+        }
+        return replaceMatches(entries, keyMapper);
+    }
+
+    private Collection<T> replaceMatches(final Map<Object, T> replacements,
+            final Function<T, Object> keyMapper) {
+        boolean change = false;
+        synchronized (this) {
+            for (int i = 0; i < this.entries.size() && !replacements.isEmpty(); i++) {
+                final T old = this.entries.get(i);
+                if (old == null) {
+                    continue;
+                }
+                final Object key = keyMapper.apply(old);
+                if (replacements.containsKey(key)) {
+                    this.entries.set(i, replacements.remove(key));
+                    change = true;
+                }
+            }
+            if (change) {
+                updateInvalidationTime();
+            }
+        }
+        return replacements.values();
     }
 
     /**
@@ -81,18 +111,18 @@ public abstract class CacheData<T> {
      */
     public void invalidate(final T[] changedEntries) {
         if (changedEntries == null || changedEntries.length == 0) {
-            synchronized (this.entries) {
+            synchronized (this) {
                 updateInvalidationTime();
                 this.entries.clear();
-                this.allEntries = null;
             }
         } else {
             updateEntries(changedEntries);
         }
     }
 
-    protected void updateInvalidationTime() {
+    protected synchronized void updateInvalidationTime() {
         this.lastInvalidationTime = this.clock.millis();
+        this.allEntries = null;
     }
 
     protected abstract void updateEntries(T[] changedEntries);
@@ -100,7 +130,7 @@ public abstract class CacheData<T> {
     public Optional<TimestampedList<T>> get(final int start, final int end) {
         final int size = end - start;
         final List<T> result = new ArrayList<>(size);
-        synchronized (this.entries) {
+        synchronized (this) {
             if (end > this.entries.size()) {
                 return Optional.empty();
             }
@@ -111,50 +141,43 @@ public abstract class CacheData<T> {
                 }
                 result.add(entry);
             }
+            return Optional.of(new TimestampedList<>(result, this.lastInvalidationTime, true));
         }
-        return Optional.of(new TimestampedList<>(result, this.lastInvalidationTime, true));
     }
 
-    public Optional<TimestampedList<T>> getAll() {
-        synchronized (this.entries) {
-            if (this.entries.isEmpty()) {
-                return Optional.empty();
-            }
-            if (this.allEntries != null) {
-                return Optional.of(this.allEntries);
-            }
-            final List<T> result = new ArrayList<>(this.entries);
-            this.allEntries = new TimestampedList<>(result, this.lastInvalidationTime, true);
+    public synchronized Optional<TimestampedList<T>> getAll() {
+        if (this.entries.isEmpty()) {
+            return Optional.empty();
+        }
+        if (this.allEntries != null) {
             return Optional.of(this.allEntries);
         }
+        final List<T> result = new ArrayList<>(this.entries);
+        this.allEntries = new TimestampedList<>(result, this.lastInvalidationTime, true);
+        return Optional.of(this.allEntries);
     }
 
-    public Optional<T> get(final int index) {
-        synchronized (this.entries) {
-            if (index >= this.entries.size()) {
-                return Optional.empty();
-            }
-            return Optional.ofNullable(this.entries.get(index));
+    public synchronized Optional<T> get(final int index) {
+        if (index >= this.entries.size()) {
+            return Optional.empty();
         }
+        return Optional.ofNullable(this.entries.get(index));
     }
 
-    public Optional<T> getAny(final Predicate<T> predicate) {
-        synchronized (this.entries) {
-            return this.entries.stream().filter(predicate).findAny();
-        }
+    public synchronized Optional<T> getAny(final Predicate<T> predicate) {
+        return this.entries.stream().filter(predicate).findAny();
     }
 
-    public long getLastInvalidationTime() {
-        synchronized (this.entries) {
-            return this.lastInvalidationTime;
-        }
+    public synchronized boolean isEmpty() {
+        return this.entries.isEmpty();
+    }
+
+    public synchronized long getLastInvalidationTime() {
+        return this.lastInvalidationTime;
     }
 
     public Class<T> getClazz() {
         return this.clazz;
     }
 
-    protected GrowthList<T> getGrowthList() {
-        return this.entries;
-    }
 }

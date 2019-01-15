@@ -39,7 +39,7 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedHistoryEntry;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 
 @RunWith(MockitoJUnitRunner.class)
-public class KtCachingRequesterImlTest {
+public class KtSmartCacheTest {
 
     @Mock
     private KtRequester               requester;
@@ -47,7 +47,7 @@ public class KtCachingRequesterImlTest {
     private KtNotificationManager<?>  notificationmanager;
 
     @InjectMocks
-    private KtCachingRequesterIml     uut;
+    private KtSmartCache     uut;
 
     private Map<String, CacheData<?>> cache;
 
@@ -172,7 +172,7 @@ public class KtCachingRequesterImlTest {
         final Result<List<HistoryEntry>> history = this.uut.getHistory("1", 1, 5);
 
         assertEquals(expected.get(), history.getContent());
-        assertEquals(KtCachingRequesterIml.CACHE_HIT_STATUS, history.getStatus());
+        assertEquals(KtSmartCache.CACHE_HIT_STATUS, history.getStatus());
         verify(this.requester, times(0)).getHistory(any(), anyInt(), anyInt());
     }
 
@@ -216,7 +216,7 @@ public class KtCachingRequesterImlTest {
         final Result<HistoryEntry> history = this.uut.getLatestHistory("1");
 
         assertEquals(new TimestampedHistoryEntry(expected.get(), 1000, true), history.getContent());
-        assertEquals(KtCachingRequesterIml.CACHE_HIT_STATUS, history.getStatus());
+        assertEquals(KtSmartCache.CACHE_HIT_STATUS, history.getStatus());
         assertTrue(history.getContent() instanceof Timestamped);
         assertEquals(true, ((TimestampedHistoryEntry) history.getContent()).wasCacheHit());
         verify(this.requester, times(0)).getLatestHistory(any());

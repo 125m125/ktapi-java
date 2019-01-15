@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PrependCacheData<T> extends CacheData<T> {
 
-    public PrependCacheData(final Class<T> clazz, final Clock clock) {
+    /* package */ PrependCacheData(final Class<T> clazz, final Clock clock) {
         super(clazz, clock);
     }
 

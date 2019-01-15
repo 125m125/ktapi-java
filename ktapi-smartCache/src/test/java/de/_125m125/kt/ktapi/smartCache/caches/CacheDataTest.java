@@ -1,6 +1,7 @@
 package de._125m125.kt.ktapi.smartCache.caches;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 public class CacheDataTest {
     private CacheData<String> uut;
     private ClockExtension    testClock;
+    private String[]          lastUpdate;
 
     @Before
     public void beforeCacheDataTest() {
@@ -22,11 +24,11 @@ public class CacheDataTest {
 
             @Override
             protected void updateEntries(final String[] changedEntries) {
-                // TODO Auto-generated method stub
-
+                CacheDataTest.this.lastUpdate = changedEntries;
             }
 
         };
+        this.lastUpdate = null;
         this.testClock.progress();
     }
 
@@ -276,5 +278,21 @@ public class CacheDataTest {
                 Optional.of(new TimestampedList<>(Arrays.asList("3", "4", "1", "2"), 2000, true)),
                 actual);
         assertTrue(actual.get().wasCacheHit());
+    }
+
+    @Test
+    public void testInvalidateForwardsEntriesIfPresent() {
+        final String[] changedEntries = new String[] { "a" };
+        this.uut.invalidate(changedEntries);
+
+        assertSame(changedEntries, this.lastUpdate);
+    }
+
+    @Test
+    public void testInvalidateDoesNotChangeLastInvalidationTimeAutomatically() {
+        final String[] changedEntries = new String[] { "a" };
+        this.uut.invalidate(changedEntries);
+
+        assertEquals(1000, this.uut.getLastInvalidationTime());
     }
 }

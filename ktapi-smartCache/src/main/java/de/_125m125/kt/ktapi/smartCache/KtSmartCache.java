@@ -43,8 +43,7 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
 /**
  *
  */
-public class KtCachingRequesterIml
-implements KtRequester, NotificationListener, KtCachingRequester {
+public class KtSmartCache implements KtRequester, NotificationListener, KtCachingRequester {
 
     private static final Function<String, CacheData<HistoryEntry>> HISTORY_FACTORY  = s -> new PrependCacheData<>(
             HistoryEntry.class);
@@ -64,12 +63,12 @@ implements KtRequester, NotificationListener, KtCachingRequester {
     private final KtNotificationManager<?>                         ktNotificationManager;
     private final TimestampedObjectFactory                         factory;
 
-    public KtCachingRequesterIml(final KtRequester requester,
+    public KtSmartCache(final KtRequester requester,
             final KtNotificationManager<?> ktNotificationManager) {
         this(requester, ktNotificationManager, null);
     }
 
-    public KtCachingRequesterIml(final KtRequester requester,
+    public KtSmartCache(final KtRequester requester,
             final KtNotificationManager<?> ktNotificationManager,
             final TimestampedObjectFactory factory) {
         this.ktNotificationManager = ktNotificationManager;
@@ -112,7 +111,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
         invalidate(key, null);
     }
 
-    private <T> void invalidate(final String key, final T[] changedEntries) {
+    protected <T> void invalidate(final String key, final T[] changedEntries) {
         @SuppressWarnings("unchecked")
         final CacheData<T> cacheData = (CacheData<T>) this.cache.get(key);
         if (cacheData != null) {
@@ -180,7 +179,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
             final int offset) {
         this.ktNotificationManager.subscribeToHistory(this);
         return getOrFetch(Entity.HISTORY_ENTRY.getUpdateChannel() + itemid, offset, offset + limit,
-                KtCachingRequesterIml.HISTORY_FACTORY,
+                KtSmartCache.HISTORY_FACTORY,
                 () -> this.requester.getHistory(itemid, limit, offset));
     }
 
@@ -188,8 +187,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
     public Result<HistoryEntry> getLatestHistory(final String itemid) {
         this.ktNotificationManager.subscribeToHistory(this);
         return this.getOrFetch(Entity.HISTORY_ENTRY.getUpdateChannel() + itemid, 0,
-                KtCachingRequesterIml.HISTORY_FACTORY,
-                () -> this.requester.getLatestHistory(itemid));
+                KtSmartCache.HISTORY_FACTORY, () -> this.requester.getLatestHistory(itemid));
     }
 
     @Override
@@ -217,7 +215,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
         this.ktNotificationManager.subscribeToItems(this, userKey, false);
         this.ktNotificationManager.subscribeToItems(this, userKey, true);
         return getAllOrFetch(Entity.ITEM.getUpdateChannel() + userKey.getUserId(),
-                KtCachingRequesterIml.ITEM_FACTORY, () -> this.requester.getItems(userKey));
+                KtSmartCache.ITEM_FACTORY, () -> this.requester.getItems(userKey));
     }
 
     @Override
@@ -225,7 +223,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
         this.ktNotificationManager.subscribeToItems(this, userKey, false);
         this.ktNotificationManager.subscribeToItems(this, userKey, true);
         return getOrFetch(Entity.ITEM.getUpdateChannel() + userKey.getUserId(),
-                item -> item.getId().equals(itemid), KtCachingRequesterIml.ITEM_FACTORY,
+                item -> item.getId().equals(itemid), KtSmartCache.ITEM_FACTORY,
                 () -> this.requester.getItem(userKey, itemid));
     }
 
@@ -234,7 +232,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
         this.ktNotificationManager.subscribeToMessages(this, userKey, false);
         this.ktNotificationManager.subscribeToMessages(this, userKey, true);
         return getAllOrFetch(Entity.MESSAGE.getUpdateChannel() + userKey.getUserId(),
-                KtCachingRequesterIml.MESSAGE_FACTORY, () -> this.requester.getMessages(userKey));
+                KtSmartCache.MESSAGE_FACTORY, () -> this.requester.getMessages(userKey));
     }
 
     @Override
@@ -242,7 +240,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
         this.ktNotificationManager.subscribeToPayouts(this, userKey, false);
         this.ktNotificationManager.subscribeToPayouts(this, userKey, true);
         return getAllOrFetch(Entity.PAYOUT.getUpdateChannel() + userKey.getUserId(),
-                KtCachingRequesterIml.PAYOUT_FACTORY, () -> this.requester.getPayouts(userKey));
+                KtSmartCache.PAYOUT_FACTORY, () -> this.requester.getPayouts(userKey));
     }
 
     @Override
@@ -250,7 +248,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
             final String itemid, final String amount) {
         final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
                 itemid, amount);
-        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
+        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this,
                 Entity.PAYOUT.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -258,7 +256,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
     @Override
     public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userKey, payoutid);
-        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
+        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this,
                 Entity.PAYOUT.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -266,7 +264,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
     @Override
     public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userKey, payoutid);
-        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this.cache,
+        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this,
                 Entity.PAYOUT.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -282,7 +280,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
         this.ktNotificationManager.subscribeToTrades(this, userKey, false);
         this.ktNotificationManager.subscribeToTrades(this, userKey, true);
         return getAllOrFetch(Entity.TRADE.getUpdateChannel() + userKey.getUserId(),
-                KtCachingRequesterIml.TRADE_FACTORY, () -> this.requester.getTrades(userKey));
+                KtSmartCache.TRADE_FACTORY, () -> this.requester.getTrades(userKey));
     }
 
     @Override
@@ -290,7 +288,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
             final String item, final int amount, final String pricePerItem) {
         final Result<WriteResult<Trade>> result = this.requester.createTrade(userKey, mode, item,
                 amount, pricePerItem);
-        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
+        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -298,7 +296,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
     @Override
     public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         final Result<WriteResult<Trade>> result = this.requester.cancelTrade(userKey, tradeId);
-        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
+        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -306,7 +304,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
     @Override
     public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         final Result<WriteResult<Trade>> result = this.requester.takeoutTrade(userKey, tradeId);
-        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this.cache,
+        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -324,7 +322,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
                 cacheGenerator);
         final Optional<TimestampedList<T>> all = cacheEntry.get(start, end);
         if (all.isPresent()) {
-            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS, all.get());
+            return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, all.get());
         } else {
             return new ExposedResult<>(fetcher, (status, result) -> cacheEntry.set(result, start));
         }
@@ -338,13 +336,11 @@ implements KtRequester, NotificationListener, KtCachingRequester {
                 cacheGenerator);
         final Optional<T> all = cacheEntry.get(index);
         if (all.isPresent()) {
-            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS,
-                    KtCachingRequesterIml.this.factory.create(all.get(),
-                            cacheEntry.getLastInvalidationTime(), true));
+            return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, KtSmartCache.this.factory
+                    .create(all.get(), cacheEntry.getLastInvalidationTime(), true));
         } else {
-            return new ExposedResult<>(fetcher,
-                    (status, result) -> KtCachingRequesterIml.this.factory.create(result,
-                            cacheEntry.getLastInvalidationTime(), false));
+            return new ExposedResult<>(fetcher, (status, result) -> KtSmartCache.this.factory
+                    .create(result, cacheEntry.getLastInvalidationTime(), false));
         }
     }
 
@@ -356,12 +352,11 @@ implements KtRequester, NotificationListener, KtCachingRequester {
                 cacheGenerator);
         final Optional<T> all = cacheEntry.getAny(index);
         if (all.isPresent()) {
-            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS,
-                    KtCachingRequesterIml.this.factory.create(all.get(),
-                            cacheEntry.getLastInvalidationTime(), true));
+            return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, KtSmartCache.this.factory
+                    .create(all.get(), cacheEntry.getLastInvalidationTime(), true));
         } else {
             final ExposedResult<T> returnResult = new ExposedResult<>(fetcher,
-                    (status, result) -> KtCachingRequesterIml.this.factory.create(result,
+                    (status, result) -> KtSmartCache.this.factory.create(result,
                             cacheEntry.getLastInvalidationTime(), false));
             return returnResult;
         }
@@ -375,7 +370,7 @@ implements KtRequester, NotificationListener, KtCachingRequester {
                 cacheGenerator);
         final Optional<TimestampedList<T>> all = cacheEntry.getAll();
         if (all.isPresent()) {
-            return new ImmediateResult<>(KtCachingRequesterIml.CACHE_HIT_STATUS, all.get());
+            return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, all.get());
         } else {
             return new ExposedResult<>(fetcher, (status, result) -> cacheEntry.set(result, 0));
         }

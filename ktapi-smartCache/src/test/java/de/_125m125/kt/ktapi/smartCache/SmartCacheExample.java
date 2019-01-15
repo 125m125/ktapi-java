@@ -24,7 +24,7 @@ public class SmartCacheExample {
         final PusherKt pusher = new PusherKt(user,
                 unescapedData -> new Gson().fromJson(unescapedData, Notification.class),
                 new KtPusherAuthorizer(user.getKey(), innerRequester));
-        final KtCachingRequester cachingRequester = new KtCachingRequesterIml(innerRequester,
+        final KtCachingRequester cachingRequester = new KtSmartCache(innerRequester,
                 pusher);
 
         cachingRequester.getHistory("-1", 10, 0).addCallback(new Callback<List<HistoryEntry>>() {
