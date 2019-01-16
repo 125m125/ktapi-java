@@ -66,8 +66,20 @@ public class KtRequesterDecorator implements KtRequester {
     }
 
     @Override
+    public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
+            final int limit) {
+        return this.requester.getMessages(userKey, offset, limit);
+    }
+
+    @Override
     public Result<List<Payout>> getPayouts(final UserKey userKey) {
         return this.requester.getPayouts(userKey);
+    }
+
+    @Override
+    public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
+            final int limit) {
+        return this.requester.getPayouts(userKey, offset, limit);
     }
 
     @Override

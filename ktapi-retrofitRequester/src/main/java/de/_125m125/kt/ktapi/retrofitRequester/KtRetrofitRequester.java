@@ -111,16 +111,17 @@ public class KtRetrofitRequester implements KtRequester {
     }
 
     @Override
-    public Result<List<Message>> getMessages(final UserKey userKey) {
-        return new RetrofitResult<>(
-                this.client.getMessages(userKey.getUserId(), userKey.getIdentifier()),
-                this.errorConverter);
+    public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
+            final int limit) {
+        return new RetrofitResult<>(this.client.getMessages(userKey.getUserId(),
+                userKey.getIdentifier(), offset, limit), this.errorConverter);
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final UserKey userKey) {
+    public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
+            final int limit) {
         return new RetrofitResult<>(
-                this.client.getPayouts(userKey.getUserId(), userKey.getIdentifier()),
+                this.client.getPayouts(userKey.getUserId(), userKey.getIdentifier(), offset, limit),
                 this.errorConverter);
     }
 

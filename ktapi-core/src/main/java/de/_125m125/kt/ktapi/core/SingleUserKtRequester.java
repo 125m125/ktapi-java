@@ -74,12 +74,30 @@ public class SingleUserKtRequester extends KtRequesterDecorator {
     }
 
     /**
+     * Gets the messages.
+     *
+     * @return the messages
+     */
+    public Result<List<Message>> getMessages(final int offset, final int limit) {
+        return super.getMessages(this.userKey, offset, limit);
+    }
+
+    /**
      * Gets the payoutrequests.
      *
      * @return the payouts
      */
     public Result<List<Payout>> getPayouts() {
         return super.getPayouts(this.userKey);
+    }
+
+    /**
+     * Gets the payoutrequests.
+     *
+     * @return the payouts
+     */
+    public Result<List<Payout>> getPayouts(final int offset, final int limit) {
+        return super.getPayouts(this.userKey, offset, limit);
     }
 
     public Result<WriteResult<Payout>> createPayout(final PAYOUT_TYPE type, final String itemid,
@@ -314,9 +332,23 @@ public class SingleUserKtRequester extends KtRequesterDecorator {
     }
 
     @Override
+    public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
+            final int limit) {
+        checkUser(userKey);
+        return super.getMessages(userKey, offset, limit);
+    }
+
+    @Override
     public Result<List<Payout>> getPayouts(final UserKey userKey) {
         checkUser(userKey);
         return super.getPayouts(userKey);
+    }
+
+    @Override
+    public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
+            final int limit) {
+        checkUser(userKey);
+        return super.getPayouts(userKey, offset, limit);
     }
 
     @Override

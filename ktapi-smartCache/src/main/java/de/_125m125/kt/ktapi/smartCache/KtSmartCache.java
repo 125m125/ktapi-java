@@ -228,19 +228,23 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
     }
 
     @Override
-    public Result<List<Message>> getMessages(final UserKey userKey) {
+    public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
+            final int limit) {
         this.ktNotificationManager.subscribeToMessages(this, userKey, false);
         this.ktNotificationManager.subscribeToMessages(this, userKey, true);
-        return getAllOrFetch(Entity.MESSAGE.getUpdateChannel() + userKey.getUserId(),
-                KtSmartCache.MESSAGE_FACTORY, () -> this.requester.getMessages(userKey));
+        return getOrFetch(Entity.MESSAGE.getUpdateChannel() + userKey.getUserId(), offset,
+                offset + limit, KtSmartCache.MESSAGE_FACTORY,
+                () -> this.requester.getMessages(userKey));
     }
 
     @Override
-    public Result<List<Payout>> getPayouts(final UserKey userKey) {
+    public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
+            final int limit) {
         this.ktNotificationManager.subscribeToPayouts(this, userKey, false);
         this.ktNotificationManager.subscribeToPayouts(this, userKey, true);
-        return getAllOrFetch(Entity.PAYOUT.getUpdateChannel() + userKey.getUserId(),
-                KtSmartCache.PAYOUT_FACTORY, () -> this.requester.getPayouts(userKey));
+        return getOrFetch(Entity.PAYOUT.getUpdateChannel() + userKey.getUserId(), offset,
+                offset + limit, KtSmartCache.PAYOUT_FACTORY,
+                () -> this.requester.getPayouts(userKey));
     }
 
     @Override
