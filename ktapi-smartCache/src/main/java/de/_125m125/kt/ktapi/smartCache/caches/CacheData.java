@@ -149,25 +149,23 @@ public abstract class CacheData<T> {
 
     protected abstract void updateEntries(T[] changedEntries);
 
-    public Optional<TimestampedList<T>> get(final int start, int end) {
+    public synchronized Optional<TimestampedList<T>> get(final int start, int end) {
         final List<T> result = new ArrayList<>(end - start);
-        synchronized (this) {
-            if (end > this.entries.size()) {
-                if (!this.fetchedLast) {
-                    return Optional.empty();
-                } else {
-                    end = this.entries.size();
-                }
+        if (end > this.entries.size()) {
+            if (!this.fetchedLast) {
+                return Optional.empty();
+            } else {
+                end = this.entries.size();
             }
-            for (int i = start; i < end; i++) {
-                final T entry = this.entries.get(i);
-                if (entry == null) {
-                    return Optional.empty();
-                }
-                result.add(entry);
-            }
-            return Optional.of(new TimestampedList<>(result, this.lastInvalidationTime, true));
         }
+        for (int i = start; i < end; i++) {
+            final T entry = this.entries.get(i);
+            if (entry == null) {
+                return Optional.empty();
+            }
+            result.add(entry);
+        }
+        return Optional.of(new TimestampedList<>(result, this.lastInvalidationTime, true));
     }
 
     public synchronized Optional<TimestampedList<T>> getAll() {

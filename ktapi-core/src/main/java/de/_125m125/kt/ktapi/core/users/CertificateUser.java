@@ -1,21 +1,20 @@
 package de._125m125.kt.ktapi.core.users;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class CertificateUser extends User {
     private final File   file;
     private final char[] password;
 
     public CertificateUser(final String userId, final String path, final char[] password) {
-        super(userId);
-        this.file = new File(path);
-        this.password = password;
+        this(userId, new File(path), password);
     }
 
     public CertificateUser(final String userId, final File file, final char[] password) {
         super(userId);
         this.file = file;
-        this.password = password;
+        this.password = Arrays.copyOf(password, password.length);
     }
 
     public String getPath() {
@@ -27,7 +26,7 @@ public class CertificateUser extends User {
     }
 
     public char[] getPassword() {
-        return this.password;
+        return Arrays.copyOf(this.password, this.password.length);
     }
 
     @Override

@@ -21,8 +21,19 @@ import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.users.TokenUser;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
-public class PusherKt
+public class KtPusher
         implements PrivateChannelEventListener, KtNotificationManager<NotificationListener> {
+    private static final class ConnectionEventListenerImplementation
+            implements ConnectionEventListener {
+        @Override
+        public void onConnectionStateChange(final ConnectionStateChange change) {
+        }
+
+        @Override
+        public void onError(final String message, final String code, final Exception e) {
+        }
+    }
+
     private final Pusher                                 pusher;
 
     private final Map<String, Set<NotificationListener>> listeners     = new HashMap<>();
@@ -31,7 +42,7 @@ public class PusherKt
     private final NotificationParser                     parser;
     private final TokenUser                              user;
 
-    public PusherKt(final TokenUser user, final NotificationParser parser,
+    public KtPusher(final TokenUser user, final NotificationParser parser,
             final Authorizer authorizer) {
         this.user = user;
         this.parser = parser;
@@ -41,15 +52,7 @@ public class PusherKt
         options.setEncrypted(true);
         options.setAuthorizer(authorizer);
         this.pusher = new Pusher("25ba65999fadc5a6e290", options);
-        this.pusher.connect(new ConnectionEventListener() {
-            @Override
-            public void onConnectionStateChange(final ConnectionStateChange change) {
-            }
-
-            @Override
-            public void onError(final String message, final String code, final Exception e) {
-            }
-        }, ConnectionState.ALL);
+        this.pusher.connect(new ConnectionEventListenerImplementation(), ConnectionState.ALL);
     }
 
     @Override

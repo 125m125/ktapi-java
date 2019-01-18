@@ -6,8 +6,8 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
+import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.entities.UpdateNotification;
-import de._125m125.kt.ktapi.websocket.events.listeners.AbstractKtWebsocketNotificationHandler;
 
 public class SemiparsedUpdateNotification<T> extends UpdateNotification<T> {
 
@@ -28,12 +28,12 @@ public class SemiparsedUpdateNotification<T> extends UpdateNotification<T> {
     @Override
     public T[] getChangedEntries() {
         if (this.contents == null) {
-            return null;
+            return (T[]) new Object[0];
         }
         if (!super.hasChangedEntries()) {
-            super.changedEntries = (T[]) new Gson().fromJson(this.contents, Array
-                    .newInstance(AbstractKtWebsocketNotificationHandler.types.get(getSource()), 0)
-                    .getClass());
+            super.changedEntries = (T[]) new Gson().fromJson(this.contents,
+                    Array.newInstance(Entity.forUpdateChannel(getSource()).getInstanceClass(), 0)
+                            .getClass());
         }
         return super.getChangedEntries();
     }

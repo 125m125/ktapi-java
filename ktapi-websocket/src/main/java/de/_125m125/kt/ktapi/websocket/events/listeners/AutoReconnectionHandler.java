@@ -12,14 +12,15 @@ import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
 public class AutoReconnectionHandler {
     private static final Logger logger = LoggerFactory.getLogger(AutoReconnectionHandler.class);
 
-    private Thread             restart_wait_thread;
-    private long               lastDelay;
-    private KtWebsocketManager manager;
+    private Thread              restart_wait_thread;
+    private long                lastDelay;
+    private KtWebsocketManager  manager;
 
     @WebsocketEventListening
     public synchronized void onWebsocketManagerCreated(final WebsocketManagerCreatedEvent e) {
         if (this.manager != null) {
-            throw new IllegalStateException("each reconnection handler can only be used for a single WebsocketManager");
+            throw new IllegalStateException(
+                    "each reconnection handler can only be used for a single WebsocketManager");
         }
         this.manager = e.getManager();
     }
@@ -51,6 +52,7 @@ public class AutoReconnectionHandler {
                 && this.restart_wait_thread != Thread.currentThread()) {
             throw new IllegalStateException("this instance is already waiting for a reconnect");
         }
+        final KtWebsocketManager myManager = this.manager;
         this.restart_wait_thread = new Thread(() -> {
             this.lastDelay = this.lastDelay != 0 ? this.lastDelay * 2 : 1000;
             System.out.println(this.lastDelay);
@@ -59,12 +61,12 @@ public class AutoReconnectionHandler {
                         this.lastDelay);
                 Thread.sleep(this.lastDelay);
             } catch (final InterruptedException e) {
-                AutoReconnectionHandler.logger
-                        .warn("Reconnect was interrupted while waiting for delay. Reconnecting immediately.");
+                AutoReconnectionHandler.logger.warn(
+                        "Reconnect was interrupted while waiting for delay. Reconnecting immediately.");
             }
             AutoReconnectionHandler.logger.debug("Attempting reconnection");
             try {
-                this.manager.connect();
+                myManager.connect();
             } catch (final IllegalStateException e) {
                 AutoReconnectionHandler.logger.info("Websocket refused reconnection attempt.", e);
             }

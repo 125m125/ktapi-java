@@ -2,14 +2,22 @@ package de._125m125.kt.ktapi.core.results;
 
 import java.util.concurrent.CountDownLatch;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public abstract class Result<T> {
     private final CountDownLatch cdl = new CountDownLatch(1);
 
+    @SuppressFBWarnings(justification = "content is set once in synchronized method. Read access is protected by CountDownlatch happens-before", value = "IS2_INCONSISTENT_SYNC")
     private T                    content;
+    @SuppressFBWarnings(justification = "errorMessage is set once in synchronized method. Read access is protected by CountDownlatch happens-before", value = "IS2_INCONSISTENT_SYNC")
     private String               errorMessage;
+    @SuppressFBWarnings(justification = "humanReadableErrorMessage is set once in synchronized method. Read access is protected by CountDownlatch happens-before", value = "IS2_INCONSISTENT_SYNC")
     private String               humanReadableErrorMessage;
+    @SuppressFBWarnings(justification = "status is set once in synchronized method. Read access is protected by CountDownlatch happens-before", value = "IS2_INCONSISTENT_SYNC")
     private int                  status;
+    @SuppressFBWarnings(justification = "successful is set once in synchronized method. Read access is protected by CountDownlatch happens-before", value = "IS2_INCONSISTENT_SYNC")
     private boolean              successful;
+    @SuppressFBWarnings(justification = "throwable is set once in synchronized method. Read access is protected by CountDownlatch happens-before", value = "IS2_INCONSISTENT_SYNC")
     private Throwable            throwable;
 
     protected synchronized void setSuccessResult(final int status, final T content) {

@@ -60,6 +60,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>3.1.10</version>
+            </dependency>
+            <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-core</artifactId>
                 <version>0.0.4-SNAPSHOT</version>
@@ -113,12 +118,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.25</version>
-            </dependency>
-            <dependency>
-                <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-testUtils</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -210,6 +209,21 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.10</version>
+                <configuration>
+                    <!-- Enables analysis which takes more memory but finds 
+                        more bugs. If you run out of memory, changes the value of the effort element 
+                        to 'low'. -->
+                    <effort>Max</effort>
+                    <!-- Reports all bugs (other values are medium and max) -->
+                    <threshold>Low</threshold>
+                    <!-- Produces XML report -->
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>

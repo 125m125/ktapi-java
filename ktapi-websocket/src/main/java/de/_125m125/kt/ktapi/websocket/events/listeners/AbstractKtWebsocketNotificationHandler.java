@@ -1,8 +1,6 @@
 package de._125m125.kt.ktapi.websocket.events.listeners;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -10,12 +8,7 @@ import org.slf4j.Logger;
 
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.NotificationListener;
-import de._125m125.kt.ktapi.core.entities.HistoryEntry;
-import de._125m125.kt.ktapi.core.entities.Item;
-import de._125m125.kt.ktapi.core.entities.Message;
-import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
-import de._125m125.kt.ktapi.core.entities.Payout;
-import de._125m125.kt.ktapi.core.entities.Trade;
+import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.User;
 import de._125m125.kt.ktapi.core.users.UserKey;
@@ -30,30 +23,6 @@ import de._125m125.kt.ktapi.websocket.requests.subscription.SubscriptionRequestD
 
 public abstract class AbstractKtWebsocketNotificationHandler<U>
         implements KtNotificationManager<U> {
-
-    public static final String                HISTORY   = "history";
-    public static final String                ITEMS     = "items";
-    public static final String                MESSAGES  = "messages";
-    public static final String                ORDERBOOK = "orderbook";
-    public static final String                PAYOUTS   = "payouts";
-    public static final String                TRADES    = "trades";
-
-    public static final Map<String, Class<?>> types     = new HashMap<>();
-
-    static {
-        AbstractKtWebsocketNotificationHandler.types
-                .put(AbstractKtWebsocketNotificationHandler.HISTORY, HistoryEntry.class);
-        AbstractKtWebsocketNotificationHandler.types
-                .put(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class);
-        AbstractKtWebsocketNotificationHandler.types
-                .put(AbstractKtWebsocketNotificationHandler.MESSAGES, Message.class);
-        AbstractKtWebsocketNotificationHandler.types
-                .put(AbstractKtWebsocketNotificationHandler.ORDERBOOK, OrderBookEntry.class);
-        AbstractKtWebsocketNotificationHandler.types
-                .put(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class);
-        AbstractKtWebsocketNotificationHandler.types
-                .put(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class);
-    }
 
     private final Logger                         logger;
     protected KtUserStore                        userStore;
@@ -71,12 +40,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
         this.subscriptionRequestDataFactory = subscriptionRequestDataFactory;
     }
 
-    public KtWebsocketManager getManager() {
-        if (this.manager == null) {
-            synchronized (this) {
-                return this.manager;
-            }
-        }
+    public synchronized KtWebsocketManager getManager() {
         return this.manager;
     }
 
@@ -162,8 +126,8 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rMessages", this.userStore.get(userKey),
                         selfCreated);
-        return subscribe(request, AbstractKtWebsocketNotificationHandler.MESSAGES,
-                userKey.getUserId(), userKey, listener);
+        return subscribe(request, Entity.MESSAGE.getUpdateChannel(), userKey.getUserId(), userKey,
+                listener);
     }
 
     @Override
@@ -171,8 +135,8 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
             final UserKey userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rOrders", this.userStore.get(userKey), selfCreated);
-        return subscribe(request, AbstractKtWebsocketNotificationHandler.TRADES,
-                userKey.getUserId(), userKey, listener);
+        return subscribe(request, Entity.TRADE.getUpdateChannel(), userKey.getUserId(), userKey,
+                listener);
     }
 
     @Override
@@ -180,8 +144,8 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
             final UserKey userKey, final boolean selfCreated) {
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rItems", this.userStore.get(userKey), selfCreated);
-        return subscribe(request, AbstractKtWebsocketNotificationHandler.ITEMS, userKey.getUserId(),
-                userKey, listener);
+        return subscribe(request, Entity.ITEM.getUpdateChannel(), userKey.getUserId(), userKey,
+                listener);
     }
 
     @Override
@@ -190,24 +154,22 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rPayouts", this.userStore.get(userKey),
                         selfCreated);
-        return subscribe(request, AbstractKtWebsocketNotificationHandler.PAYOUTS,
-                userKey.getUserId(), userKey, listener);
+        return subscribe(request, Entity.PAYOUT.getUpdateChannel(), userKey.getUserId(), userKey,
+                listener);
     }
 
     @Override
     public CompletableFuture<U> subscribeToOrderbook(final NotificationListener listener) {
         final SubscriptionRequestData request = new SubscriptionRequestData(
-                AbstractKtWebsocketNotificationHandler.ORDERBOOK);
-        return subscribe(request, AbstractKtWebsocketNotificationHandler.ORDERBOOK, null, null,
-                listener);
+                Entity.ORDERBOOK_ENTRY.getUpdateChannel());
+        return subscribe(request, Entity.ORDERBOOK_ENTRY.getUpdateChannel(), null, null, listener);
     }
 
     @Override
     public CompletableFuture<U> subscribeToHistory(final NotificationListener listener) {
         final SubscriptionRequestData request = new SubscriptionRequestData(
-                AbstractKtWebsocketNotificationHandler.HISTORY);
-        return subscribe(request, AbstractKtWebsocketNotificationHandler.HISTORY, null, null,
-                listener);
+                Entity.HISTORY_ENTRY.getUpdateChannel());
+        return subscribe(request, Entity.HISTORY_ENTRY.getUpdateChannel(), null, null, listener);
     }
 
     @Override

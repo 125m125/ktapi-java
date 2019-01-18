@@ -2,27 +2,39 @@ language: java
 jdk:
 - oraclejdk8
 
+
 env:
   global:
     secure: OndpjH7MwhDqDcZn8jFTZv9EVJN8IAqzrXMSjPl3z5h3V9kXfTfG+dcYwZN+DAtxnznQkJCDfK9yIpHvoH1D1qwHqjWNBzUGCgvl6wSXADptxBOWedrcCEcTp18IPsPVfZq5O+sZ/PgZnl/Z2ZuNUJUFeTgMeycgVM3J0LdArKJgRWXQlKiLWwUbnvUY4AO7jpH1SsTugZozfcK/VjHmrOCnqi05jEH50Myclwien97r59/BgYrrxruoQgFjmV4otT+OV2TmHUm2M2KaMY3mNGfUtRlgYqeehNBGYiVBVpHGHNQf7yYPda1MB6xCibler0E+KxENkXiJH3ZHpOhVaP2mpk9q2ErBIJcH+cFilIVtx7o5lEC+BQY2Epw8/WlvHfrtX7+ewP8KSoEjQL8WRErUOjbQphBsxlgqios6x/p1qjuoE+SY/2hj6Q7tCJHDLuAkl4xgwSRmomTZlA3TGj1QQPqXtu3olz2HrAJ8/iAjQUn1H6r17vOVSZip9UBRPlV1/3DQcTCaMV1Y43AI5FuiD/jWm5foqz5u8Gg97G1bzxKnaED+Cyob8Ua5a2csPHYstv91tsMC6nP4dNlBrMw9G2pSQ/10YJ44Rix1Dr56m+7dt1Z6IO2bc9PsbaasbkSv3aVlJIGknAORjytd4veQtk3Fj70qZHbUaBlpd/I=
 
 sudo: required
+jobs: 
+  include: 
+    - stage: test
+      name: "Unit Tests"              
+      before_install:
+        - ".travis/before-install.sh"
+      install: skip
+      after_success:
+        - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
+        - bash <(curl -s https://codecov.io/bash)
+    - name: "Spotbugs"
+      script: mvn spotbugs:check -B
+    - stage: deploy
+      script: skip
+      deploy:
+        provider: releases
+        api_key:
+          secure: fDYuxJwE3UcKUaFa9LqWnROXiP2/4CLMK/jgFN1uOqR4jYOUYBlI2ldErd5p3R4rn9wMiixv0NxGQEn9jx4UoYf7NSZoPOd53DsFf0KQiOMP1PT2VN7de7xRknD0idf+1jl208+jQpuEvC1mVlyL/xUrOC8yGF4Tvh9KBUSbgFCqp6pmA4s7xRCBNZDcH44NVdWzvnDOqPs9+G4eIN94d7fpqzuc1+ht5nXoGIWe+R84s6EpBZ1VOZX2Y2YJmuIZGo3sP9CBYWQ+hYOdJLF3TbMKwwjLsKnnIW7QQ34BxV886CbiTCUCuRRDCzI1YP+hUSBquvOf3m/obJhvNVMEVy/8E5/x0llhUFNkQhOZVdf/dyb3C9iZjRk+Xfb4naUtm8rGVl/yt+sBoSaI5s6jDO/JCIGQGAHitCXfhynnK+JakOjZCrMh7CX7EJ1/RJ8cBQygQbJL5IJcp5RsxKs3iV1iJOzzsTq0BrdFtY+PDct4zt+4dk29QdktQNFRe3lwms4fhkqKayrHlAl3TnBfTpRYK3UlxRMfUQNLjUKPMmkFgDquVmnywFHOwIlXGEhH4IDk8oKFm6myopXPlY45aPuZa1y64E2XZeLJBRJLSO29L4JVFtZy2E99+iCQ/OXXNxy5ZQDXBKqhKrlKqh2KHnrTGx9ztcPwtBmb3IEcF4c=
+        file_glob: true
+        file: "**/*.jar"
+        skip_cleanup: true
+        on:
+          repo: 125m125/ktapi-java
+          tags: true
 
-before_install:
-  - ".travis/before-install.sh"
-
-after_success:
-  - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
-  - bash <(curl -s https://codecov.io/bash)
-
-deploy:
-  provider: releases
-  api_key:
-    secure: fDYuxJwE3UcKUaFa9LqWnROXiP2/4CLMK/jgFN1uOqR4jYOUYBlI2ldErd5p3R4rn9wMiixv0NxGQEn9jx4UoYf7NSZoPOd53DsFf0KQiOMP1PT2VN7de7xRknD0idf+1jl208+jQpuEvC1mVlyL/xUrOC8yGF4Tvh9KBUSbgFCqp6pmA4s7xRCBNZDcH44NVdWzvnDOqPs9+G4eIN94d7fpqzuc1+ht5nXoGIWe+R84s6EpBZ1VOZX2Y2YJmuIZGo3sP9CBYWQ+hYOdJLF3TbMKwwjLsKnnIW7QQ34BxV886CbiTCUCuRRDCzI1YP+hUSBquvOf3m/obJhvNVMEVy/8E5/x0llhUFNkQhOZVdf/dyb3C9iZjRk+Xfb4naUtm8rGVl/yt+sBoSaI5s6jDO/JCIGQGAHitCXfhynnK+JakOjZCrMh7CX7EJ1/RJ8cBQygQbJL5IJcp5RsxKs3iV1iJOzzsTq0BrdFtY+PDct4zt+4dk29QdktQNFRe3lwms4fhkqKayrHlAl3TnBfTpRYK3UlxRMfUQNLjUKPMmkFgDquVmnywFHOwIlXGEhH4IDk8oKFm6myopXPlY45aPuZa1y64E2XZeLJBRJLSO29L4JVFtZy2E99+iCQ/OXXNxy5ZQDXBKqhKrlKqh2KHnrTGx9ztcPwtBmb3IEcF4c=
-  file_glob: true
-  file: "**/*.jar"
-  skip_cleanup: true
-  on:
-    repo: 125m125/ktapi-java
-    tags: true
-
+before_cache:
+  - rm -rf  $HOME/.m2/repository/de/125m125/kt/
+cache:
+  directories:
+    - $HOME/.m2

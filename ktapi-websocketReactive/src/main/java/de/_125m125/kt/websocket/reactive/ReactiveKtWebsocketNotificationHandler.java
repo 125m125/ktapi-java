@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de._125m125.kt.ktapi.core.NotificationListener;
+import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.Message;
@@ -80,7 +81,7 @@ public class ReactiveKtWebsocketNotificationHandler
     }
 
     public Observable<HistoryEntry> getHistoryObservable() {
-        return getObservable(AbstractKtWebsocketNotificationHandler.HISTORY, HistoryEntry.class);
+        return getObservable(Entity.HISTORY_ENTRY, HistoryEntry.class);
     }
 
     // public Observable<HistoryEntry> getHistoryObservable(String itemId) {
@@ -88,35 +89,32 @@ public class ReactiveKtWebsocketNotificationHandler
     // }
 
     public Observable<Item> getItemObservable() {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class);
+        return getObservable(Entity.ITEM, Item.class);
     }
 
     public Observable<Item> getItemObservable(final UserKey userkey) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class, userkey);
+        return getObservable(Entity.ITEM, Item.class, userkey);
     }
 
     public Observable<Item> getItemObservable(final String itemId) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class)
-                .filter(i -> itemId.equals(i.getId()));
+        return getObservable(Entity.ITEM, Item.class).filter(i -> itemId.equals(i.getId()));
     }
 
     public Observable<Item> getItemObservable(final UserKey userkey, final String itemId) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ITEMS, Item.class, userkey)
+        return getObservable(Entity.ITEM, Item.class, userkey)
                 .filter(i -> itemId.equals(i.getId()));
     }
 
     public Observable<Message> getMessageObservable() {
-        return getObservable(AbstractKtWebsocketNotificationHandler.MESSAGES, Message.class);
+        return getObservable(Entity.MESSAGE, Message.class);
     }
 
     public Observable<Message> getMessageObservable(final UserKey userkey) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.MESSAGES, Message.class,
-                userkey);
+        return getObservable(Entity.MESSAGE, Message.class, userkey);
     }
 
     public Observable<OrderBookEntry> getOrderbookObservable() {
-        return getObservable(AbstractKtWebsocketNotificationHandler.ORDERBOOK,
-                OrderBookEntry.class);
+        return getObservable(Entity.ORDERBOOK_ENTRY, OrderBookEntry.class);
     }
 
     // public Observable<OrderBookEntry> getOrderbookObservable(String itemId) {
@@ -124,47 +122,47 @@ public class ReactiveKtWebsocketNotificationHandler
     // }
 
     public Observable<Payout> getPayoutObservable() {
-        return getObservable(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class);
+        return getObservable(Entity.PAYOUT, Payout.class);
     }
 
     public Observable<Payout> getPayoutObservable(final UserKey userkey) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class, userkey);
+        return getObservable(Entity.PAYOUT, Payout.class, userkey);
     }
 
     public Observable<Payout> getPayoutObservable(final long payoutId) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.PAYOUTS, Payout.class)
-                .filter(p -> payoutId == p.getId()).takeUntil(p -> p.getState() == "SUCCESS"
-                        || p.getState() == "CANCELLED" || p.getState() == "FAILED_TAKEN");
+        return getObservable(Entity.PAYOUT, Payout.class).filter(p -> payoutId == p.getId())
+                .takeUntil(p -> "SUCCESS".equals(p.getState()) || "CANCELLED".equals(p.getState())
+                        || "FAILED_TAKEN".equals(p.getState()));
     }
 
     public Observable<Trade> getTradeObservable() {
-        return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class);
+        return getObservable(Entity.TRADE, Trade.class);
     }
 
     public Observable<Trade> getTradeObservable(final UserKey userkey) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class, userkey);
+        return getObservable(Entity.TRADE, Trade.class, userkey);
     }
 
     public Observable<Trade> getTradeObservable(final long tradeId) {
-        return getObservable(AbstractKtWebsocketNotificationHandler.TRADES, Trade.class)
-                .filter(n -> tradeId == n.getId()).takeUntil(n -> n.getAmount() == n.getSold()
-                        && n.getToTakeItems() == 0 && n.getToTakeMoney() == 0);
+        return getObservable(Entity.TRADE, Trade.class).filter(n -> tradeId == n.getId())
+                .takeUntil(n -> n.getAmount() == n.getSold() && n.getToTakeItems() == 0
+                        && n.getToTakeMoney() == 0);
     }
 
-    private <U> Observable<U> getObservable(final String type, final Class<U> t) {
-        if (AbstractKtWebsocketNotificationHandler.types.get(type) != t) {
+    private <U> Observable<U> getObservable(final Entity type, final Class<U> t) {
+        if (type.getInstanceClass() != t) {
             throw new IllegalArgumentException("type " + type + " does not map to " + t);
         }
-        return this.subject.filter(n -> type.equals(n.getSource()))
+        return this.subject.filter(n -> type.getUpdateChannel().equals(n.getSource()))
                 .flatMap(n -> Observable.fromArray(n.getChangedEntries())).map(t::cast);
     }
 
-    private <U> Observable<U> getObservable(final String type, final Class<U> t,
+    private <U> Observable<U> getObservable(final Entity type, final Class<U> t,
             final UserKey userkey) {
-        if (AbstractKtWebsocketNotificationHandler.types.get(type) != t) {
+        if (type.getInstanceClass() != t) {
             throw new IllegalArgumentException("type " + type + " does not map to " + t);
         }
-        return this.subject.filter(n -> type.equals(n.getSource()))
+        return this.subject.filter(n -> type.getUpdateChannel().equals(n.getSource()))
                 .filter(n -> userkey.getUserId().equals(n.getKey()))
                 .flatMap(n -> Observable.fromArray(n.getChangedEntries())).map(t::cast);
     }

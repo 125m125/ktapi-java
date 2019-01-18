@@ -18,6 +18,10 @@
             <version>4.2</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-pusher</artifactId>
             <scope>test</scope>
@@ -26,10 +30,6 @@
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-retrofit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

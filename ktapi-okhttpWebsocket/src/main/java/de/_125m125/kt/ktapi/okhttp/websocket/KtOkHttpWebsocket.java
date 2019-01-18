@@ -50,7 +50,7 @@ public class KtOkHttpWebsocket implements KtWebsocket {
         } else {
             this.clientBuilder = new OkHttpClientBuilder().recommendedModifiers();
         }
-        this.client = clientBuilder.build(this);
+        this.client = this.clientBuilder.build(this);
     }
 
     @Override
