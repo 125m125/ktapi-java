@@ -10,6 +10,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de._125m125.kt.ktapi.core.BUY_SELL;
 import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
 import de._125m125.kt.ktapi.core.KtCachingRequester;
@@ -55,6 +58,9 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
             Payout.class, Payout::getId);
     private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new ReplaceOrPrependOrInvalidateOnEmptyCacheData<>(
             Trade.class, Trade::getId);
+
+    private static final Logger                                    logger           = LoggerFactory
+            .getLogger(KtSmartCache.class);
 
     public static final int                                        CACHE_HIT_STATUS = 299;
 
@@ -119,6 +125,11 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
                 if (!cacheData.getClazz().isAssignableFrom(changedEntries[0].getClass())) {
                     throw new IllegalArgumentException();
                 }
+                KtSmartCache.logger.debug("invalidating cache with key {} and changed entries",
+                        key);
+            } else {
+                KtSmartCache.logger.debug("invalidating cache with key {} without changed entries",
+                        key);
             }
             cacheData.invalidate(changedEntries);
         }
@@ -167,6 +178,7 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
     public void update(final Notification notification) {
         final String key = notification.getDetails().get("source")
                 + notification.getDetails().get("key");
+        KtSmartCache.logger.debug("received notification for key {}: {}", key, notification);
         if (notification instanceof UpdateNotification<?>) {
             invalidate(key, ((UpdateNotification<?>) notification).getChangedEntries());
         } else {
@@ -326,8 +338,12 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
                 cacheGenerator);
         final Optional<TimestampedList<T>> all = cacheEntry.get(start, end);
         if (all.isPresent()) {
+            KtSmartCache.logger.debug("getting {} to {} for {} resulted in a cache hit", start, end,
+                    key);
             return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, all.get());
         } else {
+            KtSmartCache.logger.debug("getting {} to {} for {} resulted in a cache miss", start,
+                    end, key);
             return new ExposedResult<>(fetcher, (status, result) -> cacheEntry.set(result, start));
         }
     }
@@ -340,9 +356,13 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
                 cacheGenerator);
         final Optional<T> all = cacheEntry.get(index);
         if (all.isPresent()) {
+            KtSmartCache.logger.debug("getting index {} for {} resulted in a cache hit", index,
+                    key);
             return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, KtSmartCache.this.factory
                     .create(all.get(), cacheEntry.getLastInvalidationTime(), true));
         } else {
+            KtSmartCache.logger.debug("getting index {} for {} resulted in a cache miss", index,
+                    key);
             return new ExposedResult<>(fetcher, (status, result) -> KtSmartCache.this.factory
                     .create(result, cacheEntry.getLastInvalidationTime(), false));
         }
@@ -356,9 +376,13 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
                 cacheGenerator);
         final Optional<T> all = cacheEntry.getAny(index);
         if (all.isPresent()) {
+            KtSmartCache.logger.debug("getting {} with predicate {} resulted in a cache hit", key,
+                    index);
             return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, KtSmartCache.this.factory
                     .create(all.get(), cacheEntry.getLastInvalidationTime(), true));
         } else {
+            KtSmartCache.logger.debug("getting {} with predicate {} resulted in a cache miss", key,
+                    index);
             final ExposedResult<T> returnResult = new ExposedResult<>(fetcher,
                     (status, result) -> KtSmartCache.this.factory.create(result,
                             cacheEntry.getLastInvalidationTime(), false));
@@ -374,8 +398,10 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
                 cacheGenerator);
         final Optional<TimestampedList<T>> all = cacheEntry.getAll();
         if (all.isPresent()) {
+            KtSmartCache.logger.debug("getting all entries for {} resulted in a cache hit", key);
             return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, all.get());
         } else {
+            KtSmartCache.logger.debug("getting all entries for {} resulted in a cache miss", key);
             return new ExposedResult<>(fetcher, (status, result) -> cacheEntry.set(result, 0));
         }
     }
