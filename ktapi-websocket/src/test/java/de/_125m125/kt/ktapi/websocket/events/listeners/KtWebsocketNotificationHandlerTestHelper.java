@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.slf4j.Logger;
 
 import de._125m125.kt.ktapi.core.entities.Notification;
+import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
@@ -27,7 +28,6 @@ import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
 import de._125m125.kt.ktapi.websocket.events.WebsocketStatus;
 import de._125m125.kt.ktapi.websocket.requests.RequestMessage;
 import de._125m125.kt.ktapi.websocket.responses.ResponseMessage;
-import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 
 public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
 

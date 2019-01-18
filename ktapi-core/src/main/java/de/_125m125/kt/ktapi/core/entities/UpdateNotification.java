@@ -1,8 +1,6 @@
-package de._125m125.kt.ktapi.websocket.responses;
+package de._125m125.kt.ktapi.core.entities;
 
 import java.util.Map;
-
-import de._125m125.kt.ktapi.core.entities.Notification;
 
 public class UpdateNotification<T> extends Notification {
 

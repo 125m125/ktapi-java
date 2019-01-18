@@ -1,14 +1,13 @@
 package de._125m125.kt.ktapi.websocket;
 
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.entities.Notification;
 
 public class SubscriptionList {
-    private final List<NotificationListener> otherListeners;
-    private final List<NotificationListener> selfListeners;
+    private final CopyOnWriteArrayList<NotificationListener> otherListeners;
+    private final CopyOnWriteArrayList<NotificationListener> selfListeners;
 
     public SubscriptionList() {
         this.otherListeners = new CopyOnWriteArrayList<>();
@@ -17,9 +16,9 @@ public class SubscriptionList {
 
     public void addListener(final NotificationListener l, final boolean selfCreated) {
         if (selfCreated) {
-            this.selfListeners.add(l);
+            this.selfListeners.addIfAbsent(l);
         } else {
-            this.otherListeners.add(l);
+            this.otherListeners.addIfAbsent(l);
         }
     }
 

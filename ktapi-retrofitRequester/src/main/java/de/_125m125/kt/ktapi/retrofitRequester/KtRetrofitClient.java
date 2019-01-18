@@ -52,11 +52,12 @@ public interface KtRetrofitClient {
             @Header("userKey") String String);
 
     @GET("users/{userid}/messages")
-    Call<List<Message>> getMessages(@Path("userid") String userid,
-            @Header("userKey") String String);
+    Call<List<Message>> getMessages(@Path("userid") String userid, @Header("userKey") String String,
+            @Query("offset") int offset, @Query("limit") int limit);
 
     @GET("users/{userid}/payouts")
-    Call<List<Payout>> getPayouts(@Path("userid") String userid, @Header("userKey") String String);
+    Call<List<Payout>> getPayouts(@Path("userid") String userid, @Header("userKey") String String,
+            @Query("offset") int offset, @Query("limit") int limit);
 
     @GET("users/{userid}/payouts/{payoutid}")
     Call<List<Payout>> getPayouts(@Path("userid") String userid, @Path("payoutid") String payoutid,

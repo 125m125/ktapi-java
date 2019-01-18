@@ -31,9 +31,17 @@ public interface KtRequester extends Closeable {
 
     public Result<Item> getItem(UserKey userKey, String itemid);
 
-    public Result<List<Message>> getMessages(UserKey userKey);
+    public default Result<List<Message>> getMessages(final UserKey userKey) {
+        return getMessages(userKey, 0, 50);
+    }
 
-    public Result<List<Payout>> getPayouts(UserKey userKey);
+    public Result<List<Message>> getMessages(UserKey userKey, int offset, int limit);
+
+    public default Result<List<Payout>> getPayouts(final UserKey userKey) {
+        return getPayouts(userKey, 0, 50);
+    }
+
+    public Result<List<Payout>> getPayouts(UserKey userKey, int offset, int limit);
 
     public Result<WriteResult<Payout>> createPayout(UserKey userKey, PAYOUT_TYPE type,
             String itemid, String amount);

@@ -6,8 +6,8 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
+import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.websocket.events.listeners.AbstractKtWebsocketNotificationHandler;
-import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 
 public class SemiparsedUpdateNotification<T> extends UpdateNotification<T> {
 

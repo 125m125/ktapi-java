@@ -7,9 +7,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.websocket.responses.ResponseMessage;
 import de._125m125.kt.ktapi.websocket.responses.SessionResponse;
-import de._125m125.kt.ktapi.websocket.responses.UpdateNotification;
 
 public class MessageParser {
     public Optional<Object> parse(final String message) {
