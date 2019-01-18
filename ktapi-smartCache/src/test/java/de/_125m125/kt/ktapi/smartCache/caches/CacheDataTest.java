@@ -1,6 +1,7 @@
 package de._125m125.kt.ktapi.smartCache.caches;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -294,5 +295,44 @@ public class CacheDataTest {
         this.uut.invalidate(changedEntries);
 
         assertEquals(1000, this.uut.getLastInvalidationTime());
+    }
+
+    @Test
+    public void testGetDoesNotReturnEmptyWhenKnownThatEntriesNotOnServerAndMissedPartiallyAtEnd() {
+        this.uut.set(Arrays.asList("1", "2"), 1, true);
+
+        final Optional<TimestampedList<String>> actual = this.uut.get(2, 4);
+
+        assertTrue(actual.isPresent());
+        assertEquals(Arrays.asList("2"), actual.get());
+    }
+
+    @Test
+    public void testGetDoesNotReturnEmptyWhenKnownThatEntriesNotOnServerAndMissedAllAtEnd() {
+        this.uut.set(Arrays.asList("1", "2"), 1, true);
+
+        final Optional<TimestampedList<String>> actual = this.uut.get(3, 4);
+
+        assertTrue(actual.isPresent());
+        assertEquals(Arrays.asList(), actual.get());
+    }
+
+    @Test
+    public void testGetDoesReturnEmptyWhenKnownThatEntriesNotOnServerAndMissedBetweens() {
+        this.uut.set(Arrays.asList("1", "2"), 1, true);
+
+        final Optional<TimestampedList<String>> actual = this.uut.get(0, 4);
+
+        assertFalse(actual.isPresent());
+    }
+
+    @Test
+    public void testGetAllDoesNotReturnEmptyWhenEmptyAndNotOnServer() {
+        this.uut.set(Arrays.asList(), 0, true);
+
+        final Optional<TimestampedList<String>> actual = this.uut.getAll();
+
+        assertTrue(actual.isPresent());
+        assertEquals(Arrays.asList(), actual.get());
     }
 }

@@ -16,12 +16,12 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 
 public abstract class CacheData<T> {
     private final Clock         clock;
+    private final Class<T>      clazz;
 
     private final GrowthList<T> entries;
     private long                lastInvalidationTime;
+    private boolean             fetchedLast = false;
     private TimestampedList<T>  allEntries;
-
-    private final Class<T>      clazz;
 
     public CacheData(final Class<T> clazz) {
         this(clazz, Clock.systemDefaultZone());
@@ -48,9 +48,30 @@ public abstract class CacheData<T> {
      *             if the start index is negative
      */
     public synchronized TimestampedList<T> set(final List<T> newEntries, final int start) {
+        return set(newEntries, start, false);
+    }
+
+    /**
+     * sets the cached entries starting from the given start index
+     *
+     * @param newEntries
+     *            the entries to insert
+     * @param start
+     *            the index where the first entry should be inserted
+     * @param containsLast
+     *            true, if the last entry in the list is the last entry on the server
+     * @return a TimestampedList containing the provided entries
+     * @throws IllegalArgumentException
+     *             if the size of defined range does not equal the size of supplied list
+     * @throws IllegalArgumentException
+     *             if the start index is negative
+     */
+    public synchronized TimestampedList<T> set(final List<T> newEntries, final int start,
+            final boolean containsLast) {
         for (int i = newEntries.size() - 1; i >= 0; i--) {
             this.entries.set(i + start, newEntries.get(i));
         }
+        this.fetchedLast |= containsLast;
         this.allEntries = null;
         return new TimestampedList<>(newEntries, this.lastInvalidationTime, false);
     }
@@ -113,6 +134,7 @@ public abstract class CacheData<T> {
         if (changedEntries == null || changedEntries.length == 0) {
             synchronized (this) {
                 updateInvalidationTime();
+                this.fetchedLast = false;
                 this.entries.clear();
             }
         } else {
@@ -127,12 +149,15 @@ public abstract class CacheData<T> {
 
     protected abstract void updateEntries(T[] changedEntries);
 
-    public Optional<TimestampedList<T>> get(final int start, final int end) {
-        final int size = end - start;
-        final List<T> result = new ArrayList<>(size);
+    public Optional<TimestampedList<T>> get(final int start, int end) {
+        final List<T> result = new ArrayList<>(end - start);
         synchronized (this) {
             if (end > this.entries.size()) {
-                return Optional.empty();
+                if (!this.fetchedLast) {
+                    return Optional.empty();
+                } else {
+                    end = this.entries.size();
+                }
             }
             for (int i = start; i < end; i++) {
                 final T entry = this.entries.get(i);
@@ -146,11 +171,11 @@ public abstract class CacheData<T> {
     }
 
     public synchronized Optional<TimestampedList<T>> getAll() {
-        if (this.entries.isEmpty()) {
-            return Optional.empty();
-        }
         if (this.allEntries != null) {
             return Optional.of(this.allEntries);
+        }
+        if (this.entries.isEmpty() && !this.fetchedLast) {
+            return Optional.empty();
         }
         final List<T> result = new ArrayList<>(this.entries);
         this.allEntries = new TimestampedList<>(result, this.lastInvalidationTime, true);

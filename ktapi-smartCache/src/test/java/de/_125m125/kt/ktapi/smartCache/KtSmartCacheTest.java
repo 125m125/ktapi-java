@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,6 +34,7 @@ import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
+import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.smartCache.caches.CacheData;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedHistoryEntry;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
@@ -47,7 +48,7 @@ public class KtSmartCacheTest {
     private KtNotificationManager<?>  notificationmanager;
 
     @InjectMocks
-    private KtSmartCache     uut;
+    private KtSmartCache              uut;
 
     private Map<String, CacheData<?>> cache;
 
@@ -195,7 +196,7 @@ public class KtSmartCacheTest {
             argumentAt.onSuccess(200, asList);
             return null;
         }).when(result).addCallback(any());
-        when(cacheData.set(asList, 5)).thenReturn(new TimestampedList<>(asList, 1000));
+        when(cacheData.set(asList, 5, false)).thenReturn(new TimestampedList<>(asList, 1000));
 
         final Result<List<HistoryEntry>> history = this.uut.getHistory("1", 1, 5);
 
@@ -249,15 +250,29 @@ public class KtSmartCacheTest {
     }
 
     @Test
-    @Ignore
-    public void testGetItems() throws Exception {
-        throw new RuntimeException("not yet implemented");
-    }
+    public void testGetMessages_requestReturnsLessEntriesThanExpected() throws Exception {
+        @SuppressWarnings("unchecked")
+        final CacheData<Message> cacheData = mock(CacheData.class);
+        this.cache.put("message3", cacheData);
+        when(cacheData.get(5, 7)).thenReturn(Optional.empty());
 
-    @Test
-    @Ignore
-    public void testGetItem() throws Exception {
-        throw new RuntimeException("not yet implemented");
-    }
+        @SuppressWarnings("unchecked")
+        final Result<List<Message>> result = mock(Result.class);
+        final List<Message> asList = Arrays.asList(new Message("2018-01-01 00:00:00.0", "hello"));
+        when(this.requester.getMessages(any(), eq(2), eq(5))).thenReturn(result);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            final Callback<List<Message>> argumentAt = invocation.getArgumentAt(0, Callback.class);
+            argumentAt.onSuccess(200, asList);
+            return null;
+        }).when(result).addCallback(any());
+        when(cacheData.set(asList, 5, true)).thenReturn(new TimestampedList<>(asList, 1000));
 
+        final Result<List<Message>> messages = this.uut.getMessages(new TokenUserKey("1", "2"), 2,
+                5);
+
+        assertEquals(asList, messages.getContent());
+        assertEquals(200, messages.getStatus());
+        assertTrue(messages.getContent() instanceof TimestampedList);
+    }
 }

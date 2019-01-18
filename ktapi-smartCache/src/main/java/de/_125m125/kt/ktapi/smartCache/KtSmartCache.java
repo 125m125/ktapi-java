@@ -246,7 +246,7 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
         this.ktNotificationManager.subscribeToMessages(this, userKey, true);
         return getOrFetch(Entity.MESSAGE.getUpdateChannel() + userKey.getUserId(), offset,
                 offset + limit, KtSmartCache.MESSAGE_FACTORY,
-                () -> this.requester.getMessages(userKey));
+                () -> this.requester.getMessages(userKey, offset, limit));
     }
 
     @Override
@@ -256,7 +256,7 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
         this.ktNotificationManager.subscribeToPayouts(this, userKey, true);
         return getOrFetch(Entity.PAYOUT.getUpdateChannel() + userKey.getUserId(), offset,
                 offset + limit, KtSmartCache.PAYOUT_FACTORY,
-                () -> this.requester.getPayouts(userKey));
+                () -> this.requester.getPayouts(userKey, offset, limit));
     }
 
     @Override
@@ -344,7 +344,8 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
         } else {
             KtSmartCache.logger.debug("getting {} to {} for {} resulted in a cache miss", start,
                     end, key);
-            return new ExposedResult<>(fetcher, (status, result) -> cacheEntry.set(result, start));
+            return new ExposedResult<>(fetcher,
+                    (status, result) -> cacheEntry.set(result, start, result.size() < end - start));
         }
     }
 
@@ -402,7 +403,8 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
             return new ImmediateResult<>(KtSmartCache.CACHE_HIT_STATUS, all.get());
         } else {
             KtSmartCache.logger.debug("getting all entries for {} resulted in a cache miss", key);
-            return new ExposedResult<>(fetcher, (status, result) -> cacheEntry.set(result, 0));
+            return new ExposedResult<>(fetcher,
+                    (status, result) -> cacheEntry.set(result, 0, true));
         }
     }
 
