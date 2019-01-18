@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
@@ -30,7 +31,7 @@ public class ReactiveKtWebsocketNotificationHandlerTest
         final TestObserver<Payout> subscriber = new TestObserver<>();
         final Map<String, String> details = new HashMap<>();
         details.put("key", "F");
-        details.put("source", AbstractKtWebsocketNotificationHandler.PAYOUTS);
+        details.put("source", Entity.PAYOUT.getUpdateChannel());
 
         uut.getPayoutObservable(1L).subscribe(subscriber);
 

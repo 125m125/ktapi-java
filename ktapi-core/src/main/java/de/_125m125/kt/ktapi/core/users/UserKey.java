@@ -1,5 +1,6 @@
 package de._125m125.kt.ktapi.core.users;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class UserKey {
@@ -7,8 +8,8 @@ public abstract class UserKey {
     private final String typeName;
 
     public UserKey(final String userid, final Class<? extends User> userType) {
-        this.userId = userid;
-        this.typeName = userType.getTypeName() + ":" + getUserId();
+        this.userId = Objects.requireNonNull(userid);
+        this.typeName = userType.getTypeName() + ":" + this.userId;
     }
 
     @SuppressWarnings("unchecked")
@@ -32,14 +33,18 @@ public abstract class UserKey {
     public abstract String getSubIdentifier();
 
     @Override
-    public boolean equals(final Object o) {
-        if (o == this) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (getClass() != o.getClass()) {
+        if (obj == null) {
             return false;
         }
-        return ((UserKey) o).getIdentifier().equals(getIdentifier());
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserKey other = (UserKey) obj;
+        return getIdentifier().equals(other.getIdentifier());
     }
 
     @Override

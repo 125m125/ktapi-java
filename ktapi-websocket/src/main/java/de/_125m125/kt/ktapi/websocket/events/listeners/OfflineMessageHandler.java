@@ -25,7 +25,8 @@ public class OfflineMessageHandler {
     @WebsocketEventListening
     public synchronized void onWebsocketManagerCreated(final WebsocketManagerCreatedEvent e) {
         if (this.manager != null) {
-            throw new IllegalStateException("each session handler can only be used for a single WebsocketManager");
+            throw new IllegalStateException(
+                    "each session handler can only be used for a single WebsocketManager");
         }
         this.manager = e.getManager();
     }
@@ -33,9 +34,9 @@ public class OfflineMessageHandler {
     @WebsocketEventListening
     public void beforeMessageSend(final BeforeMessageSendEvent e) {
         if (!e.getWebsocketStatus().isConnected() && e.getMessage().getRequestId().isPresent()) {
-            OfflineMessageHandler.logger
-                    .info("intercepting message {} since websocket is not connected",
-                            e.getMessage().getRequestId().get());
+            OfflineMessageHandler.logger.info(
+                    "intercepting message {} since websocket is not connected",
+                    e.getMessage().getRequestId().get());
             synchronized (this.waitingRequests) {
                 this.waitingRequests.add(e.getMessage());
             }
@@ -44,18 +45,18 @@ public class OfflineMessageHandler {
     }
 
     @WebsocketEventListening
-    public void onWebsocketConnect(final WebsocketConnectedEvent e) {
+    public synchronized void onWebsocketConnect(final WebsocketConnectedEvent e) {
+        final KtWebsocketManager myManager = this.manager;
         new Thread(() -> {
             final List<RequestMessage> oldMessages;
             synchronized (this.waitingRequests) {
                 oldMessages = new ArrayList<>(this.waitingRequests);
                 this.waitingRequests.clear();
             }
-            OfflineMessageHandler.logger.info(
-                    "resending messages {}",
+            OfflineMessageHandler.logger.info("resending messages {}",
                     oldMessages.stream().map(m -> m.getRequestId().get().toString())
                             .collect(Collectors.joining(",", "[", "]")));
-            oldMessages.forEach(this.manager::sendMessage);
+            oldMessages.forEach(myManager::sendMessage);
         }, "ResendCapturedOfflineMessageThread").start();
     }
 }

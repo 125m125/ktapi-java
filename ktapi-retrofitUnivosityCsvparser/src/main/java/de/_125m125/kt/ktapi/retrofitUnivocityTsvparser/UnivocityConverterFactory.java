@@ -5,15 +5,17 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
 public class UnivocityConverterFactory extends Converter.Factory {
+    @SuppressFBWarnings(justification = "if rawtype of type is List, type has to be ParameterizedType", value = "BC_UNCONFIRMED_CAST")
     @Override
-    public Converter<ResponseBody, ?> responseBodyConverter(final Type type, final Annotation[] annotations,
-            final Retrofit retrofit) {
+    public Converter<ResponseBody, ?> responseBodyConverter(final Type type,
+            final Annotation[] annotations, final Retrofit retrofit) {
         if (!List.class.equals(getRawType(type))) {
             return null;
         }
@@ -23,8 +25,9 @@ public class UnivocityConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<?, RequestBody> requestBodyConverter(final Type type, final Annotation[] parameterAnnotations,
-            final Annotation[] methodAnnotations, final Retrofit retrofit) {
+    public Converter<?, RequestBody> requestBodyConverter(final Type type,
+            final Annotation[] parameterAnnotations, final Annotation[] methodAnnotations,
+            final Retrofit retrofit) {
         return null;
     }
 }

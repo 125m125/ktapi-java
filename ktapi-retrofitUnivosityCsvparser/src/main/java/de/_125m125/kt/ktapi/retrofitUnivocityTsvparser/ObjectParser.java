@@ -3,6 +3,9 @@ package de._125m125.kt.ktapi.retrofitUnivocityTsvparser;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -37,7 +40,8 @@ public class ObjectParser<T> implements RowProcessor {
             final String header = headers[i].replaceAll(" ", "_");
             for (final Field f : clazzFields) {
                 if (f.getName().equals(header)) {
-                    final Function<String, Object> c = this.converterFactory.getConverterFor(f.getType());
+                    final Function<String, Object> c = this.converterFactory
+                            .getConverterFor(f.getType());
                     if (c != null) {
                         this.fields.add(new ParseableField<>(f, i, c));
                     }
@@ -49,6 +53,10 @@ public class ObjectParser<T> implements RowProcessor {
 
     @Override
     public void rowProcessed(final String[] row, final ParsingContext context) {
+        if (this.fields == null) {
+            throw new IllegalStateException(
+                    "processStarted should have been called before rowProcessed");
+        }
         try {
             final Constructor<T> constructor = this.clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -59,14 +67,16 @@ public class ObjectParser<T> implements RowProcessor {
             }
 
             this.parsedResults.add(result);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e) {
+        } catch (final PrivilegedActionException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | SecurityException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void processEnded(final ParsingContext context) {
+        this.fields = null;
     }
 
     public List<T> getResult() {
@@ -78,17 +88,21 @@ public class ObjectParser<T> implements RowProcessor {
         private final int                      colIndex;
         private final Function<String, Object> converter;
 
-        public ParseableField(final Field field, final int colIndex, final Function<String, Object> converter) {
+        public ParseableField(final Field field, final int colIndex,
+                final Function<String, Object> converter) {
             super();
             this.field = field;
             this.colIndex = colIndex;
             this.converter = converter;
         }
 
-        public void apply(final T target, final String[] fields)
-                throws IllegalArgumentException, IllegalAccessException {
-            this.field.setAccessible(true);
-            this.field.set(target, this.converter.apply(fields[this.colIndex]));
+        public void apply(final T target, final String[] fields) throws PrivilegedActionException {
+            AccessController.doPrivileged((PrivilegedExceptionAction<Void>) () -> {
+                ParseableField.this.field.setAccessible(true);
+                ParseableField.this.field.set(target,
+                        ParseableField.this.converter.apply(fields[ParseableField.this.colIndex]));
+                return null;
+            });
         }
     }
 }

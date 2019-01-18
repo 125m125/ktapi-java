@@ -1,5 +1,6 @@
 package de._125m125.kt.ktapi.core.entities;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class UpdateNotification<T> extends Notification {
@@ -14,7 +15,8 @@ public class UpdateNotification<T> extends Notification {
     public UpdateNotification(final boolean selfCreated, final long uid, final String base32Uid,
             final Map<String, String> details, final T[] changedEntries) {
         super(selfCreated, uid, base32Uid, "update", details);
-        this.changedEntries = changedEntries;
+        this.changedEntries = changedEntries == null ? null
+                : Arrays.copyOf(changedEntries, changedEntries.length);
     }
 
     public String getSource() {
@@ -34,6 +36,6 @@ public class UpdateNotification<T> extends Notification {
     }
 
     public T[] getChangedEntries() {
-        return this.changedEntries;
+        return Arrays.copyOf(this.changedEntries, this.changedEntries.length);
     }
 }

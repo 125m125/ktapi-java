@@ -142,8 +142,10 @@ public class OkHttpClientBuilder {
             return;
         }
         this.closed = true;
-        this.client.connectionPool().evictAll();
-        this.client.dispatcher().executorService().shutdown();
+        if (this.client != null) {
+            this.client.connectionPool().evictAll();
+            this.client.dispatcher().executorService().shutdown();
+        }
     }
 
     /**

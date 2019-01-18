@@ -6,8 +6,8 @@ public class SessionResponse extends ResponseMessage {
 
     private final SessionDetails session;
 
-    public SessionResponse(final Integer rid, final Long pong, final String error, final Throwable errorCause,
-            final SessionDetails sessionDetails) {
+    public SessionResponse(final Integer rid, final Long pong, final String error,
+            final Throwable errorCause, final SessionDetails sessionDetails) {
         super(rid, pong, error, errorCause);
         this.session = sessionDetails;
     }
@@ -16,7 +16,7 @@ public class SessionResponse extends ResponseMessage {
         return this.session;
     }
 
-    public class SessionDetails {
+    public static class SessionDetails {
         private final String       id;
         private final List<String> channelSubscriptions;
 

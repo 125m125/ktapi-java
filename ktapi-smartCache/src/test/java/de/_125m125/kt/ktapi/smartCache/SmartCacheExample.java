@@ -11,8 +11,8 @@ import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
+import de._125m125.kt.ktapi.pusher.KtPusher;
 import de._125m125.kt.ktapi.pusher.KtPusherAuthorizer;
-import de._125m125.kt.ktapi.pusher.PusherKt;
 import de._125m125.kt.ktapi.retrofit.KtRetrofit;
 import de._125m125.kt.ktapi.retrofitRequester.KtRetrofitRequester;
 
@@ -21,11 +21,10 @@ public class SmartCacheExample {
         final TokenUser user = new TokenUser("1", "1", "1");
         final KtRetrofitRequester innerRequester = KtRetrofit
                 .createDefaultRequester(new KtUserStore(user));
-        final PusherKt pusher = new PusherKt(user,
+        final KtPusher pusher = new KtPusher(user,
                 unescapedData -> new Gson().fromJson(unescapedData, Notification.class),
                 new KtPusherAuthorizer(user.getKey(), innerRequester));
-        final KtCachingRequester cachingRequester = new KtSmartCache(innerRequester,
-                pusher);
+        final KtCachingRequester cachingRequester = new KtSmartCache(innerRequester, pusher);
 
         cachingRequester.getHistory("-1", 10, 0).addCallback(new Callback<List<HistoryEntry>>() {
 
