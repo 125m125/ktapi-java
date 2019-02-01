@@ -21,6 +21,8 @@ jobs:
     - name: "Spotbugs"
       script: mvn spotbugs:check -B
     - stage: deploy
+      name: "Deploy to Github"
+      if: tag IS true AND repo = "125m125/ktapi-java"
       script: skip
       deploy:
         provider: releases
