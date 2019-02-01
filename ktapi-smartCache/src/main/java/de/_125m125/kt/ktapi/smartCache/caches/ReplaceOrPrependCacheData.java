@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class ReplaceOrPrependCacheData<T> extends PrependCacheData<T> {
 
-    private final Function<T, Object> keyMapper;
+    protected final Function<T, Object> keyMapper;
 
     /* package */ ReplaceOrPrependCacheData(final Class<T> clazz,
             final Function<T, Object> keyMapper, final Clock clock) {

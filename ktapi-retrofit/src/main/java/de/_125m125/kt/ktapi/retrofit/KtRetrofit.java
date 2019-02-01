@@ -4,8 +4,6 @@ import java.io.File;
 
 import com.google.gson.Gson;
 
-import de._125m125.kt.ktapi.core.KtRequester;
-import de._125m125.kt.ktapi.core.SingleUserKtRequester;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.users.CertificateUser;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
@@ -45,15 +43,14 @@ public class KtRetrofit {
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
     }
 
-    public static SingleUserKtRequester createClientCertificateRequester(
-            final KtUserStore userStore, final UserKey userKey, final Cache cache) {
+    public static KtRetrofitRequester createClientCertificateRequester(final KtUserStore userStore,
+            final UserKey userKey, final Cache cache) {
         final CertificateUser user = userStore.get(userKey, CertificateUser.class);
-        final KtRequester baseRequester = new KtRetrofitRequester(KtRetrofit.DEFAULT_BASE_URL,
+        return new KtRetrofitRequester(KtRetrofit.DEFAULT_BASE_URL,
                 getClientModifiers(userStore, cache,
                         ClientCertificateAdder.createUnchecked(user.getFile(), user.getPassword())),
                 KtRetrofit.RETROFIT_MODIFIERS,
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
-        return new SingleUserKtRequester(userKey, baseRequester);
     }
 
     private static ClientModifier[] getClientModifiers(final KtUserStore store, final Cache cache,

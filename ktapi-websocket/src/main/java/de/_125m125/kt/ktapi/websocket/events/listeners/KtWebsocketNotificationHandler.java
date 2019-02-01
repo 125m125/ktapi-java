@@ -63,15 +63,15 @@ public class KtWebsocketNotificationHandler
                 keyList.notifyListeners(notificationMessage);
             } else {
                 KtWebsocketNotificationHandler.logger.debug(
-                        "No listeners found for notifications on {}.*",
-                        notificationMessage.getSource());
+                        "No listeners found for notifications on {}.{}",
+                        notificationMessage.getSource(), notificationMessage.getKey());
             }
             if (unkeyedList != null) {
                 unkeyedList.notifyListeners(notificationMessage);
             } else {
                 KtWebsocketNotificationHandler.logger.debug(
-                        "No listeners found for notifications on {}.{}",
-                        notificationMessage.getSource(), notificationMessage.getKey());
+                        "No listeners found for notifications on {}.*",
+                        notificationMessage.getSource());
             }
         }
     }

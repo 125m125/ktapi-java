@@ -7,8 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.list.GrowthList;
 
@@ -124,6 +126,20 @@ public abstract class CacheData<T> {
             }
         }
         return replacements.values();
+    }
+
+    public void removeAll(final List<T> toRemove) {
+        synchronized (this) {
+            if (entries.removeAll(toRemove)) {
+                updateInvalidationTime();
+            }
+        }
+    }
+
+    protected void removeMatches(List<T> toRemove, final Function<T, Object> keyMapper) {
+        Set<Object> removeKeys = toRemove.stream().map(keyMapper::apply)
+                .collect(Collectors.toSet());
+        entries.removeIf(e -> removeKeys.contains(keyMapper.apply(e)));
     }
 
     /**

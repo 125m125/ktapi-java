@@ -39,9 +39,9 @@ import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.smartCache.caches.CacheData;
 import de._125m125.kt.ktapi.smartCache.caches.PrependCacheData;
+import de._125m125.kt.ktapi.smartCache.caches.RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData;
 import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrInvalidateCacheData;
 import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrPrependCacheData;
-import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrPrependOrInvalidateOnEmptyCacheData;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
 import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
 
@@ -59,8 +59,9 @@ public class KtSmartCache extends KtRequesterDecorator
             Message.class);
     private static final Function<String, CacheData<Payout>>       PAYOUT_FACTORY   = s -> new ReplaceOrPrependCacheData<>(
             Payout.class, Payout::getId);
-    private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new ReplaceOrPrependOrInvalidateOnEmptyCacheData<>(
-            Trade.class, Trade::getId);
+    private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData<>(
+            Trade.class, Trade::getId, t -> t.getSold() == t.getAmount() && t.getToTakeItems() == 0
+                    && t.getToTakeMoney() == 0);
 
     private static final Logger                                    logger           = LoggerFactory
             .getLogger(KtSmartCache.class);
