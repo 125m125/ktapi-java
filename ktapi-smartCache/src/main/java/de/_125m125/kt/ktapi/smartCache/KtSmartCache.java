@@ -49,7 +49,7 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
  *
  */
 public class KtSmartCache extends KtRequesterDecorator
-        implements KtRequester, NotificationListener, KtCachingRequester {
+        implements NotificationListener, KtCachingRequester {
 
     private static final Function<String, CacheData<HistoryEntry>> HISTORY_FACTORY  = s -> new PrependCacheData<>(
             HistoryEntry.class);
