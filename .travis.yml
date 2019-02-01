@@ -31,9 +31,6 @@ jobs:
         file_glob: true
         file: "**/*.jar"
         skip_cleanup: true
-        on:
-          repo: 125m125/ktapi-java
-          tags: true
 
 before_cache:
   - rm -rf  $HOME/.m2/repository/de/125m125/kt/
