@@ -6,6 +6,7 @@ import de._125m125.kt.ktapi.core.BUY_SELL;
 import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
+import de._125m125.kt.ktapi.core.entities.ItemName;
 import de._125m125.kt.ktapi.core.entities.Message;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
@@ -43,6 +44,9 @@ public interface KtRetrofitClient {
     @GET("permissions/{userid}")
     Call<Permissions> getPermissions(@Path("userid") String userid,
             @Header("userKey") String String);
+
+    @GET("itemnames")
+    Call<List<ItemName>> getItemNames();
 
     @GET("users/{userid}/items")
     Call<List<Item>> getItems(@Path("userid") String userid, @Header("userKey") String String);
@@ -103,4 +107,7 @@ public interface KtRetrofitClient {
 
     @GET("ping")
     Call<Long> ping();
+
+    @POST("bank/read")
+    Call<WriteResult<Long>> readBankStatement();
 }

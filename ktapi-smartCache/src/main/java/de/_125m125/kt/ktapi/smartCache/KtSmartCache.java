@@ -18,11 +18,13 @@ import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
 import de._125m125.kt.ktapi.core.KtCachingRequester;
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.KtRequester;
+import de._125m125.kt.ktapi.core.KtRequesterDecorator;
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
 import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
+import de._125m125.kt.ktapi.core.entities.ItemName;
 import de._125m125.kt.ktapi.core.entities.Message;
 import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
@@ -46,7 +48,8 @@ import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
 /**
  *
  */
-public class KtSmartCache implements KtRequester, NotificationListener, KtCachingRequester {
+public class KtSmartCache extends KtRequesterDecorator
+        implements KtRequester, NotificationListener, KtCachingRequester {
 
     private static final Function<String, CacheData<HistoryEntry>> HISTORY_FACTORY  = s -> new PrependCacheData<>(
             HistoryEntry.class);
@@ -65,7 +68,6 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
     public static final int                                        CACHE_HIT_STATUS = 299;
 
     private final Map<String, CacheData<?>>                        cache;
-    private final KtRequester                                      requester;
     private final KtNotificationManager<?>                         ktNotificationManager;
     private final TimestampedObjectFactory                         factory;
 
@@ -77,9 +79,9 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
     public KtSmartCache(final KtRequester requester,
             final KtNotificationManager<?> ktNotificationManager,
             final TimestampedObjectFactory factory) {
+        super(requester);
         this.ktNotificationManager = ktNotificationManager;
         this.cache = new ConcurrentHashMap<>();
-        this.requester = requester;
         this.factory = factory != null ? factory : new TimestampedObjectFactory();
     }
 
@@ -223,6 +225,13 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
     }
 
     @Override
+    public Result<List<ItemName>> getItemNames() {
+        return getAllOrFetch("itemnames",
+                s -> new ReplaceOrInvalidateCacheData<>(ItemName.class, ItemName::getId),
+                () -> this.requester.getItemNames());
+    }
+
+    @Override
     public Result<List<Item>> getItems(final UserKey userKey) {
         this.ktNotificationManager.subscribeToItems(this, userKey, false);
         this.ktNotificationManager.subscribeToItems(this, userKey, true);
@@ -323,11 +332,6 @@ public class KtSmartCache implements KtRequester, NotificationListener, KtCachin
         result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
-    }
-
-    @Override
-    public Result<Long> ping() {
-        return this.requester.ping();
     }
 
     private <T> Result<List<T>> getOrFetch(final String key, final int start, final int end,

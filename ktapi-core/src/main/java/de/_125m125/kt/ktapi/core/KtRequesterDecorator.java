@@ -5,6 +5,7 @@ import java.util.List;
 
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
+import de._125m125.kt.ktapi.core.entities.ItemName;
 import de._125m125.kt.ktapi.core.entities.Message;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
@@ -16,7 +17,7 @@ import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
 public class KtRequesterDecorator implements KtRequester {
-    private final KtRequester requester;
+    protected final KtRequester requester;
 
     public KtRequesterDecorator(final KtRequester requester) {
         this.requester = requester;
@@ -48,6 +49,11 @@ public class KtRequesterDecorator implements KtRequester {
     @Override
     public Result<Permissions> getPermissions(final UserKey userKey) {
         return this.requester.getPermissions(userKey);
+    }
+
+    @Override
+    public Result<List<ItemName>> getItemNames() {
+        return this.requester.getItemNames();
     }
 
     @Override
@@ -133,6 +139,11 @@ public class KtRequesterDecorator implements KtRequester {
     @Override
     public Result<Long> ping() {
         return this.requester.ping();
+    }
+
+    @Override
+    public Result<WriteResult<Long>> readBankStatement() {
+        return this.requester.readBankStatement();
     }
 
 }

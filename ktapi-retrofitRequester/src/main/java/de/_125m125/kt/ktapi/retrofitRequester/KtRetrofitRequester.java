@@ -8,6 +8,7 @@ import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
+import de._125m125.kt.ktapi.core.entities.ItemName;
 import de._125m125.kt.ktapi.core.entities.Message;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
@@ -94,6 +95,11 @@ public class KtRetrofitRequester implements KtRequester {
         return new RetrofitResult<>(
                 this.client.getPermissions(userKey.getUserId(), userKey.getIdentifier()),
                 this.errorConverter);
+    }
+
+    @Override
+    public Result<List<ItemName>> getItemNames() {
+        return new RetrofitResult<>(this.client.getItemNames(), this.errorConverter);
     }
 
     @Override
@@ -184,6 +190,11 @@ public class KtRetrofitRequester implements KtRequester {
     @Override
     public Result<Long> ping() {
         return new RetrofitResult<>(this.client.ping(), this.errorConverter);
+    }
+
+    @Override
+    public Result<WriteResult<Long>> readBankStatement() {
+        return new RetrofitResult<>(this.client.readBankStatement(), this.errorConverter);
     }
 
     public OkHttpClientBuilder getOkHttpClient() {

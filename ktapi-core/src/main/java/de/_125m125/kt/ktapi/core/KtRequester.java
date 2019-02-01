@@ -5,6 +5,7 @@ import java.util.List;
 
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
+import de._125m125.kt.ktapi.core.entities.ItemName;
 import de._125m125.kt.ktapi.core.entities.Message;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
@@ -26,6 +27,13 @@ public interface KtRequester extends Closeable {
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(String itemid, BUY_SELL_BOTH mode);
 
     public Result<Permissions> getPermissions(UserKey userKey);
+
+    /**
+     * Gets a list containing the ItemNames for all items known to the server.
+     *
+     * @return the item names
+     */
+    public Result<List<ItemName>> getItemNames();
 
     public Result<List<Item>> getItems(UserKey userKey);
 
@@ -63,4 +71,12 @@ public interface KtRequester extends Closeable {
     public Result<WriteResult<Trade>> takeoutTrade(UserKey userKey, long tradeId);
 
     public Result<Long> ping();
+
+    /**
+     * tells the server to read the bank statement.
+     * 
+     * @return a WriteResult containing the remaining time in seconds until the next request can be
+     *         sent.
+     */
+    public Result<WriteResult<Long>> readBankStatement();
 }
