@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import de._125m125.kt.okhttp.helper.modifier.CertificatePinnerAdder;
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 import okhttp3.OkHttpClient;
 
@@ -58,7 +57,7 @@ public class OkHttpClientBuilder {
 
     /**
      * checks if any already registered modifier conflicts with the given modifier.
-     * 
+     *
      * @param modifier
      *            the modifier to check for conflicts
      * @return true, if one of the registered modifiers conflicts.
@@ -67,28 +66,13 @@ public class OkHttpClientBuilder {
         return this.modifiers.stream().anyMatch(modifier::conflictsWith);
     }
 
-    /**
-     * adds interceptors for the following tasks:
-     * <ul>
-     * <li>pinning the certificate for https://kt.125m125.de</li>
-     * </ul>
-     * 
-     * @return this
-     */
-    public OkHttpClientBuilder recommendedModifiers() {
-        if (!hasModifier(CertificatePinnerAdder.class)) {
-            addModifier(new CertificatePinnerAdder());
-        }
-        return this;
-    }
-
     public boolean hasModifier(final Class<? extends ClientModifier> clazz) {
         return this.modifiers.stream().map(Object::getClass).anyMatch(clazz::equals);
     }
 
     /**
      * builds the OkHttpClient with the specified modifiers.
-     * 
+     *
      * @return the OkHttpClient
      * @deprecated use {@link OkHttpClientBuilder#build(Object)} and
      *             {@link OkHttpClientBuilder#close(Object)} to allow clean closing of the build
@@ -100,12 +84,16 @@ public class OkHttpClientBuilder {
     }
 
     /**
+     * <p>
      * Builds the OkHttpClient with the specified modifiers and registers the given referencer as an
      * active user.
-     * 
+     * </p>
+     *
+     * <p>
      * When the OkHttpClient is not used anymore, {@link OkHttpClientBuilder#close(Object)} should
      * be called with the same object used as referencer here.
-     * 
+     * </p>
+     *
      * @param referencer
      *            the reference to use as an active indicator.
      * @return the OkHttpClient
@@ -127,7 +115,7 @@ public class OkHttpClientBuilder {
 
     /**
      * Closes the built OkHttpClient without paying attention to other users of that client.
-     * 
+     *
      * @deprecated use {@link OkHttpClientBuilder#build(Object)} and
      *             {@link OkHttpClientBuilder#close(Object)} to allow clean closing of the build
      *             OkHttpClient when not used anymore.
@@ -151,7 +139,7 @@ public class OkHttpClientBuilder {
     /**
      * removes the referencer from the list of active users of the client and closes the client if
      * there are no more references.
-     * 
+     *
      * @param referencer
      *            the reference used to acquire the OkHttpClient instance.
      */

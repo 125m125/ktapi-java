@@ -58,8 +58,9 @@ public class ClientCertificateAdder implements ClientModifier {
             final TrustManagerFactory trustManagerFactory = TrustManagerFactory
                     .getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init((KeyStore) null);
-            tmp = Arrays.stream(trustManagerFactory.getTrustManagers()).filter(X509TrustManager.class::isInstance)
-                    .map(X509TrustManager.class::cast).findAny();
+            tmp = Arrays.stream(trustManagerFactory.getTrustManagers())
+                    .filter(X509TrustManager.class::isInstance).map(X509TrustManager.class::cast)
+                    .findAny();
         } catch (final NoSuchAlgorithmException | KeyStoreException e) {
             e.printStackTrace();
         }
@@ -76,9 +77,9 @@ public class ClientCertificateAdder implements ClientModifier {
         this.socketFactory = createSocketFactory(pkcs12File, password);
     }
 
-    public ClientCertificateAdder(final File pkcs12File, final char[] password, final X509TrustManager trustmanager)
-            throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException,
-            UnrecoverableKeyException, KeyManagementException {
+    public ClientCertificateAdder(final File pkcs12File, final char[] password,
+            final X509TrustManager trustmanager) throws NoSuchAlgorithmException, KeyStoreException,
+            IOException, CertificateException, UnrecoverableKeyException, KeyManagementException {
         this.trustManager = trustmanager;
         this.socketFactory = createSocketFactory(pkcs12File, password);
     }
@@ -97,7 +98,8 @@ public class ClientCertificateAdder implements ClientModifier {
         keyManagerFactory.init(keyStore, password);
 
         final SSLContext context = SSLContext.getInstance("TLS");
-        context.init(keyManagerFactory.getKeyManagers(), new TrustManager[] { this.trustManager }, new SecureRandom());
+        context.init(keyManagerFactory.getKeyManagers(), new TrustManager[] { this.trustManager },
+                new SecureRandom());
         return context.getSocketFactory();
     }
 

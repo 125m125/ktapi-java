@@ -29,7 +29,8 @@ public class HeaderAdder implements ClientModifier {
             final String value = HeaderAdder.this.valueProducer.apply(chain.request());
             Request request = chain.request();
             if (value != null) {
-                request = chain.request().newBuilder().addHeader(HeaderAdder.this.name, value).build();
+                request = chain.request().newBuilder().addHeader(HeaderAdder.this.name, value)
+                        .build();
             }
             return chain.proceed(request);
         });
