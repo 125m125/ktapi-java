@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache.objects;
+package de._125m125.kt.ktapi.smartcache.objects;
 
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 

@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache;
+package de._125m125.kt.ktapi.smartcache;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,31 +37,24 @@ import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
-import de._125m125.kt.ktapi.smartCache.caches.CacheData;
-import de._125m125.kt.ktapi.smartCache.caches.PrependCacheData;
-import de._125m125.kt.ktapi.smartCache.caches.RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData;
-import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrInvalidateCacheData;
-import de._125m125.kt.ktapi.smartCache.caches.ReplaceOrPrependCacheData;
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedObjectFactory;
+import de._125m125.kt.ktapi.smartcache.caches.CacheData;
+import de._125m125.kt.ktapi.smartcache.caches.PrependCacheData;
+import de._125m125.kt.ktapi.smartcache.caches.RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData;
+import de._125m125.kt.ktapi.smartcache.caches.ReplaceOrInvalidateCacheData;
+import de._125m125.kt.ktapi.smartcache.caches.ReplaceOrPrependCacheData;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedList;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedObjectFactory;
 
-/**
- *
- */
 public class KtSmartCache extends KtRequesterDecorator
         implements NotificationListener, KtCachingRequester {
-
-    private static final Function<String, CacheData<HistoryEntry>> HISTORY_FACTORY  = s -> new PrependCacheData<>(
-            HistoryEntry.class);
-    private static final Function<String, CacheData<Item>>         ITEM_FACTORY     = s -> new ReplaceOrInvalidateCacheData<>(
-            Item.class, Item::getId);
-    private static final Function<String, CacheData<Message>>      MESSAGE_FACTORY  = s -> new PrependCacheData<>(
-            Message.class);
-    private static final Function<String, CacheData<Payout>>       PAYOUT_FACTORY   = s -> new ReplaceOrPrependCacheData<>(
-            Payout.class, Payout::getId);
-    private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData<>(
-            Trade.class, Trade::getId, t -> t.getSold() == t.getAmount() && t.getToTakeItems() == 0
-                    && t.getToTakeMoney() == 0);
+    // @CHECKSTYLE:OFF
+    private static final Function<String, CacheData<HistoryEntry>> HISTORY_FACTORY  = s -> new PrependCacheData<>(HistoryEntry.class);
+    private static final Function<String, CacheData<Item>>         ITEM_FACTORY     = s -> new ReplaceOrInvalidateCacheData<>(Item.class, Item::getId);
+    private static final Function<String, CacheData<Message>>      MESSAGE_FACTORY  = s -> new PrependCacheData<>(Message.class);
+    private static final Function<String, CacheData<Payout>>       PAYOUT_FACTORY   = s -> new ReplaceOrPrependCacheData<>(Payout.class, Payout::getId);
+    private static final Function<String, CacheData<Trade>>        TRADE_FACTORY    = s -> new RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData<>(Trade.class, Trade::getId,
+            t -> t.getSold() == t.getAmount() && t.getToTakeItems() == 0 && t.getToTakeMoney() == 0);
+    // @CHECKSTYLE:ON
 
     private static final Logger                                    logger           = LoggerFactory
             .getLogger(KtSmartCache.class);
@@ -296,9 +289,9 @@ public class KtSmartCache extends KtRequesterDecorator
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channelName,
             final String socketId) {
-        return this.requester.authorizePusher(userKey, channel_name, socketId);
+        return this.requester.authorizePusher(userKey, channelName, socketId);
     }
 
     @Override

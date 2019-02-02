@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache;
+package de._125m125.kt.ktapi.smartcache;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +15,8 @@ import de._125m125.kt.ktapi.pusher.KtPusher;
 import de._125m125.kt.ktapi.pusher.KtPusherAuthorizer;
 import de._125m125.kt.ktapi.retrofit.KtRetrofit;
 import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
+import de._125m125.kt.ktapi.smartcache.KtSmartCache;
+import de._125m125.kt.ktapi.smartcache.Timestamped;
 
 public class SmartCacheExample {
     public static void main(final String[] args) throws IOException {

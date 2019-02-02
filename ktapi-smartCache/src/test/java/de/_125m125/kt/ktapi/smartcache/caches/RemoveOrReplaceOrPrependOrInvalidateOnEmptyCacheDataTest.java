@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache.caches;
+package de._125m125.kt.ktapi.smartcache.caches;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,17 +10,18 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedList;
 
-public class ReplaceOrPrependOrInvalidateOnEmptyCacheDataTest {
+public class RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheDataTest {
 
-    ReplaceOrPrependOrInvalidateOnEmptyCacheData<String> uut;
-    ClockExtension                                       clock;
+    RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData<String> uut;
+    ClockExtension                                               clock;
 
     @Before
     public void beforePrependCacheDataTest() throws Exception {
         this.clock = new ClockExtension();
-        this.uut = new ReplaceOrPrependOrInvalidateOnEmptyCacheData<>(String.class, String::hashCode, this.clock);
+        this.uut = new RemoveOrReplaceOrPrependOrInvalidateOnEmptyCacheData<>(String.class,
+                String::hashCode, s -> s.equals("CB"), this.clock);
         this.clock.progress();
     }
 
@@ -29,12 +30,32 @@ public class ReplaceOrPrependOrInvalidateOnEmptyCacheDataTest {
     }
 
     @Test
+    public void testRemovesMatches() {
+        fillUut();
+        this.uut.updateEntries(new String[] { "CB" });
+
+        final Optional<TimestampedList<String>> actual = this.uut.getAll();
+        assertTrue(actual.isPresent());
+        assertEquals(Arrays.asList("Aa", "Ca"), actual.get());
+    }
+
+    @Test
+    public void testRemovesAndReplacesMatches() {
+        fillUut();
+        this.uut.updateEntries(new String[] { "BB", "CB" });
+
+        final Optional<TimestampedList<String>> actual = this.uut.getAll();
+        assertTrue(actual.isPresent());
+        assertEquals(Arrays.asList("BB", "Ca"), actual.get());
+    }
+
+    @Test
     public void testUpdateEntriesInvalidatesIfEmptyList() throws Exception {
         this.uut.updateEntries(Arrays.asList("a"));
 
         final Optional<TimestampedList<String>> actual = this.uut.getAll();
         assertFalse(actual.isPresent());
-        assertEquals(2000l, this.uut.getLastInvalidationTime());
+        assertEquals(2000L, this.uut.getLastInvalidationTime());
     }
 
     @Test
@@ -43,7 +64,7 @@ public class ReplaceOrPrependOrInvalidateOnEmptyCacheDataTest {
 
         final Optional<TimestampedList<String>> actual = this.uut.getAll();
         assertFalse(actual.isPresent());
-        assertEquals(2000l, this.uut.getLastInvalidationTime());
+        assertEquals(2000L, this.uut.getLastInvalidationTime());
     }
 
     @Test
@@ -67,5 +88,4 @@ public class ReplaceOrPrependOrInvalidateOnEmptyCacheDataTest {
         assertTrue(actual.isPresent());
         assertEquals(Arrays.asList("Da", "Aa", "Ba", "Ca"), actual.get());
     }
-
 }

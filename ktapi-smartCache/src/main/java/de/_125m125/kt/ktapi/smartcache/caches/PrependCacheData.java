@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache.caches;
+package de._125m125.kt.ktapi.smartcache.caches;
 
 import java.time.Clock;
 import java.util.Arrays;

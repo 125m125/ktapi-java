@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache.caches;
+package de._125m125.kt.ktapi.smartcache.caches;
 
 import java.time.Clock;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.list.GrowthList;
 
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedList;
 
 public abstract class CacheData<T> {
     private final Clock         clock;
@@ -37,7 +37,7 @@ public abstract class CacheData<T> {
     }
 
     /**
-     * sets the cached entries starting from the given start index
+     * Sets the cached entries starting from the given start index.
      *
      * @param newEntries
      *            the entries to insert
@@ -54,7 +54,7 @@ public abstract class CacheData<T> {
     }
 
     /**
-     * sets the cached entries starting from the given start index
+     * Sets the cached entries starting from the given start index.
      *
      * @param newEntries
      *            the entries to insert
@@ -130,16 +130,16 @@ public abstract class CacheData<T> {
 
     public void removeAll(final List<T> toRemove) {
         synchronized (this) {
-            if (entries.removeAll(toRemove)) {
+            if (this.entries.removeAll(toRemove)) {
                 updateInvalidationTime();
             }
         }
     }
 
-    protected void removeMatches(List<T> toRemove, final Function<T, Object> keyMapper) {
-        Set<Object> removeKeys = toRemove.stream().map(keyMapper::apply)
+    protected void removeMatches(final List<T> toRemove, final Function<T, Object> keyMapper) {
+        final Set<Object> removeKeys = toRemove.stream().map(keyMapper::apply)
                 .collect(Collectors.toSet());
-        entries.removeIf(e -> removeKeys.contains(keyMapper.apply(e)));
+        this.entries.removeIf(e -> removeKeys.contains(keyMapper.apply(e)));
     }
 
     /**
@@ -164,6 +164,13 @@ public abstract class CacheData<T> {
     }
 
     protected abstract void updateEntries(T[] changedEntries);
+
+    public synchronized Optional<T> get(final int index) {
+        if (index >= this.entries.size()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(this.entries.get(index));
+    }
 
     public synchronized Optional<TimestampedList<T>> get(final int start, int end) {
         final List<T> result = new ArrayList<>(end - start);
@@ -194,13 +201,6 @@ public abstract class CacheData<T> {
         final List<T> result = new ArrayList<>(this.entries);
         this.allEntries = new TimestampedList<>(result, this.lastInvalidationTime, true);
         return Optional.of(this.allEntries);
-    }
-
-    public synchronized Optional<T> get(final int index) {
-        if (index >= this.entries.size()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(this.entries.get(index));
     }
 
     public synchronized Optional<T> getAny(final Predicate<T> predicate) {

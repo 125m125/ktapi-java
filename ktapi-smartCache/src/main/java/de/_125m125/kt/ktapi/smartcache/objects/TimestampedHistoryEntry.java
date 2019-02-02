@@ -1,9 +1,9 @@
-package de._125m125.kt.ktapi.smartCache.objects;
+package de._125m125.kt.ktapi.smartcache.objects;
 
 import java.time.LocalDate;
 
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
-import de._125m125.kt.ktapi.smartCache.Timestamped;
+import de._125m125.kt.ktapi.smartcache.Timestamped;
 
 public class TimestampedHistoryEntry extends HistoryEntry implements Timestamped {
 
@@ -11,7 +11,8 @@ public class TimestampedHistoryEntry extends HistoryEntry implements Timestamped
     private final long         timestamp;
     private final boolean      cacheHit;
 
-    public TimestampedHistoryEntry(final HistoryEntry entry, final long timestamp, final boolean cacheHit) {
+    public TimestampedHistoryEntry(final HistoryEntry entry, final long timestamp,
+            final boolean cacheHit) {
         super();
         this.entry = entry;
         this.timestamp = timestamp;

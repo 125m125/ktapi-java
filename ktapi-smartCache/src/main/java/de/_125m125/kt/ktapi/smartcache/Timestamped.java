@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache;
+package de._125m125.kt.ktapi.smartcache;
 
 public interface Timestamped {
     public long getTimestamp();

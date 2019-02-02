@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache;
+package de._125m125.kt.ktapi.smartcache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,9 +35,11 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.users.TokenUserKey;
-import de._125m125.kt.ktapi.smartCache.caches.CacheData;
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedHistoryEntry;
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
+import de._125m125.kt.ktapi.smartcache.KtSmartCache;
+import de._125m125.kt.ktapi.smartcache.Timestamped;
+import de._125m125.kt.ktapi.smartcache.caches.CacheData;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedHistoryEntry;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KtSmartCacheTest {

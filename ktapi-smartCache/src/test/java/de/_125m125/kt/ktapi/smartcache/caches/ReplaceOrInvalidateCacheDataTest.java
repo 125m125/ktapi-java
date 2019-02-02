@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.smartCache.caches;
+package de._125m125.kt.ktapi.smartcache.caches;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,7 +10,8 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import de._125m125.kt.ktapi.smartCache.objects.TimestampedList;
+import de._125m125.kt.ktapi.smartcache.caches.ReplaceOrInvalidateCacheData;
+import de._125m125.kt.ktapi.smartcache.objects.TimestampedList;
 
 public class ReplaceOrInvalidateCacheDataTest {
 

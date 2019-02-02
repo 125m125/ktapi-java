@@ -1,9 +1,9 @@
-package de._125m125.kt.ktapi.smartCache.objects;
+package de._125m125.kt.ktapi.smartcache.objects;
 
 import java.util.AbstractList;
 import java.util.List;
 
-import de._125m125.kt.ktapi.smartCache.Timestamped;
+import de._125m125.kt.ktapi.smartcache.Timestamped;
 
 public class TimestampedList<T> extends AbstractList<T> implements Timestamped {
 
