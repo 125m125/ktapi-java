@@ -11,7 +11,7 @@ import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
 import de._125m125.kt.ktapi.retrofit.requester.modifier.ConverterFactoryAdder;
 import de._125m125.kt.ktapi.retrofit.requester.modifier.RetrofitModifier;
-import de._125m125.kt.ktapi.retrofitUnivocityTsvparser.UnivocityConverterFactory;
+import de._125m125.kt.ktapi.retrofit.tsvparser.univocity.UnivocityConverterFactory;
 import de._125m125.kt.okhttp.helper.modifier.BasicAuthenticator;
 import de._125m125.kt.okhttp.helper.modifier.ClientCertificateAdder;
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;

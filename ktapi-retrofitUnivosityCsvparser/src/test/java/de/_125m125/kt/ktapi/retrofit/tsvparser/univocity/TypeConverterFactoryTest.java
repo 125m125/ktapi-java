@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitUnivocityTsvparser;
+package de._125m125.kt.ktapi.retrofit.tsvparser.univocity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,7 +19,8 @@ public class TypeConverterFactoryTest {
 
     @Test
     public void testGetConverterFor_unknown() throws Exception {
-        final Function<String, Object> converter = this.uut.getConverterFor(TypeConverterFactoryTest.class);
+        final Function<String, Object> converter = this.uut
+                .getConverterFor(TypeConverterFactoryTest.class);
         assertNull(converter);
     }
 
@@ -83,7 +84,8 @@ public class TypeConverterFactoryTest {
         final Function<String, Object> converter = this.uut.getConverterFor(Double.class);
         assertNotNull(converter);
         assertEquals(new Double(10D), converter.apply("10"));
-        assertEquals(new Double(-1234567890123456789.12345D), converter.apply("-1234567890123456789.12345"));
+        assertEquals(new Double(-1234567890123456789.12345D),
+                converter.apply("-1234567890123456789.12345"));
     }
 
     @Test

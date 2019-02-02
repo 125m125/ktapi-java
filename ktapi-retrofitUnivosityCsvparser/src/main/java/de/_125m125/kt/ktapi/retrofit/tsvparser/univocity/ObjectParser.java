@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitUnivocityTsvparser;
+package de._125m125.kt.ktapi.retrofit.tsvparser.univocity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

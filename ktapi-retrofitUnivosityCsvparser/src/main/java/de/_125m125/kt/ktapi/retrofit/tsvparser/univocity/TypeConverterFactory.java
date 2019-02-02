@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitUnivocityTsvparser;
+package de._125m125.kt.ktapi.retrofit.tsvparser.univocity;
 
 import java.util.function.Function;
 
@@ -17,10 +17,12 @@ public class TypeConverterFactory {
 
     private enum TypeConverter implements Function<String, Object> {
         StringConverter((e) -> e, String.class),
-        BooleanConverter((e) -> e == null ? null : Boolean.parseBoolean(e), Boolean.class, boolean.class),
+        BooleanConverter((e) -> e == null ? null : Boolean.parseBoolean(e), Boolean.class,
+                boolean.class),
         IntConverter((e) -> e == null ? null : Integer.parseInt(e), Integer.class, int.class),
         LongConverter((e) -> e == null ? null : Long.parseLong(e), Long.class, long.class),
-        DoubleConverter((e) -> e == null ? null : Double.parseDouble(e), Double.class, double.class);
+        DoubleConverter((e) -> e == null ? null : Double.parseDouble(e), Double.class,
+                double.class);
 
         private final Function<String, Object> converter;
         private final Class<?>[]               classes;

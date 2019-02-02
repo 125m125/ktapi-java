@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitUnivocityTsvparser;
+package de._125m125.kt.ktapi.retrofit.tsvparser.univocity;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,14 +10,13 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
 public class UnivocityResponseBodyConverter<T> implements Converter<ResponseBody, T> {
-    private static final TypeConverterFactory DEFAULT_CONVERTER_FACTORY = new TypeConverterFactory();
+    private static final TypeConverterFactory DEFAULT_FACTORY = new TypeConverterFactory();
 
     private final TypeConverterFactory        converterFactory;
-
     private Class<?>                          entryClazz;
 
     public UnivocityResponseBodyConverter(final Class<T> clazz, final Class<?> entryClazz) {
-        this(clazz, entryClazz, UnivocityResponseBodyConverter.DEFAULT_CONVERTER_FACTORY);
+        this(clazz, entryClazz, UnivocityResponseBodyConverter.DEFAULT_FACTORY);
     }
 
     public UnivocityResponseBodyConverter(final Class<T> clazz, final Class<?> entryClazz,
@@ -30,7 +29,8 @@ public class UnivocityResponseBodyConverter<T> implements Converter<ResponseBody
     @SuppressWarnings("unchecked")
     @Override
     public T convert(final ResponseBody value) throws IOException {
-        final ObjectParser<?> rowProcessor = new ObjectParser<>(this.entryClazz, this.converterFactory);
+        final ObjectParser<?> rowProcessor = new ObjectParser<>(this.entryClazz,
+                this.converterFactory);
 
         final TsvParserSettings parserSettings = new TsvParserSettings();
         parserSettings.setProcessor(rowProcessor);
