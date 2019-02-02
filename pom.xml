@@ -242,7 +242,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                	<violationSeverity>warning</violationSeverity>
+                    <violationSeverity>warning</violationSeverity>
                     <configLocation>de/_125m125/kt/ktapi/checkstyle/checkstyle.xml</configLocation>
                     <!-- <headerLocation>whizbang/LICENSE.txt</headerLocation> -->
                 </configuration>

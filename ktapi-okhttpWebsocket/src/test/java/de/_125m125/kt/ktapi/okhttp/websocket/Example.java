@@ -26,22 +26,22 @@ public class Example {
                 "a".toCharArray());
         final KtOkHttpWebsocket ws = new KtOkHttpWebsocket("wss://kt.125m125.de/api/websocket",
                 builder);
-        final AbstractKtWebsocketNotificationHandler<?> manager = new KtWebsocketNotificationHandler(
-                new KtUserStore(user));
+        final AbstractKtWebsocketNotificationHandler<?> manager = 
+                new KtWebsocketNotificationHandler(new KtUserStore(user));
         KtWebsocketManager.builder(ws).addDefaultParsers().addListener(new OfflineMessageHandler())
-        .addListener(new SessionHandler()).addListener(manager)
-        .addListener(new AutoReconnectionHandler()).buildAndOpen();
+                .addListener(new SessionHandler()).addListener(manager)
+                .addListener(new AutoReconnectionHandler()).buildAndOpen();
 
         Thread.sleep(100);
         System.out.println("subscribing...");
         manager.subscribeToItems(System.out::println, user.getKey(), false)
-        .whenComplete((listener, throwable) -> {
-            if (throwable != null) {
-                System.out.println("Subscription failed: " + throwable.getMessage());
-            } else {
-                System.out.println("Subscription succeeded");
-            }
-        });
+                .whenComplete((listener, throwable) -> {
+                    if (throwable != null) {
+                        System.out.println("Subscription failed: " + throwable.getMessage());
+                    } else {
+                        System.out.println("Subscription succeeded");
+                    }
+                });
         manager.subscribeToAll(System.out::println);
         manager.subscribeToAll(System.out::println, user.getKey(), true);
 
