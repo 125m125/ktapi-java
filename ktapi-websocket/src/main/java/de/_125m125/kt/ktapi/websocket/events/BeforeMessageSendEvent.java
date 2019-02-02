@@ -6,7 +6,8 @@ public class BeforeMessageSendEvent extends CancelableWebsocketEvent {
 
     private final RequestMessage message;
 
-    public BeforeMessageSendEvent(final WebsocketStatus websocketStatus, final RequestMessage message) {
+    public BeforeMessageSendEvent(final WebsocketStatus websocketStatus,
+            final RequestMessage message) {
         super(websocketStatus);
         this.message = message;
     }

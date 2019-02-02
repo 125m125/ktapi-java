@@ -57,14 +57,16 @@ public class RequestMessage {
             return this;
         }
 
-        public RequestMessageBuilder addResponseCallback(final Consumer<ResponseMessage> responseReceiver) {
+        public RequestMessageBuilder addResponseCallback(
+                final Consumer<ResponseMessage> responseReceiver) {
             expectResponse();
             this.result.addCallback(responseReceiver);
             return this;
         }
 
         public RequestMessageBuilder expectResponse() {
-            this.content.computeIfAbsent("rid", k -> RequestMessageBuilder.nextRequestId.getAndIncrement());
+            this.content.computeIfAbsent("rid",
+                    k -> RequestMessageBuilder.nextRequestId.getAndIncrement());
             return this;
         }
 

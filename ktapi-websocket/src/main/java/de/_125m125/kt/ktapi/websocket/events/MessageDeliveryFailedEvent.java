@@ -9,8 +9,8 @@ public class MessageDeliveryFailedEvent extends CancelableWebsocketEvent {
     private final IOException    reason;
     private final RequestMessage requestMessage;
 
-    public MessageDeliveryFailedEvent(final WebsocketStatus websocketStatus, final RequestMessage requestMessage,
-            final IOException reason) {
+    public MessageDeliveryFailedEvent(final WebsocketStatus websocketStatus,
+            final RequestMessage requestMessage, final IOException reason) {
         super(websocketStatus);
         this.requestMessage = requestMessage;
         this.reason = reason;

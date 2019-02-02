@@ -8,7 +8,8 @@ public class ResponseMessage {
     private final String    error;
     private final Throwable errorCause;
 
-    public ResponseMessage(final Integer rid, final Long pong, final String error, final Throwable errorCause) {
+    public ResponseMessage(final Integer rid, final Long pong, final String error,
+            final Throwable errorCause) {
         super();
         this.rid = rid;
         this.pong = pong;
@@ -29,7 +30,8 @@ public class ResponseMessage {
     }
 
     public Optional<String> getError() {
-        return this.error == null || "false".equals(this.error) ? Optional.empty() : Optional.of(this.error);
+        return this.error == null || "false".equals(this.error) ? Optional.empty()
+                : Optional.of(this.error);
     }
 
     public Optional<Throwable> getErrorCause() {
