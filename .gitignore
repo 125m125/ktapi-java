@@ -1,6 +1,7 @@
 .project
 .settings
 .classpath
+.checkstyle
 target
 bin
 pom.xml.versionsBackup

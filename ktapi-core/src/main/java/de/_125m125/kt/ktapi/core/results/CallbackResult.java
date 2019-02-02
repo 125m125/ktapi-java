@@ -10,7 +10,8 @@ import de._125m125.kt.ktapi.core.results.Result.ResultFetchException;
                 if (r.isSuccessful()) {
                     c.onSuccess(r.getStatus(), r.getContent());
                 } else {
-                    c.onFailure(r.getStatus(), r.getErrorMessage(), r.getHumanReadableErrorMessage());
+                    c.onFailure(r.getStatus(), r.getErrorMessage(),
+                            r.getHumanReadableErrorMessage());
                 }
             } catch (final Exception e) {
                 if (e instanceof ResultFetchException) {

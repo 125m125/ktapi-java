@@ -2,8 +2,8 @@ package de._125m125.kt.ktapi.retrofitRequester;
 
 import java.util.List;
 
-import de._125m125.kt.ktapi.core.BUY_SELL;
-import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
+import de._125m125.kt.ktapi.core.BuySell;
+import de._125m125.kt.ktapi.core.BuySellBoth;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.ItemName;
@@ -34,12 +34,12 @@ public interface KtRetrofitClient {
 
     @GET("orderbook/{itemid}")
     Call<List<OrderBookEntry>> getOrderBook(@Path("itemid") String itemid,
-            @Query("limit") int limit, @Query("mode") BUY_SELL_BOTH mode,
+            @Query("limit") int limit, @Query("mode") BuySellBoth mode,
             @Query("summarize") boolean summarizeRemaining);
 
     @GET("orderbook/{itemid}/best")
     Call<List<OrderBookEntry>> getBestOrderBookEntries(@Path("itemid") String itemid,
-            @Query("mode") BUY_SELL_BOTH mode);
+            @Query("mode") BuySellBoth mode);
 
     @GET("permissions/{userid}")
     Call<Permissions> getPermissions(@Path("userid") String userid,
@@ -93,7 +93,7 @@ public interface KtRetrofitClient {
     @POST("users/{user}/orders")
     @FormUrlEncoded
     Call<WriteResult<Trade>> createTrade(@Path("user") final String user,
-            @Field("buySell") final BUY_SELL buySell, @Field("item") final String item,
+            @Field("buySell") final BuySell buySell, @Field("item") final String item,
             @Field("amount") final int amount, @Field("price") final String price,
             @Header("userKey") String String);
 

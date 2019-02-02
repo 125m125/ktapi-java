@@ -59,13 +59,13 @@ public class TimestampedHistoryEntry extends HistoryEntry implements Timestamped
     }
 
     @Override
-    public double getUnit_value() {
-        return this.entry.getUnit_value();
+    public double getUnitVolume() {
+        return this.entry.getUnitVolume();
     }
 
     @Override
-    public double getDollar_value() {
-        return this.entry.getDollar_value();
+    public double getDollarVolume() {
+        return this.entry.getDollarVolume();
     }
 
     @Override

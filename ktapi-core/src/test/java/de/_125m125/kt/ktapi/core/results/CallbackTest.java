@@ -113,7 +113,8 @@ public class CallbackTest {
     public void testAfterTriConsumer() {
         final int[] callCounts = { 0, 0 };
         final TriConsumer<Object, Object, Object> consumer = (a, b, c) -> callCounts[0]++;
-        final TriConsumer<Object, Object, Object> andThen = consumer.andThen((a, b, c) -> callCounts[1]++);
+        final TriConsumer<Object, Object, Object> andThen = consumer
+                .andThen((a, b, c) -> callCounts[1]++);
 
         andThen.accept("a", 1, 'l');
 

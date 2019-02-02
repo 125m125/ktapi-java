@@ -1,6 +1,6 @@
 package de._125m125.kt.ktapi.core;
 
-public enum PAYOUT_TYPE {
+public enum PayoutType {
     // money
     KADCON("kadcon"),
     // items
@@ -13,7 +13,7 @@ public enum PAYOUT_TYPE {
 
     private final String comName;
 
-    private PAYOUT_TYPE(final String comName) {
+    private PayoutType(final String comName) {
         this.comName = comName;
     }
 

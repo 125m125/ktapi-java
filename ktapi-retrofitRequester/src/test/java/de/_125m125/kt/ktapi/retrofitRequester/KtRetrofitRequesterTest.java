@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
+import de._125m125.kt.ktapi.core.PayoutType;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
@@ -58,18 +58,18 @@ public class KtRetrofitRequesterTest {
                 .setResource("/de/_125m125/kt/ktapi/responses/payout/PayoutCreationSuccess.json");
 
         final Result<WriteResult<Payout>> result = this.uut
-                .createPayout(new TokenUserKey("8", "16"), PAYOUT_TYPE.DELIVERY, "4", "1");
+                .createPayout(new TokenUserKey("8", "16"), PayoutType.DELIVERY, "4", "1");
 
         assertEquals(true, result.isSuccessful());
         assertEquals(200, result.getStatus());
-        assertEquals(PAYOUT_TYPE.DELIVERY.getComName(),
+        assertEquals(PayoutType.DELIVERY.getComName(),
                 result.getContent().getObject().getPayoutType());
         assertEquals("4", result.getContent().getObject().getMaterial());
         assertEquals(1, result.getContent().getObject().getAmount(), 1e-10);
 
         assertEquals("/users/8/payouts", this.fakeInterceptor.getUri().getPath());
         assertTrue("Body should contain payout type", this.fakeInterceptor.getBody()
-                .contains("type=" + PAYOUT_TYPE.DELIVERY.getComName()));
+                .contains("type=" + PayoutType.DELIVERY.getComName()));
         assertTrue("Body should contain material",
                 this.fakeInterceptor.getBody().contains("item=4"));
         assertTrue("Body should contain payout type",

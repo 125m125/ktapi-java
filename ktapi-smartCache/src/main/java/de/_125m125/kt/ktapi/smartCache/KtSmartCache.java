@@ -13,14 +13,14 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de._125m125.kt.ktapi.core.BUY_SELL;
-import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
+import de._125m125.kt.ktapi.core.BuySell;
+import de._125m125.kt.ktapi.core.BuySellBoth;
 import de._125m125.kt.ktapi.core.KtCachingRequester;
 import de._125m125.kt.ktapi.core.KtNotificationManager;
 import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.KtRequesterDecorator;
 import de._125m125.kt.ktapi.core.NotificationListener;
-import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
+import de._125m125.kt.ktapi.core.PayoutType;
 import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
@@ -207,14 +207,14 @@ public class KtSmartCache extends KtRequesterDecorator
 
     @Override
     public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit,
-            final BUY_SELL_BOTH mode, final boolean summarizeRemaining) {
+            final BuySellBoth mode, final boolean summarizeRemaining) {
         // TODO caching
         return this.requester.getOrderBook(itemid, limit, mode, summarizeRemaining);
     }
 
     @Override
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid,
-            final BUY_SELL_BOTH mode) {
+            final BuySellBoth mode) {
         // TODO caching
         return this.requester.getBestOrderBookEntries(itemid, mode);
     }
@@ -270,7 +270,7 @@ public class KtSmartCache extends KtRequesterDecorator
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PayoutType type,
             final String itemid, final String amount) {
         final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
                 itemid, amount);
@@ -310,7 +310,7 @@ public class KtSmartCache extends KtRequesterDecorator
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BuySell mode,
             final String item, final int amount, final String pricePerItem) {
         final Result<WriteResult<Trade>> result = this.requester.createTrade(userKey, mode, item,
                 amount, pricePerItem);

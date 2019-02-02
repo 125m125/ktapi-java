@@ -2,10 +2,10 @@ package de._125m125.kt.ktapi.retrofitRequester;
 
 import java.util.List;
 
-import de._125m125.kt.ktapi.core.BUY_SELL;
-import de._125m125.kt.ktapi.core.BUY_SELL_BOTH;
+import de._125m125.kt.ktapi.core.BuySell;
+import de._125m125.kt.ktapi.core.BuySellBoth;
 import de._125m125.kt.ktapi.core.KtRequester;
-import de._125m125.kt.ktapi.core.PAYOUT_TYPE;
+import de._125m125.kt.ktapi.core.PayoutType;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.ItemName;
@@ -77,7 +77,7 @@ public class KtRetrofitRequester implements KtRequester {
 
     @Override
     public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit,
-            final BUY_SELL_BOTH mode, final boolean summarizeRemaining) {
+            final BuySellBoth mode, final boolean summarizeRemaining) {
         return new RetrofitResult<>(
                 this.client.getOrderBook(itemid, limit, mode, summarizeRemaining),
                 this.errorConverter);
@@ -85,7 +85,7 @@ public class KtRetrofitRequester implements KtRequester {
 
     @Override
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid,
-            final BUY_SELL_BOTH mode) {
+            final BuySellBoth mode) {
         return new RetrofitResult<>(this.client.getBestOrderBookEntries(itemid, mode),
                 this.errorConverter);
     }
@@ -132,7 +132,7 @@ public class KtRetrofitRequester implements KtRequester {
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PayoutType type,
             final String itemid, final String amount) {
         return new RetrofitResult<>(this.client.createPayout(userKey.getUserId(), type.getComName(),
                 itemid, amount, userKey.getIdentifier()), this.errorConverter);
@@ -167,7 +167,7 @@ public class KtRetrofitRequester implements KtRequester {
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BuySell mode,
             final String item, final int amount, final String pricePerItem) {
         return new RetrofitResult<>(this.client.createTrade(userKey.getUserId(), mode, item, amount,
                 pricePerItem, userKey.getIdentifier()), this.errorConverter);

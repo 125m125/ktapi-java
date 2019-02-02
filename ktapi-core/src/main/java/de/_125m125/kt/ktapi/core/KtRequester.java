@@ -21,10 +21,10 @@ public interface KtRequester extends Closeable {
 
     public Result<HistoryEntry> getLatestHistory(String itemid);
 
-    public Result<List<OrderBookEntry>> getOrderBook(String itemid, int limit, BUY_SELL_BOTH mode,
+    public Result<List<OrderBookEntry>> getOrderBook(String itemid, int limit, BuySellBoth mode,
             boolean summarizeRemaining);
 
-    public Result<List<OrderBookEntry>> getBestOrderBookEntries(String itemid, BUY_SELL_BOTH mode);
+    public Result<List<OrderBookEntry>> getBestOrderBookEntries(String itemid, BuySellBoth mode);
 
     public Result<Permissions> getPermissions(UserKey userKey);
 
@@ -51,19 +51,19 @@ public interface KtRequester extends Closeable {
 
     public Result<List<Payout>> getPayouts(UserKey userKey, int offset, int limit);
 
-    public Result<WriteResult<Payout>> createPayout(UserKey userKey, PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(UserKey userKey, PayoutType type,
             String itemid, String amount);
 
     public Result<WriteResult<Payout>> cancelPayout(UserKey userKey, long payoutid);
 
     public Result<WriteResult<Payout>> takeoutPayout(UserKey userKey, long payoutid);
 
-    public Result<PusherResult> authorizePusher(UserKey userKey, String channel_name,
+    public Result<PusherResult> authorizePusher(UserKey userKey, String channelName,
             String socketId);
 
     public Result<List<Trade>> getTrades(UserKey userKey);
 
-    public Result<WriteResult<Trade>> createTrade(UserKey userKey, BUY_SELL mode, String item,
+    public Result<WriteResult<Trade>> createTrade(UserKey userKey, BuySell mode, String item,
             int amount, String pricePerItem);
 
     public Result<WriteResult<Trade>> cancelTrade(UserKey userKey, long tradeId);
@@ -74,7 +74,7 @@ public interface KtRequester extends Closeable {
 
     /**
      * tells the server to read the bank statement.
-     * 
+     *
      * @return a WriteResult containing the remaining time in seconds until the next request can be
      *         sent.
      */

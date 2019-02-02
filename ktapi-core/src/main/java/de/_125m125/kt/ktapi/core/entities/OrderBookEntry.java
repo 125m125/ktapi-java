@@ -2,7 +2,7 @@ package de._125m125.kt.ktapi.core.entities;
 
 import java.util.Objects;
 
-import de._125m125.kt.ktapi.core.BUY_SELL;
+import de._125m125.kt.ktapi.core.BuySell;
 
 public class OrderBookEntry {
     private String type;
@@ -32,11 +32,11 @@ public class OrderBookEntry {
         return this.type.equals("sell");
     }
 
-    public BUY_SELL getBuySell() {
+    public BuySell getBuySell() {
         if (isBuying()) {
-            return BUY_SELL.BUY;
+            return BuySell.BUY;
         } else if (isSelling()) {
-            return BUY_SELL.SELL;
+            return BuySell.SELL;
         } else {
             throw new IllegalStateException();
         }

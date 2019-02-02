@@ -5,7 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Message {
-    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+    private static DateTimeFormatter FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss.S");
     private String                   timestamp;
     private String                   message;
 
