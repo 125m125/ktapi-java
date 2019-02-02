@@ -20,6 +20,8 @@ jobs:
         - bash <(curl -s https://codecov.io/bash)
     - name: "Spotbugs"
       script: mvn spotbugs:check -B
+    - name: "Checkstyle"
+      script: mvn checkstyle:check -B
     - stage: deploy
       name: "Deploy to Github"
       if: tag IS true AND repo = "125m125/ktapi-java"
