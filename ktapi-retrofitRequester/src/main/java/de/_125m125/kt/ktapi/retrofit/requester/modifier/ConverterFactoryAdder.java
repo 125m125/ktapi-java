@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester.builderModifier;
+package de._125m125.kt.ktapi.retrofit.requester.modifier;
 
 import retrofit2.Converter.Factory;
 import retrofit2.Retrofit.Builder;

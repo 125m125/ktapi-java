@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester;
+package de._125m125.kt.ktapi.retrofit.requester;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -20,7 +20,8 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.TokenUserKey;
-import de._125m125.kt.ktapi.retrofitRequester.builderModifier.RetrofitModifier;
+import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
+import de._125m125.kt.ktapi.retrofit.requester.modifier.RetrofitModifier;
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;

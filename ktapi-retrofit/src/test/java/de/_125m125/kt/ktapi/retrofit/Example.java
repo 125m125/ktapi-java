@@ -8,7 +8,7 @@ import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.retrofitRequester.KtRetrofitRequester;
+import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
 
 public class Example {
     public static void main(final String[] args) throws InterruptedException {

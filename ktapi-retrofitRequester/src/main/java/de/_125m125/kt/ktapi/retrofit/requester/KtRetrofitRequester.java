@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester;
+package de._125m125.kt.ktapi.retrofit.requester;
 
 import java.util.List;
 
@@ -19,8 +19,9 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
-import de._125m125.kt.ktapi.retrofitRequester.builderModifier.RetrofitModifier;
+import de._125m125.kt.ktapi.retrofit.requester.modifier.RetrofitModifier;
 import de._125m125.kt.okhttp.helper.OkHttpClientBuilder;
+import de._125m125.kt.okhttp.helper.modifier.CertificatePinnerAdder;
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -36,7 +37,8 @@ public class KtRetrofitRequester implements KtRequester {
     public KtRetrofitRequester(final String url, final ClientModifier[] clientModifiers,
             final RetrofitModifier[] retrofitModifiers,
             final Converter<ResponseBody, ErrorResponse> errorConverter) {
-        this(url, new OkHttpClientBuilder(clientModifiers).recommendedModifiers(),
+        this(url,
+                new OkHttpClientBuilder(clientModifiers).addModifier(new CertificatePinnerAdder()),
                 retrofitModifiers, errorConverter);
     }
 
@@ -153,9 +155,9 @@ public class KtRetrofitRequester implements KtRequester {
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channelName,
             final String socketId) {
-        return new RetrofitResult<>(this.client.authorizePusher(userKey.getUserId(), channel_name,
+        return new RetrofitResult<>(this.client.authorizePusher(userKey.getUserId(), channelName,
                 socketId, userKey.getIdentifier()), this.errorConverter);
     }
 

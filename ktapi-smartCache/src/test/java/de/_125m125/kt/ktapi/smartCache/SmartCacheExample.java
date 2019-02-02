@@ -14,7 +14,7 @@ import de._125m125.kt.ktapi.core.users.TokenUser;
 import de._125m125.kt.ktapi.pusher.KtPusher;
 import de._125m125.kt.ktapi.pusher.KtPusherAuthorizer;
 import de._125m125.kt.ktapi.retrofit.KtRetrofit;
-import de._125m125.kt.ktapi.retrofitRequester.KtRetrofitRequester;
+import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
 
 public class SmartCacheExample {
     public static void main(final String[] args) throws IOException {

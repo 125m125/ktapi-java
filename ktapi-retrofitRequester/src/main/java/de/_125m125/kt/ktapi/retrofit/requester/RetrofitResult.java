@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester;
+package de._125m125.kt.ktapi.retrofit.requester;
 
 import java.io.IOException;
 

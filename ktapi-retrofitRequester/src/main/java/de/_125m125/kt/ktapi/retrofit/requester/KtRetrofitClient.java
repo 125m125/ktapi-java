@@ -1,4 +1,4 @@
-package de._125m125.kt.ktapi.retrofitRequester;
+package de._125m125.kt.ktapi.retrofit.requester;
 
 import java.util.List;
 
@@ -43,67 +43,68 @@ public interface KtRetrofitClient {
 
     @GET("permissions/{userid}")
     Call<Permissions> getPermissions(@Path("userid") String userid,
-            @Header("userKey") String String);
+            @Header("userKey") String userKey);
 
     @GET("itemnames")
     Call<List<ItemName>> getItemNames();
 
     @GET("users/{userid}/items")
-    Call<List<Item>> getItems(@Path("userid") String userid, @Header("userKey") String String);
+    Call<List<Item>> getItems(@Path("userid") String userid, @Header("userKey") String userKey);
 
     @GET("users/{userid}/items/{itemid}")
     Call<Item> getItem(@Path("userid") String userid, @Path("itemid") String itemid,
-            @Header("userKey") String String);
+            @Header("userKey") String userKey);
 
     @GET("users/{userid}/messages")
-    Call<List<Message>> getMessages(@Path("userid") String userid, @Header("userKey") String String,
-            @Query("offset") int offset, @Query("limit") int limit);
+    Call<List<Message>> getMessages(@Path("userid") String userid,
+            @Header("userKey") String userKey, @Query("offset") int offset,
+            @Query("limit") int limit);
 
     @GET("users/{userid}/payouts")
-    Call<List<Payout>> getPayouts(@Path("userid") String userid, @Header("userKey") String String,
+    Call<List<Payout>> getPayouts(@Path("userid") String userid, @Header("userKey") String userKey,
             @Query("offset") int offset, @Query("limit") int limit);
 
     @GET("users/{userid}/payouts/{payoutid}")
     Call<List<Payout>> getPayouts(@Path("userid") String userid, @Path("payoutid") String payoutid,
-            @Header("userKey") String String);
+            @Header("userKey") String userKey);
 
     @POST("users/{userid}/payouts")
     @FormUrlEncoded
     Call<WriteResult<Payout>> createPayout(@Path("userid") String userid,
             @Field("type") String type, @Field("item") String itemid,
-            @Field("amount") String amount, @Header("userKey") String String);
+            @Field("amount") String amount, @Header("userKey") String userKey);
 
     @POST("users/{userid}/payouts/{payoutid}/cancel")
     Call<WriteResult<Payout>> cancelPayout(@Path("userid") String userid,
-            @Path("payoutid") long payoutid, @Header("userKey") String String);
+            @Path("payoutid") long payoutid, @Header("userKey") String userKey);
 
     @POST("users/{userid}/payouts/{payoutid}/takout")
     Call<WriteResult<Payout>> takeoutPayout(@Path("userid") String userid,
-            @Path("payoutid") long payoutid, @Header("userKey") String String);
+            @Path("payoutid") long payoutid, @Header("userKey") String userKey);
 
     @POST("pusher/authenticate")
     @FormUrlEncoded
     Call<PusherResult> authorizePusher(@Query("user") final String user,
             @Field("channel_name") final String channelname,
-            @Field("socketId") final String socketId, @Header("userKey") String String);
+            @Field("socketId") final String socketId, @Header("userKey") String userKey);
 
     @GET("users/{user}/orders")
-    Call<List<Trade>> getTrades(@Path("user") final String user, @Header("userKey") String String);
+    Call<List<Trade>> getTrades(@Path("user") final String user, @Header("userKey") String userKey);
 
     @POST("users/{user}/orders")
     @FormUrlEncoded
     Call<WriteResult<Trade>> createTrade(@Path("user") final String user,
             @Field("buySell") final BuySell buySell, @Field("item") final String item,
             @Field("amount") final int amount, @Field("price") final String price,
-            @Header("userKey") String String);
+            @Header("userKey") String userKey);
 
     @POST("users/{user}/orders/{orderId}/cancel")
     Call<WriteResult<Trade>> cancelTrade(@Path("user") final String user,
-            @Path("orderId") final long orderId, @Header("userKey") String String);
+            @Path("orderId") final long orderId, @Header("userKey") String userKey);
 
     @POST("users/{user}/orders/{orderId}/takeout")
     Call<WriteResult<Trade>> takeoutTrade(@Path("user") final String user,
-            @Path("orderId") final long orderId, @Header("userKey") String String);
+            @Path("orderId") final long orderId, @Header("userKey") String userKey);
 
     @GET("ping")
     Call<Long> ping();
