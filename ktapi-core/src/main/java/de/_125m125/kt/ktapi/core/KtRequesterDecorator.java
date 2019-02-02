@@ -36,13 +36,13 @@ public class KtRequesterDecorator implements KtRequester {
 
     @Override
     public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit,
-            final BUY_SELL_BOTH mode, final boolean summarizeRemaining) {
+            final BuySellBoth mode, final boolean summarizeRemaining) {
         return this.requester.getOrderBook(itemid, limit, mode, summarizeRemaining);
     }
 
     @Override
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid,
-            final BUY_SELL_BOTH mode) {
+            final BuySellBoth mode) {
         return this.requester.getBestOrderBookEntries(itemid, mode);
     }
 
@@ -89,7 +89,7 @@ public class KtRequesterDecorator implements KtRequester {
     }
 
     @Override
-    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PAYOUT_TYPE type,
+    public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PayoutType type,
             final String itemid, final String amount) {
         return this.requester.createPayout(userKey, type, itemid, amount);
     }
@@ -110,9 +110,9 @@ public class KtRequesterDecorator implements KtRequester {
     }
 
     @Override
-    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channel_name,
+    public Result<PusherResult> authorizePusher(final UserKey userKey, final String channelName,
             final String socketId) {
-        return this.requester.authorizePusher(userKey, channel_name, socketId);
+        return this.requester.authorizePusher(userKey, channelName, socketId);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class KtRequesterDecorator implements KtRequester {
     }
 
     @Override
-    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BUY_SELL mode,
+    public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BuySell mode,
             final String item, final int amount, final String pricePerItem) {
         return this.requester.createTrade(userKey, mode, item, amount, pricePerItem);
     }

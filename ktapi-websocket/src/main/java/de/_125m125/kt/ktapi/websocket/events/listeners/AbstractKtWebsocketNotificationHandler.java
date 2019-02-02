@@ -1,6 +1,7 @@
 package de._125m125.kt.ktapi.websocket.events.listeners;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,10 +35,11 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
     public AbstractKtWebsocketNotificationHandler(final Logger logger, final KtUserStore userStore,
             final VerificationMode mode,
             final SubscriptionRequestDataFactory subscriptionRequestDataFactory) {
-        this.logger = logger;
-        this.userStore = userStore;
-        this.mode = mode;
-        this.subscriptionRequestDataFactory = subscriptionRequestDataFactory;
+        this.logger = Objects.requireNonNull(logger);
+        this.userStore = Objects.requireNonNull(userStore);
+        this.mode = Objects.requireNonNull(mode);
+        this.subscriptionRequestDataFactory = Objects
+                .requireNonNull(subscriptionRequestDataFactory);
     }
 
     public synchronized KtWebsocketManager getManager() {
@@ -76,10 +78,11 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
         try {
             final KtWebsocketManager manager = getManager();
             if (manager == null) {
-                this.logger.error(
-                        "tried to subscribe to events before NofiticationListener was fully initialized");
-                result.completeExceptionally(new IllegalStateException(
-                        "the notification manager first has to be assigned to a KtWebsocketmanager"));
+                this.logger.error("tried to subscribe to events before "
+                        + "NofiticationListener was fully initialized");
+                result.completeExceptionally(
+                        new IllegalStateException("the notification manager first has to "
+                                + "be assigned to a KtWebsocketmanager"));
             }
             final ChannelIdentifier userKey = new ChannelIdentifier(request);
             if (this.knownUsers.contains(userKey)) {
@@ -208,6 +211,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
                 result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
                 break;
             case ALWAYS:
+            default:
                 return 0;
             }
             return result;
@@ -253,6 +257,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
                     }
                     break;
                 case ALWAYS:
+                default:
                     return false;
                 }
             }

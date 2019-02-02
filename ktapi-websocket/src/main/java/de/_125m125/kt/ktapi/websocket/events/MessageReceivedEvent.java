@@ -4,7 +4,8 @@ public class MessageReceivedEvent extends WebsocketEvent {
 
     private final Object message;
 
-    public MessageReceivedEvent(final WebsocketStatus websocketStatus, final Object parsedResponse) {
+    public MessageReceivedEvent(final WebsocketStatus websocketStatus,
+            final Object parsedResponse) {
         super(websocketStatus);
         this.message = parsedResponse;
     }

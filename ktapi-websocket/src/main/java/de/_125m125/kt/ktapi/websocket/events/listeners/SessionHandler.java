@@ -21,8 +21,7 @@ import de._125m125.kt.ktapi.websocket.responses.ResponseMessage;
 import de._125m125.kt.ktapi.websocket.responses.SessionResponse;
 
 public class SessionHandler {
-    private static final Logger        logger          = LoggerFactory
-            .getLogger(SessionHandler.class);
+    private static final Logger      logger        = LoggerFactory.getLogger(SessionHandler.class);
 
     private KtWebsocketManager       manager;
     private ScheduledExecutorService service;
@@ -37,7 +36,8 @@ public class SessionHandler {
     @WebsocketEventListening
     public synchronized void onWebsocketManagerCreated(final WebsocketManagerCreatedEvent e) {
         if (this.manager != null) {
-            throw new IllegalStateException("each session handler can only be used for a single WebsocketManager");
+            throw new IllegalStateException(
+                    "each session handler can only be used for a single WebsocketManager");
         }
         this.manager = e.getManager();
         this.service = Executors.newScheduledThreadPool(1, r -> {
@@ -75,7 +75,8 @@ public class SessionHandler {
                 .addContent(SessionRequestData.createStartRequest()).build();
         this.manager.sendRequest(requestMessage);
         try {
-            final ResponseMessage responseMessage = requestMessage.getResult().get(5, TimeUnit.SECONDS);
+            final ResponseMessage responseMessage = requestMessage.getResult().get(5,
+                    TimeUnit.SECONDS);
             if (!(responseMessage instanceof SessionResponse)) {
                 SessionHandler.logger.warn("Failed to aquire session.");
                 return;
@@ -101,8 +102,10 @@ public class SessionHandler {
                 .addContent(SessionRequestData.createResumtionRequest(this.sessionId)).build();
         this.manager.sendRequest(requestMessage);
         try {
-            final ResponseMessage responseMessage = requestMessage.getResult().get(30, TimeUnit.SECONDS);
-            final boolean error = responseMessage.getError().filter("unknownSessionId"::equals).isPresent();
+            final ResponseMessage responseMessage = requestMessage.getResult().get(30,
+                    TimeUnit.SECONDS);
+            final boolean error = responseMessage.getError().filter("unknownSessionId"::equals)
+                    .isPresent();
             if (error) {
                 SessionHandler.logger.warn("Could not resume session.");
                 this.sessionId = null;

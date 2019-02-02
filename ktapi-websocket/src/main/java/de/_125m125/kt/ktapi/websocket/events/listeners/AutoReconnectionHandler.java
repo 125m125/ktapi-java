@@ -12,7 +12,7 @@ import de._125m125.kt.ktapi.websocket.events.WebsocketManagerCreatedEvent;
 public class AutoReconnectionHandler {
     private static final Logger logger = LoggerFactory.getLogger(AutoReconnectionHandler.class);
 
-    private Thread              restart_wait_thread;
+    private Thread              restartWaitThread;
     private long                lastDelay;
     private KtWebsocketManager  manager;
 
@@ -30,16 +30,17 @@ public class AutoReconnectionHandler {
         AutoReconnectionHandler.logger
                 .debug("Websocket was connected successfully. Resetting reconnection delay");
         this.lastDelay = 0;
-        if (this.restart_wait_thread != null) {
-            this.restart_wait_thread.interrupt();
+        if (this.restartWaitThread != null) {
+            this.restartWaitThread.interrupt();
         }
     }
 
     @WebsocketEventListening
     public void onWebsocketDisconnected(final WebsocketDisconnectedEvent e) {
         if (e.getWebsocketStatus().isActive()) {
-            AutoReconnectionHandler.logger.info(
-                    "Websocket was disconnected while still being active. Starting delay reconnection.");
+            AutoReconnectionHandler.logger
+                    .info("Websocket was disconnected while still being active. "
+                            + "Starting delay reconnection.");
             reConnectDelayed();
         }
     }
@@ -48,12 +49,12 @@ public class AutoReconnectionHandler {
      * reconnects the websocket after a delay.
      */
     private synchronized void reConnectDelayed() {
-        if (this.restart_wait_thread != null && this.restart_wait_thread.isAlive()
-                && this.restart_wait_thread != Thread.currentThread()) {
+        if (this.restartWaitThread != null && this.restartWaitThread.isAlive()
+                && this.restartWaitThread != Thread.currentThread()) {
             throw new IllegalStateException("this instance is already waiting for a reconnect");
         }
         final KtWebsocketManager myManager = this.manager;
-        this.restart_wait_thread = new Thread(() -> {
+        this.restartWaitThread = new Thread(() -> {
             this.lastDelay = this.lastDelay != 0 ? this.lastDelay * 2 : 1000;
             System.out.println(this.lastDelay);
             try {
@@ -61,8 +62,9 @@ public class AutoReconnectionHandler {
                         this.lastDelay);
                 Thread.sleep(this.lastDelay);
             } catch (final InterruptedException e) {
-                AutoReconnectionHandler.logger.warn(
-                        "Reconnect was interrupted while waiting for delay. Reconnecting immediately.");
+                AutoReconnectionHandler.logger
+                        .warn("Reconnect was interrupted while waiting for delay. "
+                                + "Reconnecting immediately.");
             }
             AutoReconnectionHandler.logger.debug("Attempting reconnection");
             try {
@@ -71,7 +73,7 @@ public class AutoReconnectionHandler {
                 AutoReconnectionHandler.logger.info("Websocket refused reconnection attempt.", e);
             }
         });
-        this.restart_wait_thread.setDaemon(false);
-        this.restart_wait_thread.start();
+        this.restartWaitThread.setDaemon(false);
+        this.restartWaitThread.start();
     }
 }

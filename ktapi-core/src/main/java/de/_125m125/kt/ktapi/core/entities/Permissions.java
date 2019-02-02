@@ -1,28 +1,31 @@
 package de._125m125.kt.ktapi.core.entities;
 
 public class Permissions {
-    public static final Permissions NO_PERMISSIONS = new Permissions(false, false, false, false, false, false);
-
-    private boolean rPayouts;
-    private boolean wOrders;
-    private boolean rMessages;
-    private boolean wPayouts;
-    private boolean rItems;
-    private boolean rOrders;
+    public static final Permissions NO_PERMISSIONS = new Permissions(false, false, false, false,
+            false, false);
+    // @CHECKSTYLE:OFF naming required to allow parsing/encoding of messages
+    private boolean                 rPayouts;
+    private boolean                 wOrders;
+    private boolean                 rMessages;
+    private boolean                 wPayouts;
+    private boolean                 rItems;
+    private boolean                 rOrders;
+    // @CHECKSTYLE:ON
 
     protected Permissions() {
 
     }
 
-    public Permissions(final boolean rPayouts, final boolean wOrders, final boolean rMessages, final boolean wPayouts,
-            final boolean rItems, final boolean rOrders) {
+    public Permissions(final boolean readPayouts, final boolean writeOrders,
+            final boolean readMessages, final boolean writePayouts, final boolean readItems,
+            final boolean readOrders) {
         super();
-        this.rPayouts = rPayouts;
-        this.wOrders = wOrders;
-        this.rMessages = rMessages;
-        this.wPayouts = wPayouts;
-        this.rItems = rItems;
-        this.rOrders = rOrders;
+        this.rPayouts = readPayouts;
+        this.wOrders = writeOrders;
+        this.rMessages = readMessages;
+        this.wPayouts = writePayouts;
+        this.rItems = readItems;
+        this.rOrders = readOrders;
     }
 
     public boolean mayReadPayouts() {

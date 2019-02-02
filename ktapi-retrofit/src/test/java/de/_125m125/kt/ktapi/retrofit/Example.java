@@ -8,7 +8,7 @@ import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.TokenUser;
-import de._125m125.kt.ktapi.retrofitRequester.KtRetrofitRequester;
+import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
 
 public class Example {
     public static void main(final String[] args) throws InterruptedException {
@@ -40,7 +40,8 @@ public class Example {
             }
 
             @Override
-            public void onFailure(final int status, final String message, final String humanReadableMessage) {
+            public void onFailure(final int status, final String message,
+                    final String humanReadableMessage) {
                 System.out.println("Request failed with status " + status + ": " + message);
             }
 
@@ -51,8 +52,9 @@ public class Example {
         });
 
         requester.ping().addCallback(Callback.successCallback(s -> r -> System.out.println(r)))
-        .addCallback(Callback.failureCallback(s -> s < 500 ? m -> h -> System.out.println("Client error: " + h)
-                : m -> h -> System.out.println("Server error: " + h)))
-        .addCallback(Callback.errorCallback(Throwable::printStackTrace));
+                .addCallback(Callback.failureCallback(
+                        s -> s < 500 ? m -> h -> System.out.println("Client error: " + h)
+                                : m -> h -> System.out.println("Server error: " + h)))
+                .addCallback(Callback.errorCallback(Throwable::printStackTrace));
     }
 }

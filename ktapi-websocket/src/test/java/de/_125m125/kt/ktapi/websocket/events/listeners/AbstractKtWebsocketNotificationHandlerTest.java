@@ -153,48 +153,37 @@ public class AbstractKtWebsocketNotificationHandlerTest {
                 // @formatter:off
                 { "ALWAYS rechecks every time", VerificationMode.ALWAYS,
                         createSubscribeMessages(this.knownUser.getKey(), false),
-                        createSubscribeMessages(this.knownUser.getKey(), true), true, true, 2
-                },
+                        createSubscribeMessages(this.knownUser.getKey(), true), true, true, 2 },
                 { "UNKNOWN_UID checks only first success", VerificationMode.UNKNOWN_UID,
                         createSubscribeMessages(this.knownUser.getKey(), false),
-                        createSubscribeMessages(this.knownUser.getKey(), true), true, true, 1
-                },
+                        createSubscribeMessages(this.knownUser.getKey(), true), true, true, 1 },
                 { "UNKNOWN_UID rechecks after first failure", VerificationMode.UNKNOWN_UID,
                         createSubscribeMessages(this.knownUser.getKey(), true),
-                        createSubscribeMessages(this.knownUser.getKey(), true), false, true, 2
-                },
+                        createSubscribeMessages(this.knownUser.getKey(), true), false, true, 2 },
                 { "UNKNOWN_UID rechecks for ignores different token", VerificationMode.UNKNOWN_UID,
                         createSubscribeMessages(this.knownUser.getKey(), true),
-                        createSubscribeMessages(this.knownUser2.getKey(), true), true, true, 1
-                },
+                        createSubscribeMessages(this.knownUser2.getKey(), true), true, true, 1 },
                 { "UNKNOWN_UID rechecks for different user", VerificationMode.UNKNOWN_UID,
                         createSubscribeMessages(this.knownUser.getKey(), true),
-                        createSubscribeMessages(this.knownUser3.getKey(), true), true, true, 2
-                },
+                        createSubscribeMessages(this.knownUser3.getKey(), true), true, true, 2 },
                 { "UNKNOWN_UID rechecks for different type", VerificationMode.UNKNOWN_UID,
                         createSubscribeMessages(this.knownUser.getKey(), false),
-                        createSubscribeItems(this.knownUser.getKey(), true), true, true, 2
-                },
+                        createSubscribeItems(this.knownUser.getKey(), true), true, true, 2 },
                 { "UNKNOWN_TKN checks only first success", VerificationMode.UNKNOWN_TKN,
                         createSubscribeMessages(this.knownUser.getKey(), true),
-                        createSubscribeMessages(this.knownUser.getKey(), true), true, true, 1
-                },
+                        createSubscribeMessages(this.knownUser.getKey(), true), true, true, 1 },
                 { "UNKNOWN_TKN rechecks after first failure", VerificationMode.UNKNOWN_TKN,
                         createSubscribeMessages(this.knownUser.getKey(), true),
-                        createSubscribeMessages(this.knownUser.getKey(), true), false, true, 2
-                },
+                        createSubscribeMessages(this.knownUser.getKey(), true), false, true, 2 },
                 { "UNKNOWN_TKN rechecks for different token", VerificationMode.UNKNOWN_TKN,
                         createSubscribeMessages(this.knownUser.getKey(), false),
-                        createSubscribeMessages(this.knownUser2.getKey(), true), true, true, 2
-                },
+                        createSubscribeMessages(this.knownUser2.getKey(), true), true, true, 2 },
                 { "UNKNOWN_TKN rechecks for different user", VerificationMode.UNKNOWN_TKN,
                         createSubscribeMessages(this.knownUser.getKey(), true),
-                        createSubscribeMessages(this.knownUser3.getKey(), true), true, true, 2
-                },
+                        createSubscribeMessages(this.knownUser3.getKey(), true), true, true, 2 },
                 { "UNKNOWN_TKN rechecks for different type", VerificationMode.UNKNOWN_TKN,
                         createSubscribeMessages(this.knownUser.getKey(), false),
-                        createSubscribeItems(this.knownUser.getKey(), true), true, true, 2
-                },
+                        createSubscribeItems(this.knownUser.getKey(), true), true, true, 2 },
                 // @formatter:on
         };
     }

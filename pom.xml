@@ -27,6 +27,7 @@
         <maven>3.0</maven>
     </prerequisites>
     <modules>
+        <module>ktapi-buildTools</module>
         <module>ktapi-core</module>
         <module>ktapi-okHttpHelper</module>
         <module>ktapi-okhttpWebsocket</module>
@@ -215,14 +216,35 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>3.1.10</version>
                 <configuration>
-                    <!-- Enables analysis which takes more memory but finds 
-                        more bugs. If you run out of memory, changes the value of the effort element 
-                        to 'low'. -->
+                    <!-- Enables analysis which takes more memory but finds more bugs. If 
+						you run out of memory, changes the value of the effort element to 'low'. -->
                     <effort>Max</effort>
                     <!-- Reports all bugs (other values are medium and max) -->
                     <threshold>Low</threshold>
                     <!-- Produces XML report -->
                     <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>8.17</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>de.125m125.kt</groupId>
+                        <artifactId>ktapi-buildTools</artifactId>
+                        <version>0.0.4-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <violationSeverity>warning</violationSeverity>
+                    <configLocation>de/_125m125/kt/ktapi/checkstyle/checkstyle.xml</configLocation>
+                    <!-- <headerLocation>whizbang/LICENSE.txt</headerLocation> -->
                 </configuration>
             </plugin>
             <plugin>
@@ -238,6 +260,15 @@
             </plugin>
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
     <profiles>
         <profile>
             <id>release</id>

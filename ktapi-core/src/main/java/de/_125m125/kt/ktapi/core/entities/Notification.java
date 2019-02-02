@@ -36,8 +36,8 @@ public class Notification {
      * @param details
      *            the details for this notification
      */
-    public Notification(final boolean selfCreated, final long uid, final String base32Uid, final String type,
-            final Map<String, String> details) {
+    public Notification(final boolean selfCreated, final long uid, final String base32Uid,
+            final String type, final Map<String, String> details) {
         super();
         this.selfCreated = selfCreated;
         this.uid = uid;
@@ -57,7 +57,7 @@ public class Notification {
 
     /**
      * Gets the if of the subscribed uer.
-     * 
+     *
      * @return the id of the subscribed user
      */
     public long getUid() {
@@ -96,8 +96,9 @@ public class Notification {
      */
     @Override
     public String toString() {
-        return "Notification [selfCreated=" + this.selfCreated + ", uid=" + this.uid + ", base32Uid=" + this.base32Uid
-                + ", type=" + this.type + ", details=" + this.details + "]";
+        return "Notification [selfCreated=" + this.selfCreated + ", uid=" + this.uid
+                + ", base32Uid=" + this.base32Uid + ", type=" + this.type + ", details="
+                + this.details + "]";
     }
 
 }

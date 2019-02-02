@@ -54,7 +54,8 @@ public class KtWebsocketManager implements Closeable {
 
     private static final Logger logger       = LoggerFactory.getLogger(KtWebsocketManager.class);
     /**
-     * This marker marks log messages, where the token of a user could be contained in a json string
+     * This marker marks log messages, where the token of a user could be
+     * contained in a json string.
      */
     public static final Marker  TOKEN_MARKER = MarkerFactory
             .getMarker("de.125m125.kt.ktapi.websocket.JSON-TOKEN");
@@ -65,11 +66,13 @@ public class KtWebsocketManager implements Closeable {
 
     public static class Builder {
         private final KtWebsocket                                                  websocket;
-        private final Map<Class<? extends WebsocketEvent>, List<Consumer<Object>>> listeners = new HashMap<>();
-        private final List<WebsocketMessageParser<?>>                              parsers   = new ArrayList<>();
+        private final Map<Class<? extends WebsocketEvent>, List<Consumer<Object>>> listeners;
+        private final List<WebsocketMessageParser<?>>                              parsers;
 
         public Builder(final KtWebsocket websocket) {
             this.websocket = websocket;
+            listeners = new HashMap<>();
+            parsers = new ArrayList<>();
         }
 
         public <T extends WebsocketEvent> Builder addListener(final Class<T> clazz,
@@ -98,8 +101,7 @@ public class KtWebsocketManager implements Closeable {
                 final Parameter p = parameters[0];
                 if (!WebsocketEvent.class.isAssignableFrom(p.getType())) {
                     KtWebsocketManager.logger
-                            .warn("Method {} does not accept a WebsocketEvent as argument.",
-                            m);
+                            .warn("Method {} does not accept a WebsocketEvent as argument.", m);
                     throw new IllegalArgumentException(
                             "The argument for " + listener.getClass().getName() + "#" + m.getName()
                                     + " does not extend WebsocketEvent");
@@ -155,10 +157,10 @@ public class KtWebsocketManager implements Closeable {
     private final List<WebsocketMessageParser<?>>                              parsers;
     private final KtWebsocket                                                  websocket;
 
-    protected volatile boolean                                                 active           = false;
-    protected volatile boolean                                                 connected        = false;
+    protected volatile boolean                                                 active;
+    protected volatile boolean                                                 connected;
 
-    private final Map<Integer, RequestMessage>                                 awaitedResponses = new ConcurrentHashMap<>();
+    private final Map<Integer, RequestMessage>                                 awaitedResponses;
 
     public KtWebsocketManager(
             final Map<Class<? extends WebsocketEvent>, List<Consumer<Object>>> listeners,
@@ -167,6 +169,9 @@ public class KtWebsocketManager implements Closeable {
         this.listeners = listeners;
         this.parsers = parsers;
         this.websocket = websocket;
+        active = false;
+        connected = false;
+        awaitedResponses = new ConcurrentHashMap<>();
     }
 
     public <T extends WebsocketEvent> void fireEvent(final T e) {

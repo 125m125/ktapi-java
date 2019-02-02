@@ -6,7 +6,8 @@ public class AfterMessageSendEvent extends WebsocketEvent {
 
     private final RequestMessage requestMessage;
 
-    public AfterMessageSendEvent(final WebsocketStatus websocketStatus, final RequestMessage requestMessage) {
+    public AfterMessageSendEvent(final WebsocketStatus websocketStatus,
+            final RequestMessage requestMessage) {
         super(websocketStatus);
         this.requestMessage = requestMessage;
     }

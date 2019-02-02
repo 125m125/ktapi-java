@@ -144,7 +144,7 @@ public interface KtNotificationManager<U> {
     }
 
     /**
-     * Subscribe to all notification that do not require a logged in user
+     * Subscribe to all notification that do not require a logged in user.
      *
      * @param listener
      *            the listener
@@ -164,7 +164,7 @@ public interface KtNotificationManager<U> {
      * underlying Notificationmanager may still receive event messages from the server, but will not
      * forward them to this listener anymore and won't prevent the garbage collector from collecting
      * it.
-     * 
+     *
      * @param listener
      *            the listener that should be unsubscribed
      */

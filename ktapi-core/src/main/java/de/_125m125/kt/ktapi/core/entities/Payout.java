@@ -16,7 +16,8 @@ public class Payout {
         super();
     }
 
-    public Payout(final long id, final String material, final String materialName, final double amount,
+    public Payout(final long id, final String material, final String materialName,
+            final double amount,
             final String state, final String payoutType, final String date, final String message) {
         super();
         this.id = id;

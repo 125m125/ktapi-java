@@ -18,7 +18,8 @@ public interface Callback<T> {
     }
 
     public static <T> Callback<T> of(final Optional<BiConsumer<Integer, T>> success,
-            final Optional<TriConsumer<Integer, String, String>> failure, final Optional<Consumer<Throwable>> error) {
+            final Optional<TriConsumer<Integer, String, String>> failure,
+            final Optional<Consumer<Throwable>> error) {
         Objects.requireNonNull(success);
         Objects.requireNonNull(failure);
         Objects.requireNonNull(error);
@@ -30,7 +31,8 @@ public interface Callback<T> {
             }
 
             @Override
-            public void onFailure(final int status, final String message, final String humanReadableMessage) {
+            public void onFailure(final int status, final String message,
+                    final String humanReadableMessage) {
                 failure.ifPresent(f -> f.accept(status, message, humanReadableMessage));
             }
 
@@ -49,11 +51,13 @@ public interface Callback<T> {
         return of(Optional.of(success), Optional.empty(), Optional.empty());
     }
 
-    public static <T> Callback<T> failureCallback(final Function<Integer, Function<String, Consumer<String>>> failure) {
+    public static <T> Callback<T> failureCallback(
+            final Function<Integer, Function<String, Consumer<String>>> failure) {
         return ofCurried(Optional.empty(), Optional.of(failure), Optional.empty());
     }
 
-    public static <T> Callback<T> failureCallback(final TriConsumer<Integer, String, String> failure) {
+    public static <T> Callback<T> failureCallback(
+            final TriConsumer<Integer, String, String> failure) {
         return of(Optional.empty(), Optional.of(failure), Optional.empty());
     }
 
@@ -68,14 +72,17 @@ public interface Callback<T> {
     public void onError(Throwable t);
 
     /**
+     * <p>
      * Represents an operation that accepts three input arguments and returns no
      * result. This is the three-arity specialization of {@link Consumer}.
      * Unlike most other functional interfaces, {@code TriConsumer} is expected
      * to operate via side-effects.
+     * </p>
      *
      * <p>
      * This is a <a href="package-summary.html">functional interface</a>
      * whose functional method is {@link #accept(Object, Object, Object)}.
+     * </p>
      *
      * @param <T>
      *            the type of the first argument to the operation
@@ -116,7 +123,8 @@ public interface Callback<T> {
          * @throws NullPointerException
          *             if {@code after} is null
          */
-        default TriConsumer<T, U, V> andThen(final TriConsumer<? super T, ? super U, ? super V> after) {
+        default TriConsumer<T, U, V> andThen(
+                final TriConsumer<? super T, ? super U, ? super V> after) {
             Objects.requireNonNull(after);
             return (t, u, v) -> {
                 accept(t, u, v);

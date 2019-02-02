@@ -2,7 +2,7 @@ package de._125m125.kt.ktapi.core.entities;
 
 import java.util.Objects;
 
-import de._125m125.kt.ktapi.core.BUY_SELL;
+import de._125m125.kt.ktapi.core.BuySell;
 
 public class Trade {
     private long    id;
@@ -20,9 +20,9 @@ public class Trade {
         super();
     }
 
-    public Trade(final long id, final boolean buySell, final String materialId, final String materialName,
-            final int amount, final double price, final int sold, final double toTakeM, final int toTakeI,
-            final boolean cancelled) {
+    public Trade(final long id, final boolean buySell, final String materialId,
+            final String materialName, final int amount, final double price, final int sold,
+            final double toTakeM, final int toTakeI, final boolean cancelled) {
         super();
         this.id = id;
         this.buy = buySell;
@@ -40,8 +40,8 @@ public class Trade {
         return this.id;
     }
 
-    public BUY_SELL getBuySell() {
-        return this.buy ? BUY_SELL.BUY : BUY_SELL.SELL;
+    public BuySell getBuySell() {
+        return this.buy ? BuySell.BUY : BuySell.SELL;
     }
 
     public boolean isBuySell() {

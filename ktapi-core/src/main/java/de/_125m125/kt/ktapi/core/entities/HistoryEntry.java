@@ -12,23 +12,25 @@ public class HistoryEntry {
     private double                   close;
     private Double                   low;
     private Double                   high;
+    // @CHECKSTYLE:OFF naming required to allow parsing/encoding of messages
     private double                   unit_volume;
     private double                   dollar_volume;
+    // @CHECKSTYLE:ON
 
     protected HistoryEntry() {
         super();
     }
 
-    public HistoryEntry(final String date, final double open, final double close, final Double low, final Double high,
-            final double unit_value, final double dollar_value) {
+    public HistoryEntry(final String date, final double open, final double close, final Double low,
+            final Double high, final double unitVolume, final double dollarVolume) {
         super();
         this.date = Objects.requireNonNull(date);
         this.open = open;
         this.close = close;
         this.low = low;
         this.high = high;
-        this.unit_volume = unit_value;
-        this.dollar_volume = dollar_value;
+        this.unit_volume = unitVolume;
+        this.dollar_volume = dollarVolume;
     }
 
     public String getDatestring() {
@@ -55,11 +57,11 @@ public class HistoryEntry {
         return this.high;
     }
 
-    public double getUnit_value() {
+    public double getUnitVolume() {
         return this.unit_volume;
     }
 
-    public double getDollar_value() {
+    public double getDollarVolume() {
         return this.dollar_volume;
     }
 
@@ -125,7 +127,8 @@ public class HistoryEntry {
         } else if (!this.date.equals(other.date)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.dollar_volume) != Double.doubleToLongBits(other.dollar_volume)) {
+        if (Double.doubleToLongBits(this.dollar_volume) != Double
+                .doubleToLongBits(other.dollar_volume)) {
             return false;
         }
         if (this.high == null) {
@@ -145,7 +148,8 @@ public class HistoryEntry {
         if (Double.doubleToLongBits(this.open) != Double.doubleToLongBits(other.open)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.unit_volume) != Double.doubleToLongBits(other.unit_volume)) {
+        if (Double.doubleToLongBits(this.unit_volume) != Double
+                .doubleToLongBits(other.unit_volume)) {
             return false;
         }
         return true;
