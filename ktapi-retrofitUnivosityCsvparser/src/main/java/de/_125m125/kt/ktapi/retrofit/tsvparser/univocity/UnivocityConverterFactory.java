@@ -12,7 +12,8 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 
 public class UnivocityConverterFactory extends Converter.Factory {
-    @SuppressFBWarnings(justification = "if rawtype is of type is List, Type has to be ParameterizedType", value = "BC_UNCONFIRMED_CAST")
+    @SuppressFBWarnings(justification = "if rawtype is of type is List, "
+            + "Type has to be ParameterizedType", value = "BC_UNCONFIRMED_CAST")
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(final Type type,
             final Annotation[] annotations, final Retrofit retrofit) {
