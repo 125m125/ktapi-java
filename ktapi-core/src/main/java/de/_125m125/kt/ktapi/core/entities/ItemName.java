@@ -1,8 +1,12 @@
 package de._125m125.kt.ktapi.core.entities;
 
 public class ItemName {
-    private final String id;
-    private final String name;
+    private String id;
+    private String name;
+
+    protected ItemName() {
+        super();
+    }
 
     public ItemName(String id, String name) {
         this.id = id;
