@@ -13,7 +13,7 @@ public class HistoryEntry {
     private Double                   low;
     private Double                   high;
     // @CHECKSTYLE:OFF naming required to allow parsing/encoding of messages
-    private double                   unit_volume;
+    private int                      unit_volume;
     private double                   dollar_volume;
     // @CHECKSTYLE:ON
 
@@ -22,7 +22,7 @@ public class HistoryEntry {
     }
 
     public HistoryEntry(final String date, final double open, final double close, final Double low,
-            final Double high, final double unitVolume, final double dollarVolume) {
+            final Double high, final int unitVolume, final double dollarVolume) {
         super();
         this.date = Objects.requireNonNull(date);
         this.open = open;
@@ -57,7 +57,7 @@ public class HistoryEntry {
         return this.high;
     }
 
-    public double getUnitVolume() {
+    public int getUnitVolume() {
         return this.unit_volume;
     }
 

@@ -60,7 +60,7 @@ public class TimestampedHistoryEntry extends HistoryEntry implements Timestamped
     }
 
     @Override
-    public double getUnitVolume() {
+    public int getUnitVolume() {
         return this.entry.getUnitVolume();
     }
 

@@ -17,8 +17,8 @@ public class Payout {
     }
 
     public Payout(final long id, final String material, final String materialName,
-            final double amount,
-            final String state, final String payoutType, final String date, final String message) {
+            final double amount, final String state, final String payoutType, final String date,
+            final String message) {
         super();
         this.id = id;
         this.material = Objects.requireNonNull(material);
@@ -27,7 +27,7 @@ public class Payout {
         this.state = Objects.requireNonNull(state);
         this.payoutType = Objects.requireNonNull(payoutType);
         this.date = Objects.requireNonNull(date);
-        this.message = message != null ? message : "";
+        this.message = message;
     }
 
     public long getId() {
@@ -59,7 +59,7 @@ public class Payout {
     }
 
     public String getMessage() {
-        return this.message;
+        return this.message != null ? message : null;
     }
 
     @Override
