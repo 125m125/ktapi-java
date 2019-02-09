@@ -258,7 +258,7 @@ public class KtSmartCacheTest {
 
         @SuppressWarnings("unchecked")
         final Result<List<Message>> result = mock(Result.class);
-        final List<Message> asList = Arrays.asList(new Message("2018-01-01 00:00:00.0", "hello"));
+        final List<Message> asList = Arrays.asList(new Message(1546300800, "hello"));
         when(this.requester.getMessages(any(), eq(2), eq(5))).thenReturn(result);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")

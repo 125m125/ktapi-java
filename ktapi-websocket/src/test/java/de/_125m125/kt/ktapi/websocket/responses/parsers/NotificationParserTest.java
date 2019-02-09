@@ -4,8 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -92,17 +93,21 @@ public class NotificationParserTest {
 
     @Test
     public void testParsesChangedEntries() {
-        final String raw = "{\"selfCreated\":true,\"uid\":1510910885,\"base32Uid\":\"1d0tat5\",\"type\":\"update\",\"details\":{\"source\":\"messages\",\"key\":\"1d0tat5\",\"channel\":\"rMessages\"},contents:[{\"timestamp\":\"2018-01-01 00:00:00.0\",\"message\":\"hello world\"},{\"timestamp\":\"2018-01-02 04:08:16.0\",\"message\":\"hello second world\"}]}";
+        final String raw = "{\"selfCreated\":true,\"uid\":1510910885,\"base32Uid\":\"1d0tat5\",\"type\":\"update\",\"details\":{\"source\":\"messages\",\"key\":\"1d0tat5\",\"channel\":\"rMessages\"},contents:[{\"timestamp\":1514761200000,\"message\":\"hello world\"},{\"timestamp\":1514862496000,\"message\":\"hello second world\"}]}";
 
         final UpdateNotification<?> parse = this.uut.parse(raw,
                 Optional.of((JsonObject) new JsonParser().parse(raw)));
 
         assertTrue(parse.hasChangedEntries());
         final Message first = (Message) parse.getChangedEntries()[0];
-        assertEquals(LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0), first.getTime());
+        assertEquals(ZonedDateTime.of(2018, Month.JANUARY.getValue(), 1, 0, 0, 0, 0, ZoneId.of("Z"))
+                .toLocalDateTime(), first.getTime());
         assertEquals("hello world", first.getMessage());
         final Message second = (Message) parse.getChangedEntries()[1];
-        assertEquals(LocalDateTime.of(2018, Month.JANUARY, 2, 4, 8, 16), second.getTime());
+        assertEquals(
+                ZonedDateTime.of(2018, Month.JANUARY.getValue(), 2, 4, 8, 16, 0, ZoneId.of("Z"))
+                        .toLocalDateTime(),
+                second.getTime());
         assertEquals("hello second world", second.getMessage());
     }
 }

@@ -1,26 +1,24 @@
 package de._125m125.kt.ktapi.core.entities;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
+import java.time.ZoneId;
 
 public class Message {
-    private static DateTimeFormatter FORMATTER = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd HH:mm:ss.S");
-    private String                   timestamp;
-    private String                   message;
+    private long   timestamp;
+    private String message;
 
     protected Message() {
         super();
     }
 
-    public Message(final String timestamp, final String message) {
+    public Message(final long timestamp, final String message) {
         super();
-        this.timestamp = Objects.requireNonNull(timestamp);
+        this.timestamp = timestamp;
         this.message = message != null ? message : "";
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return this.timestamp;
     }
 
@@ -29,7 +27,7 @@ public class Message {
     }
 
     public LocalDateTime getTime() {
-        return LocalDateTime.parse(this.timestamp, Message.FORMATTER);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
     }
 
     @Override
@@ -47,13 +45,13 @@ public class Message {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.message == null) ? 0 : this.message.hashCode());
-        result = prime * result + ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -63,19 +61,15 @@ public class Message {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Message other = (Message) obj;
-        if (this.message == null) {
+        Message other = (Message) obj;
+        if (message == null) {
             if (other.message != null) {
                 return false;
             }
-        } else if (!this.message.equals(other.message)) {
+        } else if (!message.equals(other.message)) {
             return false;
         }
-        if (this.timestamp == null) {
-            if (other.timestamp != null) {
-                return false;
-            }
-        } else if (!this.timestamp.equals(other.timestamp)) {
+        if (timestamp != other.timestamp) {
             return false;
         }
         return true;
