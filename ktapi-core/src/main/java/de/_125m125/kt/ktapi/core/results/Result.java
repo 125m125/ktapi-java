@@ -1,42 +1,52 @@
 package de._125m125.kt.ktapi.core.results;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public abstract class Result<T> {
-    private final CountDownLatch cdl = new CountDownLatch(1);
+public class Result<T> {
+
+    private static final Logger     logger    = LoggerFactory.getLogger(Result.class);
+
+    private final CountDownLatch    cdl       = new CountDownLatch(1);
 
     @SuppressFBWarnings(
             justification = "content is set once in synchronized method. "
                     + "Read access is protected by CountDownlatch happens-before",
-                    value = "IS2_INCONSISTENT_SYNC")
-    private T                    content;
+            value = "IS2_INCONSISTENT_SYNC")
+    private T                       content;
     @SuppressFBWarnings(
             justification = "errorMessage is set once in synchronized method. "
                     + "Read access is protected by CountDownlatch happens-before",
-                    value = "IS2_INCONSISTENT_SYNC")
-    private String               errorMessage;
+            value = "IS2_INCONSISTENT_SYNC")
+    private String                  errorMessage;
     @SuppressFBWarnings(
             justification = "humanReadableErrorMessage is set once in synchronized method. "
                     + "Read access is protected by CountDownlatch happens-before",
-                    value = "IS2_INCONSISTENT_SYNC")
-    private String               humanReadableErrorMessage;
+            value = "IS2_INCONSISTENT_SYNC")
+    private String                  humanReadableErrorMessage;
     @SuppressFBWarnings(
             justification = "status is set once in synchronized method. "
                     + "Read access is protected by CountDownlatch happens-before",
-                    value = "IS2_INCONSISTENT_SYNC")
-    private int                  status;
+            value = "IS2_INCONSISTENT_SYNC")
+    private int                     status;
     @SuppressFBWarnings(
             justification = "successful is set once in synchronized method. "
                     + "Read access is protected by CountDownlatch happens-before",
-                    value = "IS2_INCONSISTENT_SYNC")
-    private boolean              successful;
+            value = "IS2_INCONSISTENT_SYNC")
+    private boolean                 successful;
     @SuppressFBWarnings(
             justification = "throwable is set once in synchronized method. "
                     + "Read access is protected by CountDownlatch happens-before",
-                    value = "IS2_INCONSISTENT_SYNC")
-    private Throwable            throwable;
+            value = "IS2_INCONSISTENT_SYNC")
+    private Throwable               throwable;
+
+    private final List<Callback<T>> callbacks = new ArrayList<>();
 
     protected synchronized void setSuccessResult(final int status, final T content) {
         if (this.cdl.getCount() == 0) {
@@ -45,7 +55,7 @@ public abstract class Result<T> {
         this.successful = true;
         this.status = status;
         this.content = content;
-        this.cdl.countDown();
+        complete();
     }
 
     protected synchronized void setFailureResult(final ErrorResponse errorResponse) {
@@ -55,7 +65,7 @@ public abstract class Result<T> {
         this.status = errorResponse.getCode();
         this.errorMessage = errorResponse.getMessage();
         this.humanReadableErrorMessage = errorResponse.getHumanReadableMessage();
-        this.cdl.countDown();
+        complete();
     }
 
     protected synchronized void setFailureResult(final int status, final String errorMessage,
@@ -66,7 +76,7 @@ public abstract class Result<T> {
         this.status = status;
         this.errorMessage = errorMessage;
         this.humanReadableErrorMessage = humanReadableErrorMessage;
-        this.cdl.countDown();
+        complete();
     }
 
     protected synchronized void setErrorResult(final Throwable t) {
@@ -74,9 +84,13 @@ public abstract class Result<T> {
             throw new IllegalStateException("This result is already populated");
         }
         this.throwable = t;
-        this.cdl.countDown();
+        complete();
     }
 
+    private void complete() {
+        this.cdl.countDown();
+        this.callbacks.forEach(this::invokeCallback);
+    }
 
     public T getContent() throws InterruptedException {
         await();
@@ -103,9 +117,27 @@ public abstract class Result<T> {
         return this.successful;
     }
 
-    public Result<T> addCallback(final Callback<T> callback) {
-        new CallbackResult<>(this, callback);
+    public synchronized Result<T> addCallback(final Callback<T> callback) {
+        if (this.cdl.getCount() == 0) {
+            invokeCallback(callback);
+        } else {
+            this.callbacks.add(callback);
+        }
         return this;
+    }
+
+    protected void invokeCallback(final Callback<T> callback) {
+        try {
+            if (this.throwable != null) {
+                callback.onError(this.throwable);
+            } else if (this.successful) {
+                callback.onSuccess(this.status, this.content);
+            } else {
+                callback.onFailure(this.status, this.errorMessage, this.humanReadableErrorMessage);
+            }
+        } catch (final Exception e) {
+            Result.logger.error("An exception occured while trying to invoke result callback", e);
+        }
     }
 
     public void await() throws InterruptedException {
