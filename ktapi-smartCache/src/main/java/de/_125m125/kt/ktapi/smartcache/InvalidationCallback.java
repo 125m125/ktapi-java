@@ -4,7 +4,7 @@ import de._125m125.kt.ktapi.core.results.Callback;
 
 public class InvalidationCallback<T> implements Callback<T> {
 
-    private final String                key;
+    private final String       key;
     private final KtSmartCache requester;
 
     public InvalidationCallback(final KtSmartCache requester, final String key) {
@@ -20,7 +20,7 @@ public class InvalidationCallback<T> implements Callback<T> {
     @Override
     public void onFailure(final int status, final String message,
             final String humanReadableMessage) {
-        if (status > 500) {
+        if (status >= 500) {
             // data could have changed
             invalidate(null);
         }
@@ -34,7 +34,8 @@ public class InvalidationCallback<T> implements Callback<T> {
 
     @SuppressWarnings("unchecked")
     private void invalidate(final T result) {
-        this.requester.<T>invalidate(this.key, (T[]) new Object[] { result });
+        this.requester.<T>invalidate(this.key,
+                result != null ? (T[]) new Object[] { result } : null);
     }
 
 }
