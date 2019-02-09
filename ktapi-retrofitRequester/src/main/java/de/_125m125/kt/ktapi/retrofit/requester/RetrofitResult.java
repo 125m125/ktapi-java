@@ -38,7 +38,7 @@ public class RetrofitResult<T> extends Result<T> {
 
             @Override
             public void onFailure(final Call<T> call, final Throwable t) {
-                setFailureResult(new ErrorResponse(-1, t.toString(), t.getLocalizedMessage()));
+                setErrorResult(t);
             }
         });
     }
