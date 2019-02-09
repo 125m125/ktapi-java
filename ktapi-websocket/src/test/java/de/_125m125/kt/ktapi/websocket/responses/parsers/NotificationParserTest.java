@@ -93,20 +93,22 @@ public class NotificationParserTest {
 
     @Test
     public void testParsesChangedEntries() {
-        final String raw = "{\"selfCreated\":true,\"uid\":1510910885,\"base32Uid\":\"1d0tat5\",\"type\":\"update\",\"details\":{\"source\":\"messages\",\"key\":\"1d0tat5\",\"channel\":\"rMessages\"},contents:[{\"timestamp\":1514761200000,\"message\":\"hello world\"},{\"timestamp\":1514862496000,\"message\":\"hello second world\"}]}";
+        final String raw = "{\"selfCreated\":true,\"uid\":1510910885,\"base32Uid\":\"1d0tat5\",\"type\":\"update\",\"details\":{\"source\":\"messages\",\"key\":\"1d0tat5\",\"channel\":\"rMessages\"},contents:[{\"timestamp\":1514764800000,\"message\":\"hello world\"},{\"timestamp\":1514866096000,\"message\":\"hello second world\"}]}";
 
         final UpdateNotification<?> parse = this.uut.parse(raw,
                 Optional.of((JsonObject) new JsonParser().parse(raw)));
 
         assertTrue(parse.hasChangedEntries());
         final Message first = (Message) parse.getChangedEntries()[0];
-        assertEquals(ZonedDateTime.of(2018, Month.JANUARY.getValue(), 1, 0, 0, 0, 0, ZoneId.of("Z"))
-                .toLocalDateTime(), first.getTime());
+        assertEquals(
+                ZonedDateTime.of(2018, Month.JANUARY.getValue(), 1, 0, 0, 0, 0, ZoneId.of("Z"))
+                        .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime(),
+                first.getTime());
         assertEquals("hello world", first.getMessage());
         final Message second = (Message) parse.getChangedEntries()[1];
         assertEquals(
                 ZonedDateTime.of(2018, Month.JANUARY.getValue(), 2, 4, 8, 16, 0, ZoneId.of("Z"))
-                        .toLocalDateTime(),
+                        .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime(),
                 second.getTime());
         assertEquals("hello second world", second.getMessage());
     }
