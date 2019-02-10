@@ -42,7 +42,7 @@ public class AbstractKtWebsocketNotificationHandlerTest {
     private static final class AbstrKtWebsocketNotificationHandlerExt
             extends AbstractKtWebsocketNotificationHandler<NotificationListener> {
 
-        Set<NotificationListener> listeners = new HashSet<>();
+        private final Set<NotificationListener> listeners = new HashSet<>();
 
         private AbstrKtWebsocketNotificationHandlerExt(final Logger logger,
                 final KtUserStore userStore, final VerificationMode mode,
@@ -62,7 +62,7 @@ public class AbstractKtWebsocketNotificationHandlerTest {
         @Override
         protected void addListener(final SubscriptionRequestData request, final String source,
                 final String key, final NotificationListener listener,
-                final CompletableFuture<NotificationListener> result) {
+                final CompletableFuture<NotificationListener> result, final Priority priority) {
             this.listeners.add(listener);
             result.complete(listener);
         }

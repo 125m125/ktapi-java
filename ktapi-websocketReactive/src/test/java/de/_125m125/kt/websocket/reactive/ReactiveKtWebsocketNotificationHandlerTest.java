@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import de._125m125.kt.ktapi.core.KtNotificationManager.Priority;
 import de._125m125.kt.ktapi.core.entities.Entity;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.UpdateNotification;
@@ -33,12 +34,13 @@ public class ReactiveKtWebsocketNotificationHandlerTest
         details.put("key", "F");
         details.put("source", Entity.PAYOUT.getUpdateChannel());
 
-        uut.getPayoutObservable(1L).subscribe(subscriber);
+        uut.getPayoutObservable(1L, Priority.NORMAL).subscribe(subscriber);
 
-        uut.subject.onNext(new UpdateNotification<>(false, 15L, "F", details,
-                new Payout[] { new Payout(1, "4", "Cobblestone (4)", 23, "IN_PROGRESS", "Box1",
-                        "2018-01-01 00:00:00.0", "") }));
-        uut.subject.onNext(
+        uut.subjects.get(Priority.NORMAL)
+                .onNext(new UpdateNotification<>(false, 15L, "F", details,
+                        new Payout[] { new Payout(1, "4", "Cobblestone (4)", 23, "IN_PROGRESS",
+                                "Box1", "2018-01-01 00:00:00.0", "") }));
+        uut.subjects.get(Priority.NORMAL).onNext(
                 new UpdateNotification<>(false, 15L, "F", details, new Payout[] { new Payout(1, "4",
                         "Cobblestone (4)", 23, "SUCCESS", "Box1", "2018-01-01 00:00:00.0", "") }));
 

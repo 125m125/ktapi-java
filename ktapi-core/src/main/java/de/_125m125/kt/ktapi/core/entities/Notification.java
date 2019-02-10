@@ -101,4 +101,58 @@ public class Notification {
                 + this.details + "]";
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.base32Uid == null) ? 0 : this.base32Uid.hashCode());
+        result = prime * result + ((this.details == null) ? 0 : this.details.hashCode());
+        result = prime * result + (this.selfCreated ? 1231 : 1237);
+        result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
+        result = prime * result + (int) (this.uid ^ (this.uid >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Notification other = (Notification) obj;
+        if (this.base32Uid == null) {
+            if (other.base32Uid != null) {
+                return false;
+            }
+        } else if (!this.base32Uid.equals(other.base32Uid)) {
+            return false;
+        }
+        if (this.details == null) {
+            if (other.details != null) {
+                return false;
+            }
+        } else if (!this.details.equals(other.details)) {
+            return false;
+        }
+        if (this.selfCreated != other.selfCreated) {
+            return false;
+        }
+        if (this.type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!this.type.equals(other.type)) {
+            return false;
+        }
+        if (this.uid != other.uid) {
+            return false;
+        }
+        return true;
+    }
+
 }

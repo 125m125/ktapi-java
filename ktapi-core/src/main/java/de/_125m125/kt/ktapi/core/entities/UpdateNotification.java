@@ -38,4 +38,31 @@ public class UpdateNotification<T> extends Notification {
     public T[] getChangedEntries() {
         return Arrays.copyOf(this.changedEntries, this.changedEntries.length);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Arrays.hashCode(this.changedEntries);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UpdateNotification other = (UpdateNotification) obj;
+        if (!Arrays.equals(this.changedEntries, other.changedEntries)) {
+            return false;
+        }
+        return true;
+    }
+
 }

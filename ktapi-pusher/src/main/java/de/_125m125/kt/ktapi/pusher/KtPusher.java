@@ -1,11 +1,11 @@
 package de._125m125.kt.ktapi.pusher;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.locks.StampedLock;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.pusher.client.Authorizer;
 import com.pusher.client.Pusher;
@@ -34,25 +34,30 @@ public class KtPusher
         }
     }
 
-    private final Pusher                                 pusher;
+    private final Pusher                                                    pusher;
 
-    private final Map<String, Set<NotificationListener>> listeners     = new HashMap<>();
-    private final StampedLock                            listenersLock = new StampedLock();
+    private final Map<String, EnumMap<Priority, Set<NotificationListener>>> listeners;
 
-    private final NotificationParser                     parser;
-    private final TokenUser                              user;
+    private final NotificationParser                                        parser;
+    private final TokenUser                                                 user;
 
     public KtPusher(final TokenUser user, final NotificationParser parser,
             final Authorizer authorizer) {
         this.user = user;
         this.parser = parser;
+        this.listeners = new ConcurrentHashMap<>();
 
         final PusherOptions options = new PusherOptions();
         options.setCluster("eu");
         options.setEncrypted(true);
         options.setAuthorizer(authorizer);
-        this.pusher = new Pusher("25ba65999fadc5a6e290", options);
+        this.pusher = createPusher(options);
+    }
+
+    protected Pusher createPusher(final PusherOptions options) {
+        final Pusher pusher = new Pusher("25ba65999fadc5a6e290", options);
         this.pusher.connect(new ConnectionEventListenerImplementation(), ConnectionState.ALL);
+        return pusher;
     }
 
     @Override
@@ -60,18 +65,13 @@ public class KtPusher
         final String unescapedData = data.substring(1, data.length() - 1).replaceAll("\\\\\"",
                 "\"");
         final Notification notification = this.parser.parse(unescapedData);
-        final long stamp = this.listenersLock.tryOptimisticRead();
-        Set<NotificationListener> receivers = this.listeners.get(channelname);
-        if (!this.listenersLock.validate(stamp)) {
-            final long readLock = this.listenersLock.readLock();
-            try {
-                receivers = this.listeners.get(channelname);
-            } finally {
-                this.listenersLock.unlockRead(readLock);
+        final EnumMap<Priority, Set<NotificationListener>> receivers = this.listeners
+                .get(channelname);
+        if (receivers != null) {
+            synchronized (receivers) {
+                receivers.values().stream().flatMap(Set::stream)
+                        .forEach(r -> r.update(notification));
             }
-        }
-        for (final NotificationListener pl : receivers) {
-            pl.update(notification);
         }
     }
 
@@ -85,20 +85,16 @@ public class KtPusher
     }
 
     public CompletableFuture<NotificationListener> subscribe(final String channel,
-            final String eventName, final NotificationListener listener) {
+            final String eventName, final NotificationListener listener, final Priority priority) {
         final CompletableFuture<NotificationListener> result = new CompletableFuture<>();
         try {
             final boolean subscribe;
-            final Set<NotificationListener> receivers;
-            final long writeLock = this.listenersLock.writeLock();
-            try {
-                subscribe = !this.listeners.containsKey(channel);
-                receivers = this.listeners.computeIfAbsent(channel,
-                        e -> new CopyOnWriteArraySet<>());
-            } finally {
-                this.listenersLock.unlock(writeLock);
+            final EnumMap<Priority, Set<NotificationListener>> receivers;
+            subscribe = !this.listeners.containsKey(channel);
+            receivers = this.listeners.computeIfAbsent(channel, e -> new EnumMap<>(Priority.class));
+            synchronized (receivers) {
+                receivers.computeIfAbsent(priority, p -> new HashSet<>()).add(listener);
             }
-            receivers.add(listener);
             if (subscribe) {
                 if (channel.startsWith("private-")) {
                     this.pusher.subscribePrivate(channel, this, eventName);
@@ -115,86 +111,80 @@ public class KtPusher
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToMessages(
-            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated,
+            final Priority priority) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
         final String channelName = "private-" + user.getUserId() + "_rMessages";
         if (selfCreated) {
-            return subscribe(channelName.concat(".selfCreated"), "update", listener);
+            return subscribe(channelName.concat(".selfCreated"), "update", listener, priority);
         } else {
-            return subscribe(channelName, "update", listener);
+            return subscribe(channelName, "update", listener, priority);
         }
     }
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToTrades(
-            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated,
+            final Priority priority) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
         final String channelName = "private-" + user.getUserId() + "_rOrders";
         if (selfCreated) {
-            return subscribe(channelName.concat(".selfCreated"), "update", listener);
+            return subscribe(channelName.concat(".selfCreated"), "update", listener, priority);
         } else {
-            return subscribe(channelName, "update", listener);
+            return subscribe(channelName, "update", listener, priority);
         }
     }
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToItems(
-            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated,
+            final Priority priority) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
         final String channelName = "private-" + user.getUserId() + "_rItems";
         if (selfCreated) {
-            return subscribe(channelName.concat(".selfCreated"), "update", listener);
+            return subscribe(channelName.concat(".selfCreated"), "update", listener, priority);
         } else {
-            return subscribe(channelName, "update", listener);
+            return subscribe(channelName, "update", listener, priority);
         }
     }
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToPayouts(
-            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
+            final NotificationListener listener, final UserKey user, final boolean selfCreated,
+            final Priority priority) {
         if (!this.user.getKey().equals(user)) {
             throw new IllegalArgumentException(
                     "PusherKt only supports subscriptions for a single user");
         }
         final String channelName = "private-" + user.getUserId() + "_rPayouts";
         if (selfCreated) {
-            return subscribe(channelName.concat(".selfCreated"), "update", listener);
+            return subscribe(channelName.concat(".selfCreated"), "update", listener, priority);
         } else {
-            return subscribe(channelName, "update", listener);
+            return subscribe(channelName, "update", listener, priority);
         }
     }
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToOrderbook(
-            final NotificationListener listener) {
+            final NotificationListener listener, final Priority priority) {
         final String channelName = "orderbook";
-        return subscribe(channelName, "update", listener);
+        return subscribe(channelName, "update", listener, priority);
     }
 
     @Override
     public CompletableFuture<NotificationListener> subscribeToHistory(
-            final NotificationListener listener) {
+            final NotificationListener listener, final Priority priority) {
         final String channelName = "history";
-        return subscribe(channelName, "update", listener);
-    }
-
-    @Override
-    public CompletableFuture<NotificationListener>[] subscribeToAll(
-            final NotificationListener listener, final UserKey user, final boolean selfCreated) {
-        if (!this.user.getKey().equals(user)) {
-            throw new IllegalArgumentException(
-                    "PusherKt only supports subscriptions for a single user");
-        }
-        return KtNotificationManager.super.subscribeToAll(listener, user, selfCreated);
+        return subscribe(channelName, "update", listener, priority);
     }
 
     @Override
@@ -204,12 +194,11 @@ public class KtPusher
 
     @Override
     public void unsubscribe(final NotificationListener listener) {
-        final long writeLock = this.listenersLock.writeLock();
-        try {
-            this.listeners.values().forEach(l -> l.remove(listener));
-        } finally {
-            this.listenersLock.unlock(writeLock);
-        }
+        this.listeners.values().forEach(l -> {
+            synchronized (l) {
+                l.values().forEach(v -> v.remove(listener));
+            }
+        });
     }
 
 }

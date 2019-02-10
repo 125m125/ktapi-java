@@ -69,11 +69,13 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
      *            the authentification details required to subscribe to the channel
      * @param listener
      *            the listener that should be notified on new events
+     * @param priority
+     *            the priority
      * @return the response message from the server
      */
     public CompletableFuture<U> subscribe(final SubscriptionRequestData request,
             final String source, final String key, final UserKey owner,
-            final NotificationListener listener) {
+            final NotificationListener listener, final Priority priority) {
         final CompletableFuture<U> result = new CompletableFuture<>();
         try {
             final KtWebsocketManager manager = getManager();
@@ -86,7 +88,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
             }
             final ChannelIdentifier userKey = new ChannelIdentifier(request);
             if (this.knownUsers.contains(userKey)) {
-                addListener(request, source, key, listener, result);
+                addListener(request, source, key, listener, result, priority);
                 return result;
             }
             final RequestMessage requestMessage = RequestMessage.builder().addContent(request)
@@ -95,7 +97,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
             manager.sendRequest(requestMessage);
             requestMessage.getResult().addCallback(responseMessage -> {
                 if (responseMessage.success()) {
-                    addListener(request, source, key, listener, result);
+                    addListener(request, source, key, listener, result, priority);
                     if (!VerificationMode.ALWAYS.equals(this.mode)) {
                         addKnownUser(userKey);
                     }
@@ -117,7 +119,7 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
     }
 
     protected abstract void addListener(SubscriptionRequestData request, String source, String key,
-            NotificationListener listener, CompletableFuture<U> result);
+            NotificationListener listener, CompletableFuture<U> result, Priority priority);
 
     protected boolean addKnownUser(final ChannelIdentifier identifier) {
         return this.knownUsers.add(identifier);
@@ -125,54 +127,58 @@ public abstract class AbstractKtWebsocketNotificationHandler<U>
 
     @Override
     public CompletableFuture<U> subscribeToMessages(final NotificationListener listener,
-            final UserKey userKey, final boolean selfCreated) {
+            final UserKey userKey, final boolean selfCreated, final Priority priority) {
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rMessages", this.userStore.get(userKey),
                         selfCreated);
         return subscribe(request, Entity.MESSAGE.getUpdateChannel(), userKey.getUserId(), userKey,
-                listener);
+                listener, priority);
     }
 
     @Override
     public CompletableFuture<U> subscribeToTrades(final NotificationListener listener,
-            final UserKey userKey, final boolean selfCreated) {
+            final UserKey userKey, final boolean selfCreated, final Priority priority) {
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rOrders", this.userStore.get(userKey), selfCreated);
         return subscribe(request, Entity.TRADE.getUpdateChannel(), userKey.getUserId(), userKey,
-                listener);
+                listener, priority);
     }
 
     @Override
     public CompletableFuture<U> subscribeToItems(final NotificationListener listener,
-            final UserKey userKey, final boolean selfCreated) {
+            final UserKey userKey, final boolean selfCreated, final Priority priority) {
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rItems", this.userStore.get(userKey), selfCreated);
         return subscribe(request, Entity.ITEM.getUpdateChannel(), userKey.getUserId(), userKey,
-                listener);
+                listener, priority);
     }
 
     @Override
     public CompletableFuture<U> subscribeToPayouts(final NotificationListener listener,
-            final UserKey userKey, final boolean selfCreated) {
+            final UserKey userKey, final boolean selfCreated, final Priority priority) {
         final SubscriptionRequestData request = this.subscriptionRequestDataFactory
                 .createSubscriptionRequestData("rPayouts", this.userStore.get(userKey),
                         selfCreated);
         return subscribe(request, Entity.PAYOUT.getUpdateChannel(), userKey.getUserId(), userKey,
-                listener);
+                listener, priority);
     }
 
     @Override
-    public CompletableFuture<U> subscribeToOrderbook(final NotificationListener listener) {
+    public CompletableFuture<U> subscribeToOrderbook(final NotificationListener listener,
+            final Priority priority) {
         final SubscriptionRequestData request = new SubscriptionRequestData(
                 Entity.ORDERBOOK_ENTRY.getUpdateChannel());
-        return subscribe(request, Entity.ORDERBOOK_ENTRY.getUpdateChannel(), null, null, listener);
+        return subscribe(request, Entity.ORDERBOOK_ENTRY.getUpdateChannel(), null, null, listener,
+                priority);
     }
 
     @Override
-    public CompletableFuture<U> subscribeToHistory(final NotificationListener listener) {
+    public CompletableFuture<U> subscribeToHistory(final NotificationListener listener,
+            final Priority priority) {
         final SubscriptionRequestData request = new SubscriptionRequestData(
                 Entity.HISTORY_ENTRY.getUpdateChannel());
-        return subscribe(request, Entity.HISTORY_ENTRY.getUpdateChannel(), null, null, listener);
+        return subscribe(request, Entity.HISTORY_ENTRY.getUpdateChannel(), null, null, listener,
+                priority);
     }
 
     @Override

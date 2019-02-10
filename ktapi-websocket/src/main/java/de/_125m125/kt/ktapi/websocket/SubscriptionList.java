@@ -1,41 +1,44 @@
 package de._125m125.kt.ktapi.websocket;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import de._125m125.kt.ktapi.core.KtNotificationManager.Priority;
 import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.entities.Notification;
 
 public class SubscriptionList {
-    private final CopyOnWriteArrayList<NotificationListener> otherListeners;
-    private final CopyOnWriteArrayList<NotificationListener> selfListeners;
+    private final EnumMap<Priority, Set<NotificationListener>> otherListeners;
+    private final EnumMap<Priority, Set<NotificationListener>> selfListeners;
 
     public SubscriptionList() {
-        this.otherListeners = new CopyOnWriteArrayList<>();
-        this.selfListeners = new CopyOnWriteArrayList<>();
+        this.otherListeners = new EnumMap<>(Priority.class);
+        this.selfListeners = new EnumMap<>(Priority.class);
     }
 
-    public void addListener(final NotificationListener l, final boolean selfCreated) {
+    public synchronized void addListener(final NotificationListener l, final boolean selfCreated,
+            final Priority priority) {
         if (selfCreated) {
-            this.selfListeners.addIfAbsent(l);
+            this.selfListeners.computeIfAbsent(priority, p -> new HashSet<>()).add(l);
         } else {
-            this.otherListeners.addIfAbsent(l);
+            this.otherListeners.computeIfAbsent(priority, p -> new HashSet<>()).add(l);
         }
     }
 
-    public void notifyListeners(final Notification notification) {
-        for (final NotificationListener nl : notification.isSelfCreated() ? this.selfListeners
-                : this.otherListeners) {
-            nl.update(notification);
-        }
+    public synchronized void notifyListeners(final Notification notification) {
+        (notification.isSelfCreated() ? this.selfListeners.values() : this.otherListeners.values())
+                .stream().flatMap(Set::stream).forEach(nl -> nl.update(notification));
     }
 
-    public void removeListener(final NotificationListener listener) {
-        this.otherListeners.remove(listener);
-        this.selfListeners.remove(listener);
+    public synchronized void removeListener(final NotificationListener listener) {
+        Stream.concat(this.selfListeners.values().stream(), this.otherListeners.values().stream())
+                .forEach(nl -> nl.remove(listener));
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "SubscriptionList [otherListeners=" + this.otherListeners + ", selfListeners="
                 + this.selfListeners + "]";
     }

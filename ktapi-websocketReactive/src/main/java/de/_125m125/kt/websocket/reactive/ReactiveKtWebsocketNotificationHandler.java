@@ -1,5 +1,8 @@
 package de._125m125.kt.websocket.reactive;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -29,10 +32,14 @@ import io.reactivex.subjects.Subject;
 
 public class ReactiveKtWebsocketNotificationHandler
         extends AbstractKtWebsocketNotificationHandler<Disposable> {
-    private static final Logger                    logger  = LoggerFactory
+    private static final Logger logger = LoggerFactory
             .getLogger(ReactiveKtWebsocketNotificationHandler.class);
-    protected final Subject<UpdateNotification<?>> subject = PublishSubject
-            .<UpdateNotification<?>>create().toSerialized();
+
+    public static Subject<UpdateNotification<?>> createSubject() {
+        return PublishSubject.<UpdateNotification<?>>create().toSerialized();
+    }
+
+    protected final Map<Priority, Subject<UpdateNotification<?>>> subjects;
 
     public ReactiveKtWebsocketNotificationHandler(final KtUserStore userStore,
             final VerificationMode mode) {
@@ -44,6 +51,7 @@ public class ReactiveKtWebsocketNotificationHandler
             final SubscriptionRequestDataFactory subscriptionRequestDataFactory) {
         super(ReactiveKtWebsocketNotificationHandler.logger, userStore, mode,
                 subscriptionRequestDataFactory);
+        this.subjects = Collections.synchronizedMap(new EnumMap<>(Priority.class));
     }
 
     @Override
@@ -54,8 +62,10 @@ public class ReactiveKtWebsocketNotificationHandler
     @Override
     protected void addListener(final SubscriptionRequestData request, final String source,
             final String key, final NotificationListener listener,
-            final CompletableFuture<Disposable> result) {
-        Observable<UpdateNotification<?>> filter = this.subject
+            final CompletableFuture<Disposable> result, final Priority priority) {
+        final Subject<UpdateNotification<?>> subject = this.subjects.computeIfAbsent(priority,
+                p -> createSubject());
+        Observable<UpdateNotification<?>> filter = subject
                 .filter(n -> source.equals(n.getSource()));
         if (key != null) {
             filter = filter.filter(n -> key.equals(n.getKey()));
@@ -67,7 +77,7 @@ public class ReactiveKtWebsocketNotificationHandler
     @Override
     public void disconnect() {
         super.disconnect();
-        this.subject.onComplete();
+        this.subjects.values().forEach(Subject::onComplete);
     }
 
     @Override
@@ -76,93 +86,99 @@ public class ReactiveKtWebsocketNotificationHandler
         if (e.getMessage() instanceof UpdateNotification) {
             ReactiveKtWebsocketNotificationHandler.logger.trace("Received UpdateNotification {}",
                     e.getMessage());
-            this.subject.onNext((UpdateNotification<?>) e.getMessage());
+            this.subjects.values().forEach(s -> s.onNext((UpdateNotification<?>) e.getMessage()));
         }
     }
 
-    public Observable<HistoryEntry> getHistoryObservable() {
-        return getObservable(Entity.HISTORY_ENTRY, HistoryEntry.class);
+    public Observable<HistoryEntry> getHistoryObservable(final Priority priority) {
+        return getObservable(Entity.HISTORY_ENTRY, HistoryEntry.class, priority);
     }
 
     // public Observable<HistoryEntry> getHistoryObservable(String itemId) {
     // return getObservable(AbstractKtWebsocketNotificationHandler.HISTORY, HistoryEntry.class);
     // }
 
-    public Observable<Item> getItemObservable() {
-        return getObservable(Entity.ITEM, Item.class);
+    public Observable<Item> getItemObservable(final Priority priority) {
+        return getObservable(Entity.ITEM, Item.class, priority);
     }
 
-    public Observable<Item> getItemObservable(final UserKey userkey) {
-        return getObservable(Entity.ITEM, Item.class, userkey);
+    public Observable<Item> getItemObservable(final UserKey userkey, final Priority priority) {
+        return getObservable(Entity.ITEM, Item.class, userkey, priority);
     }
 
-    public Observable<Item> getItemObservable(final String itemId) {
-        return getObservable(Entity.ITEM, Item.class).filter(i -> itemId.equals(i.getId()));
-    }
-
-    public Observable<Item> getItemObservable(final UserKey userkey, final String itemId) {
-        return getObservable(Entity.ITEM, Item.class, userkey)
+    public Observable<Item> getItemObservable(final String itemId, final Priority priority) {
+        return getObservable(Entity.ITEM, Item.class, priority)
                 .filter(i -> itemId.equals(i.getId()));
     }
 
-    public Observable<Message> getMessageObservable() {
-        return getObservable(Entity.MESSAGE, Message.class);
+    public Observable<Item> getItemObservable(final UserKey userkey, final String itemId,
+            final Priority priority) {
+        return getObservable(Entity.ITEM, Item.class, userkey, priority)
+                .filter(i -> itemId.equals(i.getId()));
     }
 
-    public Observable<Message> getMessageObservable(final UserKey userkey) {
-        return getObservable(Entity.MESSAGE, Message.class, userkey);
+    public Observable<Message> getMessageObservable(final Priority priority) {
+        return getObservable(Entity.MESSAGE, Message.class, priority);
     }
 
-    public Observable<OrderBookEntry> getOrderbookObservable() {
-        return getObservable(Entity.ORDERBOOK_ENTRY, OrderBookEntry.class);
+    public Observable<Message> getMessageObservable(final UserKey userkey,
+            final Priority priority) {
+        return getObservable(Entity.MESSAGE, Message.class, userkey, priority);
+    }
+
+    public Observable<OrderBookEntry> getOrderbookObservable(final Priority priority) {
+        return getObservable(Entity.ORDERBOOK_ENTRY, OrderBookEntry.class, priority);
     }
 
     // public Observable<OrderBookEntry> getOrderbookObservable(String itemId) {
     // return getObservable(AbstractKtWebsocketNotificationHandler.ORDERBOOK, OrderBookEntry.class);
     // }
 
-    public Observable<Payout> getPayoutObservable() {
-        return getObservable(Entity.PAYOUT, Payout.class);
+    public Observable<Payout> getPayoutObservable(final Priority priority) {
+        return getObservable(Entity.PAYOUT, Payout.class, priority);
     }
 
-    public Observable<Payout> getPayoutObservable(final UserKey userkey) {
-        return getObservable(Entity.PAYOUT, Payout.class, userkey);
+    public Observable<Payout> getPayoutObservable(final UserKey userkey, final Priority priority) {
+        return getObservable(Entity.PAYOUT, Payout.class, userkey, priority);
     }
 
-    public Observable<Payout> getPayoutObservable(final long payoutId) {
-        return getObservable(Entity.PAYOUT, Payout.class).filter(p -> payoutId == p.getId())
-                .takeUntil(p -> "SUCCESS".equals(p.getState()) || "CANCELLED".equals(p.getState())
-                        || "FAILED_TAKEN".equals(p.getState()));
+    public Observable<Payout> getPayoutObservable(final long payoutId, final Priority priority) {
+        return getObservable(Entity.PAYOUT, Payout.class, priority)
+                .filter(p -> payoutId == p.getId()).takeUntil(p -> "SUCCESS".equals(p.getState())
+                        || "CANCELLED".equals(p.getState()) || "FAILED_TAKEN".equals(p.getState()));
     }
 
-    public Observable<Trade> getTradeObservable() {
-        return getObservable(Entity.TRADE, Trade.class);
+    public Observable<Trade> getTradeObservable(final Priority priority) {
+        return getObservable(Entity.TRADE, Trade.class, priority);
     }
 
-    public Observable<Trade> getTradeObservable(final UserKey userkey) {
-        return getObservable(Entity.TRADE, Trade.class, userkey);
+    public Observable<Trade> getTradeObservable(final UserKey userkey, final Priority priority) {
+        return getObservable(Entity.TRADE, Trade.class, userkey, priority);
     }
 
-    public Observable<Trade> getTradeObservable(final long tradeId) {
-        return getObservable(Entity.TRADE, Trade.class).filter(n -> tradeId == n.getId())
+    public Observable<Trade> getTradeObservable(final long tradeId, final Priority priority) {
+        return getObservable(Entity.TRADE, Trade.class, priority).filter(n -> tradeId == n.getId())
                 .takeUntil(n -> n.getAmount() == n.getSold() && n.getToTakeItems() == 0
                         && n.getToTakeMoney() == 0);
     }
 
-    private <U> Observable<U> getObservable(final Entity type, final Class<U> t) {
+    private <U> Observable<U> getObservable(final Entity type, final Class<U> t,
+            final Priority priority) {
         if (type.getInstanceClass() != t) {
             throw new IllegalArgumentException("type " + type + " does not map to " + t);
         }
-        return this.subject.filter(n -> type.getUpdateChannel().equals(n.getSource()))
+        return this.subjects.computeIfAbsent(priority, p -> createSubject())
+                .filter(n -> type.getUpdateChannel().equals(n.getSource()))
                 .flatMap(n -> Observable.fromArray(n.getChangedEntries())).map(t::cast);
     }
 
     private <U> Observable<U> getObservable(final Entity type, final Class<U> t,
-            final UserKey userkey) {
+            final UserKey userkey, final Priority priority) {
         if (type.getInstanceClass() != t) {
             throw new IllegalArgumentException("type " + type + " does not map to " + t);
         }
-        return this.subject.filter(n -> type.getUpdateChannel().equals(n.getSource()))
+        return this.subjects.computeIfAbsent(priority, p -> createSubject())
+                .filter(n -> type.getUpdateChannel().equals(n.getSource()))
                 .filter(n -> userkey.getUserId().equals(n.getKey()))
                 .flatMap(n -> Observable.fromArray(n.getChangedEntries())).map(t::cast);
     }

@@ -37,4 +37,14 @@ public class SemiparsedUpdateNotification<T> extends UpdateNotification<T> {
         }
         return super.getChangedEntries();
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

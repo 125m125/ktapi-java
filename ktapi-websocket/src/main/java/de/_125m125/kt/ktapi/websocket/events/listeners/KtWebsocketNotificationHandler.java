@@ -79,13 +79,13 @@ public class KtWebsocketNotificationHandler
     @Override
     protected void addListener(final SubscriptionRequestData request, final String source,
             final String key, final NotificationListener listener,
-            final CompletableFuture<NotificationListener> result) {
+            final CompletableFuture<NotificationListener> result, final Priority priority) {
         final SubscriptionList subList;
         synchronized (this.subscriptions) {
             subList = this.subscriptions.computeIfAbsent(source, n -> new HashMap<>())
                     .computeIfAbsent(key, n -> new SubscriptionList());
         }
-        subList.addListener(listener, request.isSelfCreated());
+        subList.addListener(listener, request.isSelfCreated(), priority);
         result.complete(listener);
         KtWebsocketNotificationHandler.logger.info("successfully added listener {} to {}.{}",
                 listener, source, key);

@@ -10,6 +10,19 @@ import de._125m125.kt.ktapi.core.users.UserKey;
 public interface KtNotificationManager<U> {
 
     /**
+     * The Priority of subscriptions indicates the order, in which listeners should be invoked.
+     * Listeners with highest priority are invoked first, listeners with lowest priority last. There
+     * are no guarantees on the order in which listeners with the same priority are notified.
+     */
+    public static enum Priority {
+    HIGHEST,
+    HIGH,
+    NORMAL,
+    LOW,
+    LOWEST,
+    }
+
+    /**
      * Subscribe to updates for messages.
      *
      * @param listener
@@ -23,8 +36,29 @@ public interface KtNotificationManager<U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
+    public default CompletableFuture<U> subscribeToMessages(final NotificationListener listener,
+            final UserKey userKey, final boolean selfCreated) {
+        return subscribeToMessages(listener, userKey, selfCreated, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to updates for messages.
+     *
+     * @param listener
+     *            the listener
+     * @param userKey
+     *            the user key
+     * @param selfCreated
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
+     * @param priority
+     *            the priority
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
+     */
     public CompletableFuture<U> subscribeToMessages(NotificationListener listener, UserKey userKey,
-            boolean selfCreated);
+            boolean selfCreated, Priority priority);
 
     /**
      * Subscribe to updates for trades of the key for the user.
@@ -40,8 +74,29 @@ public interface KtNotificationManager<U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
+    public default CompletableFuture<U> subscribeToTrades(final NotificationListener listener,
+            final UserKey userKey, final boolean selfCreated) {
+        return subscribeToTrades(listener, userKey, selfCreated, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to updates for trades of the key for the user.
+     *
+     * @param listener
+     *            the listener
+     * @param userKey
+     *            the key for the user
+     * @param selfCreated
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
+     * @param priority
+     *            the priority
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
+     */
     public CompletableFuture<U> subscribeToTrades(NotificationListener listener, UserKey userKey,
-            boolean selfCreated);
+            boolean selfCreated, Priority priority);
 
     /**
      * Subscribe to updates for the itemlist.
@@ -57,8 +112,29 @@ public interface KtNotificationManager<U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
+    public default CompletableFuture<U> subscribeToItems(final NotificationListener listener,
+            final UserKey userKey, final boolean selfCreated) {
+        return subscribeToItems(listener, userKey, selfCreated, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to updates for the itemlist.
+     *
+     * @param listener
+     *            the listener
+     * @param userKey
+     *            the key for the user
+     * @param selfCreated
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
+     * @param priority
+     *            the priority
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
+     */
     public CompletableFuture<U> subscribeToItems(NotificationListener listener, UserKey userKey,
-            boolean selfCreated);
+            boolean selfCreated, Priority priority);
 
     /**
      * Subscribe to updates for payouts.
@@ -70,9 +146,33 @@ public interface KtNotificationManager<U> {
      * @param selfCreated
      *            true to listen only to self-created notifications, false to only listen to
      *            non-self-created notification
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
+     */
+    public default CompletableFuture<U> subscribeToPayouts(final NotificationListener listener,
+            final UserKey userKey, final boolean selfCreated) {
+        return subscribeToPayouts(listener, userKey, selfCreated, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to updates for payouts.
+     *
+     * @param listener
+     *            the listener
+     * @param userKey
+     *            the key for the user
+     * @param selfCreated
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
+     * @param priority
+     *            the priority
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
      */
     public CompletableFuture<U> subscribeToPayouts(NotificationListener listener, UserKey userKey,
-            boolean selfCreated);
+            boolean selfCreated, Priority priority);
 
     /**
      * Subscribe to updates for orderbooks.
@@ -83,7 +183,23 @@ public interface KtNotificationManager<U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
-    public CompletableFuture<U> subscribeToOrderbook(NotificationListener listener);
+    public default CompletableFuture<U> subscribeToOrderbook(final NotificationListener listener) {
+        return subscribeToOrderbook(listener, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to updates for orderbooks.
+     *
+     * @param listener
+     *            the listener
+     * @param priority
+     *            the priority
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
+     */
+    public CompletableFuture<U> subscribeToOrderbook(NotificationListener listener,
+            Priority priority);
 
     // /**
     // * Subscribe to updates for the orderbook of a specific item.
@@ -105,7 +221,23 @@ public interface KtNotificationManager<U> {
      *         was successful. If the subscription fails, the cause will be forwarded to the future.
      *         That listener can later be used to unsubscribe.
      */
-    public CompletableFuture<U> subscribeToHistory(NotificationListener listener);
+    public default CompletableFuture<U> subscribeToHistory(final NotificationListener listener) {
+        return subscribeToHistory(listener, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to updates for historic values.
+     *
+     * @param listener
+     *            the listener
+     * @param priority
+     *            the priority
+     * @return a CompletableFuture that will receive the subscribing listener when the subscription
+     *         was successful. If the subscription fails, the cause will be forwarded to the future.
+     *         That listener can later be used to unsubscribe.
+     */
+    public CompletableFuture<U> subscribeToHistory(final NotificationListener listener,
+            Priority priority);
 
     // /**
     // * Subscribe to updates for historic values of a specific item.
@@ -134,12 +266,33 @@ public interface KtNotificationManager<U> {
      */
     public default CompletableFuture<U>[] subscribeToAll(final NotificationListener listener,
             final UserKey userKey, final boolean selfCreated) {
+        return subscribeToAll(listener, userKey, selfCreated, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to all notifications for a specific user.
+     *
+     * @param listener
+     *            the listener
+     * @param userKey
+     *            the userKey
+     * @param selfCreated
+     *            true to listen only to self-created notifications, false to only listen to
+     *            non-self-created notification
+     * @param priority
+     *            the priority
+     * @return an array of CompletableFutures, where each entry is the result of one subscription.
+     *         Index 0: items, index 1: messages, index 2: payouts, index 3: orders. All futures
+     *         will return the same listener.
+     */
+    public default CompletableFuture<U>[] subscribeToAll(final NotificationListener listener,
+            final UserKey userKey, final boolean selfCreated, final Priority priority) {
         @SuppressWarnings("unchecked")
         final CompletableFuture<U>[] results = new CompletableFuture[4];
-        results[0] = subscribeToItems(listener, userKey, selfCreated);
-        results[1] = subscribeToMessages(listener, userKey, selfCreated);
-        results[2] = subscribeToPayouts(listener, userKey, selfCreated);
-        results[3] = subscribeToTrades(listener, userKey, selfCreated);
+        results[0] = subscribeToItems(listener, userKey, selfCreated, priority);
+        results[1] = subscribeToMessages(listener, userKey, selfCreated, priority);
+        results[2] = subscribeToPayouts(listener, userKey, selfCreated, priority);
+        results[3] = subscribeToTrades(listener, userKey, selfCreated, priority);
         return results;
     }
 
@@ -152,10 +305,25 @@ public interface KtNotificationManager<U> {
      *         Index 0: history, index 1: orderbook. All futures will return the same listener.
      */
     public default CompletableFuture<U>[] subscribeToAll(final NotificationListener listener) {
+        return subscribeToAll(listener, Priority.NORMAL);
+    }
+
+    /**
+     * Subscribe to all notification that do not require a logged in user.
+     *
+     * @param listener
+     *            the listener
+     * @param priority
+     *            the priority
+     * @return an array of CompletableFutures, where each entry is the result of one subscription.
+     *         Index 0: history, index 1: orderbook. All futures will return the same listener.
+     */
+    public default CompletableFuture<U>[] subscribeToAll(final NotificationListener listener,
+            final Priority priority) {
         @SuppressWarnings("unchecked")
         final CompletableFuture<U>[] results = new CompletableFuture[4];
-        results[0] = subscribeToHistory(listener);
-        results[1] = subscribeToOrderbook(listener);
+        results[0] = subscribeToHistory(listener, priority);
+        results[1] = subscribeToOrderbook(listener, priority);
         return results;
     }
 

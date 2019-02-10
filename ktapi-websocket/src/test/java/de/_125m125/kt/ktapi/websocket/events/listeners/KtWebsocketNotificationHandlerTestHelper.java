@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +14,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.slf4j.Logger;
 
+import de._125m125.kt.ktapi.core.KtNotificationManager.Priority;
+import de._125m125.kt.ktapi.core.NotificationListener;
 import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.entities.UpdateNotification;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
@@ -207,5 +212,53 @@ public abstract class KtWebsocketNotificationHandlerTestHelper<T> {
         assertEquals(1, tl2.getLastNotifications().size());
         assertEquals(0, tl3.getLastNotifications().size());
         assertEquals(0, tl4.getLastNotifications().size());
+    }
+
+    @Test
+    public void testListenersReceiveNotificationsOrderedBypriorityInorderSubscribe() {
+        final NotificationListener[] listeners = new NotificationListener[5];
+        for (int i = 0; i < Priority.values().length; i++) {
+            final Priority priority = Priority.values()[i];
+            listeners[i] = mock(NotificationListener.class);
+            this.uut.subscribeToOrderbook(listeners[i], priority);
+        }
+        final InOrder inOrder = Mockito.inOrder((Object[]) listeners);
+
+        final Map<String, String> details = new HashMap<>();
+        details.put("source", "orderbook");
+        details.put("key", "1");
+        details.put("channel", "orderbook");
+        final UpdateNotification<Object> notification = new UpdateNotification<>(false, 0, "0",
+                details);
+        this.uut.onMessageReceived(
+                new MessageReceivedEvent(new WebsocketStatus(true, true), notification));
+
+        for (int i = 0; i < listeners.length; i++) {
+            inOrder.verify(listeners[i]).update(notification);
+        }
+    }
+
+    @Test
+    public void testListenersReceiveNotificationsOrderedBypriorityReverseSubscribe() {
+        final NotificationListener[] listeners = new NotificationListener[5];
+        for (int i = Priority.values().length - 1; i >= 0; i--) {
+            final Priority priority = Priority.values()[i];
+            listeners[i] = mock(NotificationListener.class);
+            this.uut.subscribeToOrderbook(listeners[i], priority);
+        }
+        final InOrder inOrder = Mockito.inOrder((Object[]) listeners);
+
+        final Map<String, String> details = new HashMap<>();
+        details.put("source", "orderbook");
+        details.put("key", "1");
+        details.put("channel", "orderbook");
+        final UpdateNotification<Object> notification = new UpdateNotification<>(false, 0, "0",
+                details);
+        this.uut.onMessageReceived(
+                new MessageReceivedEvent(new WebsocketStatus(true, true), notification));
+
+        for (int i = 0; i < listeners.length; i++) {
+            inOrder.verify(listeners[i]).update(notification);
+        }
     }
 }
