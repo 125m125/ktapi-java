@@ -3,6 +3,7 @@ package de._125m125.kt.ktapi.smartcache;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -17,6 +18,7 @@ import de._125m125.kt.ktapi.core.BuySell;
 import de._125m125.kt.ktapi.core.BuySellBoth;
 import de._125m125.kt.ktapi.core.KtCachingRequester;
 import de._125m125.kt.ktapi.core.KtNotificationManager;
+import de._125m125.kt.ktapi.core.KtNotificationManager.Priority;
 import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.KtRequesterDecorator;
 import de._125m125.kt.ktapi.core.NotificationListener;
@@ -61,20 +63,33 @@ public class KtSmartCache extends KtRequesterDecorator
 
     public static final int                                        CACHE_HIT_STATUS = 299;
 
+    private final Priority                                         priority;
     private final Map<String, CacheData<?>>                        cache;
     private final KtNotificationManager<?>                         ktNotificationManager;
     private final TimestampedObjectFactory                         factory;
 
     public KtSmartCache(final KtRequester requester,
             final KtNotificationManager<?> ktNotificationManager) {
-        this(requester, ktNotificationManager, null);
+        this(requester, ktNotificationManager, null, null);
+    }
+
+    public KtSmartCache(final KtRequester requester,
+            final KtNotificationManager<?> ktNotificationManager, final Priority priority) {
+        this(requester, ktNotificationManager, priority, null);
     }
 
     public KtSmartCache(final KtRequester requester,
             final KtNotificationManager<?> ktNotificationManager,
             final TimestampedObjectFactory factory) {
+        this(requester, ktNotificationManager, null, factory);
+    }
+
+    public KtSmartCache(final KtRequester requester,
+            final KtNotificationManager<?> ktNotificationManager, final Priority priority,
+            final TimestampedObjectFactory factory) {
         super(requester);
-        this.ktNotificationManager = ktNotificationManager;
+        this.ktNotificationManager = Objects.requireNonNull(ktNotificationManager);
+        this.priority = priority != null ? priority : Priority.HIGH;
         this.cache = new ConcurrentHashMap<>();
         this.factory = factory != null ? factory : new TimestampedObjectFactory();
     }
@@ -185,7 +200,7 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<List<HistoryEntry>> getHistory(final String itemid, final int limit,
             final int offset) {
-        this.ktNotificationManager.subscribeToHistory(this);
+        this.ktNotificationManager.subscribeToHistory(this, this.priority);
         return getOrFetch(Entity.HISTORY_ENTRY.getUpdateChannel() + itemid, offset, offset + limit,
                 KtSmartCache.HISTORY_FACTORY,
                 () -> this.requester.getHistory(itemid, limit, offset));
@@ -193,7 +208,7 @@ public class KtSmartCache extends KtRequesterDecorator
 
     @Override
     public Result<HistoryEntry> getLatestHistory(final String itemid) {
-        this.ktNotificationManager.subscribeToHistory(this);
+        this.ktNotificationManager.subscribeToHistory(this, this.priority);
         return this.getOrFetch(Entity.HISTORY_ENTRY.getUpdateChannel() + itemid, 0,
                 KtSmartCache.HISTORY_FACTORY, () -> this.requester.getLatestHistory(itemid));
     }
@@ -227,16 +242,16 @@ public class KtSmartCache extends KtRequesterDecorator
 
     @Override
     public Result<List<Item>> getItems(final UserKey userKey) {
-        this.ktNotificationManager.subscribeToItems(this, userKey, false);
-        this.ktNotificationManager.subscribeToItems(this, userKey, true);
+        this.ktNotificationManager.subscribeToItems(this, userKey, false, this.priority);
+        this.ktNotificationManager.subscribeToItems(this, userKey, true, this.priority);
         return getAllOrFetch(Entity.ITEM.getUpdateChannel() + userKey.getUserId(),
                 KtSmartCache.ITEM_FACTORY, () -> this.requester.getItems(userKey));
     }
 
     @Override
     public Result<Item> getItem(final UserKey userKey, final String itemid) {
-        this.ktNotificationManager.subscribeToItems(this, userKey, false);
-        this.ktNotificationManager.subscribeToItems(this, userKey, true);
+        this.ktNotificationManager.subscribeToItems(this, userKey, false, this.priority);
+        this.ktNotificationManager.subscribeToItems(this, userKey, true, this.priority);
         return getOrFetch(Entity.ITEM.getUpdateChannel() + userKey.getUserId(),
                 item -> item.getId().equals(itemid), KtSmartCache.ITEM_FACTORY,
                 () -> this.requester.getItem(userKey, itemid));
@@ -245,8 +260,8 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
             final int limit) {
-        this.ktNotificationManager.subscribeToMessages(this, userKey, false);
-        this.ktNotificationManager.subscribeToMessages(this, userKey, true);
+        this.ktNotificationManager.subscribeToMessages(this, userKey, false, this.priority);
+        this.ktNotificationManager.subscribeToMessages(this, userKey, true, this.priority);
         return getOrFetch(Entity.MESSAGE.getUpdateChannel() + userKey.getUserId(), offset,
                 offset + limit, KtSmartCache.MESSAGE_FACTORY,
                 () -> this.requester.getMessages(userKey, offset, limit));
@@ -255,8 +270,8 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
             final int limit) {
-        this.ktNotificationManager.subscribeToPayouts(this, userKey, false);
-        this.ktNotificationManager.subscribeToPayouts(this, userKey, true);
+        this.ktNotificationManager.subscribeToPayouts(this, userKey, false, this.priority);
+        this.ktNotificationManager.subscribeToPayouts(this, userKey, true, this.priority);
         return getOrFetch(Entity.PAYOUT.getUpdateChannel() + userKey.getUserId(), offset,
                 offset + limit, KtSmartCache.PAYOUT_FACTORY,
                 () -> this.requester.getPayouts(userKey, offset, limit));
@@ -296,8 +311,8 @@ public class KtSmartCache extends KtRequesterDecorator
 
     @Override
     public Result<List<Trade>> getTrades(final UserKey userKey) {
-        this.ktNotificationManager.subscribeToTrades(this, userKey, false);
-        this.ktNotificationManager.subscribeToTrades(this, userKey, true);
+        this.ktNotificationManager.subscribeToTrades(this, userKey, false, this.priority);
+        this.ktNotificationManager.subscribeToTrades(this, userKey, true, this.priority);
         return getAllOrFetch(Entity.TRADE.getUpdateChannel() + userKey.getUserId(),
                 KtSmartCache.TRADE_FACTORY, () -> this.requester.getTrades(userKey));
     }

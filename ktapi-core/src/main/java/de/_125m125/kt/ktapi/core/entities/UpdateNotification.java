@@ -58,7 +58,7 @@ public class UpdateNotification<T> extends Notification {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final UpdateNotification other = (UpdateNotification) obj;
+        final UpdateNotification<?> other = (UpdateNotification<?>) obj;
         if (!Arrays.equals(this.changedEntries, other.changedEntries)) {
             return false;
         }

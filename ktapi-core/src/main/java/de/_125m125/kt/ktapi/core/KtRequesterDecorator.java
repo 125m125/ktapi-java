@@ -2,6 +2,7 @@ package de._125m125.kt.ktapi.core;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Item;
@@ -20,7 +21,7 @@ public class KtRequesterDecorator implements KtRequester {
     protected final KtRequester requester;
 
     public KtRequesterDecorator(final KtRequester requester) {
-        this.requester = requester;
+        this.requester = Objects.requireNonNull(requester);
     }
 
     @Override
