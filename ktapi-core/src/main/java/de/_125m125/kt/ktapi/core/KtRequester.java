@@ -17,6 +17,8 @@ import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
 public interface KtRequester extends Closeable {
+    String              DEFAULT_BASE_URL   = "https://kt.125m125.de/api/v2.0/";
+
     public Result<List<HistoryEntry>> getHistory(String itemid, int limit, int offset);
 
     public Result<HistoryEntry> getLatestHistory(String itemid);

@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.google.gson.Gson;
 
+import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.users.CertificateUser;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
@@ -22,7 +23,6 @@ import okhttp3.Cache;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class KtRetrofit {
-    public static final String              DEFAULT_BASE_URL   = "https://kt.125m125.de/api/v2.0/";
     private static final RetrofitModifier[] RETROFIT_MODIFIERS = new RetrofitModifier[] {
             new ConverterFactoryAdder(new UnivocityConverterFactory()),
             new ConverterFactoryAdder(GsonConverterFactory.create()) };
@@ -38,7 +38,7 @@ public class KtRetrofit {
 
     public static KtRetrofitRequester createDefaultRequester(final KtUserStore userStore,
             final Cache cache) {
-        return new KtRetrofitRequester(KtRetrofit.DEFAULT_BASE_URL,
+        return new KtRetrofitRequester(KtRequester.DEFAULT_BASE_URL,
                 getClientModifiers(userStore, cache), KtRetrofit.RETROFIT_MODIFIERS,
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
     }
@@ -46,7 +46,7 @@ public class KtRetrofit {
     public static KtRetrofitRequester createClientCertificateRequester(final KtUserStore userStore,
             final UserKey userKey, final Cache cache) {
         final CertificateUser user = userStore.get(userKey, CertificateUser.class);
-        return new KtRetrofitRequester(KtRetrofit.DEFAULT_BASE_URL,
+        return new KtRetrofitRequester(KtRequester.DEFAULT_BASE_URL,
                 getClientModifiers(userStore, cache,
                         ClientCertificateAdder.createUnchecked(user.getFile(), user.getPassword())),
                 KtRetrofit.RETROFIT_MODIFIERS,

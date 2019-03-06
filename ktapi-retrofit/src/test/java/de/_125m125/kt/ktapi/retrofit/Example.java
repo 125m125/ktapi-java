@@ -56,5 +56,8 @@ public class Example {
                         s -> s < 500 ? m -> h -> System.out.println("Client error: " + h)
                                 : m -> h -> System.out.println("Server error: " + h)))
                 .addCallback(Callback.errorCallback(Throwable::printStackTrace));
+
+        Thread.sleep(10000);
+        requester.close();
     }
 }

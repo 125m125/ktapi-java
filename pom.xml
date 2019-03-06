@@ -29,6 +29,7 @@
     <modules>
         <module>ktapi-buildTools</module>
         <module>ktapi-core</module>
+        <module>ktapi-jerseyRequester</module>
         <module>ktapi-okHttpHelper</module>
         <module>ktapi-okhttpWebsocket</module>
         <module>ktapi-pusher</module>
@@ -61,13 +62,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-annotations</artifactId>
-                <version>3.1.11</version>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-core</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-core</artifactId>
+                <artifactId>ktapi-jerseyRequester</artifactId>
                 <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -119,6 +120,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.25</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>3.1.11</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
