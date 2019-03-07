@@ -8,6 +8,7 @@
     <name>ktapi</name>
     <description>API implementation for Kadcontrade</description>
     <url>https://kt.125m125.de</url>
+    <inceptionYear>2017</inceptionYear>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -256,6 +257,28 @@
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <header>com/mycila/maven/plugin/license/templates/MIT.txt</header>
+                    <includes>
+                        <include>src/main/java/**</include>
+                        <include>src/test/java/**</include>
+                    </includes>
+                    <properties>
+                        <owner>Kadcontrade</owner>
+                    </properties>
                 </configuration>
             </plugin>
         </plugins>
