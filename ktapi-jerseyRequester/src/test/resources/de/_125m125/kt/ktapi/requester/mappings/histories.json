@@ -1,0 +1,26 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPath": "/history/4",
+		"queryParameters": {
+			"limit": {
+				"equalTo": "10"
+			},
+			"offset": {
+				"equalTo": "0"
+			}
+		},
+		"headers": {
+			"Accept": {
+				"contains": "application/json"
+			}
+		}
+	},
+	"response": {
+		"status": 200,
+		"bodyFileName": "history.json",
+		"headers": {
+			"Content-Type": "application/json"
+		}
+	}
+}

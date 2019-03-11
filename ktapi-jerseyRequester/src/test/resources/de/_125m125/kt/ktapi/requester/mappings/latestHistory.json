@@ -1,0 +1,26 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPath": "/history/4/latest",
+		"headers": {
+			"Accept": {
+				"contains": "application/json"
+			}
+		}
+	},
+	"response": {
+		"status": 200,
+		"jsonBody": {
+			"close": "0.648797",
+			"open": "0.782616",
+			"high": "1.0",
+			"low":"",
+			"unitVolume": 2,
+			"dollarVolume": "1.750000",
+			"date":"2019-02-01"
+		},
+		"headers": {
+			"Content-Type": "application/json"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+    "success": true,
+    "code": 201,
+    "message": "creationsuccess",
+    "humanReadableMessage": "Die Order wurde erfolgreich erstellt",
+    "data": {
+        "active": true,
+        "buy": true,
+        "cancelled": false,
+        "sold": 1,
+        "amount": 1,
+        "id": 2282356126412355415,
+        "price": "0.100000",
+        "materialId": "4",
+        "materialName": "Cobblestone(4)",
+        "toTakeM": -200,
+        "toTakeI": 1
+    }
+}
