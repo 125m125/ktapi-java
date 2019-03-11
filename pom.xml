@@ -29,14 +29,11 @@
     <modules>
         <module>ktapi-buildTools</module>
         <module>ktapi-core</module>
-        <module>ktapi-jerseyRequester</module>
         <module>ktapi-okHttpHelper</module>
         <module>ktapi-okhttpWebsocket</module>
         <module>ktapi-pusher</module>
         <module>ktapi-report</module>
-        <module>ktapi-retrofit</module>
-        <module>ktapi-retrofitRequester</module>
-        <module>ktapi-retrofitUnivosityCsvparser</module>
+        <module>ktapi-requester</module>
         <module>ktapi-smartCache</module>
         <module>ktapi-websocket</module>
         <module>ktapi-websocketReactive</module>
