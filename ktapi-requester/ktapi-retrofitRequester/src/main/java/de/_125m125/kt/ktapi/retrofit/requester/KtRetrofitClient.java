@@ -29,7 +29,7 @@ public interface KtRetrofitClient {
     Call<List<HistoryEntry>> getHistory(@Path("itemid") String itemid, @Query("limit") int limit,
             @Query("offset") int offset);
 
-    @GET("history/{itemid}")
+    @GET("history/{itemid}/latest")
     Call<HistoryEntry> getLatestHistory(@Path("itemid") String itemid);
 
     @GET("orderbook/{itemid}")

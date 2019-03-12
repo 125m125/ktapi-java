@@ -6,31 +6,21 @@
         <artifactId>ktapi-requester</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
-    <artifactId>ktapi-retrofit</artifactId>
+    <artifactId>ktapi-requesterIntegrationTest</artifactId>
     <dependencies>
         <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
-            <version>2.5.0</version>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>2.21.0</version>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-retrofitRequester</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

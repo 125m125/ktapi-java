@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>ktapi-jerseyRequester</module>
+        <module>ktapi-requesterIntegrationTest</module>
         <module>ktapi-retrofit</module>
         <module>ktapi-retrofitRequester</module>
         <module>ktapi-retrofitUnivosityCsvparser</module>

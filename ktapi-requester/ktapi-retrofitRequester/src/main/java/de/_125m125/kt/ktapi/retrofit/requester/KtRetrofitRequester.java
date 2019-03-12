@@ -1,6 +1,7 @@
 package de._125m125.kt.ktapi.retrofit.requester;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import de._125m125.kt.ktapi.core.BuySell;
 import de._125m125.kt.ktapi.core.BuySellBoth;
@@ -19,6 +20,7 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
+import de._125m125.kt.ktapi.retrofit.requester.modifier.HybridModifier;
 import de._125m125.kt.ktapi.retrofit.requester.modifier.RetrofitModifier;
 import de._125m125.kt.okhttp.helper.OkHttpClientBuilder;
 import de._125m125.kt.okhttp.helper.modifier.CertificatePinnerAdder;
@@ -42,6 +44,17 @@ public class KtRetrofitRequester implements KtRequester {
                 retrofitModifiers, errorConverter);
     }
 
+    public KtRetrofitRequester(final String url, final ClientModifier[] clientModifiers,
+            final HybridModifier[] hybridModifiers, final RetrofitModifier[] retrofitModifiers,
+            final Converter<ResponseBody, ErrorResponse> errorConverter) {
+        this(url,
+                Stream.of(clientModifiers, hybridModifiers).flatMap(Stream::of)
+                        .toArray(ClientModifier[]::new),
+                Stream.of(retrofitModifiers, hybridModifiers).flatMap(Stream::of)
+                        .toArray(RetrofitModifier[]::new),
+                errorConverter);
+    }
+
     public KtRetrofitRequester(final String url, final OkHttpClientBuilder clientBuilder,
             final RetrofitModifier[] retrofitModifiers,
             final Converter<ResponseBody, ErrorResponse> errorConverter) {
@@ -56,8 +69,8 @@ public class KtRetrofitRequester implements KtRequester {
                 retrofitBuilder = retrofitModifier.modify(retrofitBuilder);
             }
         }
-        this.client = retrofitBuilder.client(this.okHttpClient).build()
-                .create(KtRetrofitClient.class);
+        this.client =
+                retrofitBuilder.client(this.okHttpClient).build().create(KtRetrofitClient.class);
     }
 
     @Override

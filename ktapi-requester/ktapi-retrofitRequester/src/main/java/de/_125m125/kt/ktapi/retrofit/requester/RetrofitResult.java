@@ -22,15 +22,18 @@ public class RetrofitResult<T> extends Result<T> {
                 } else {
                     ErrorResponse errorResponse;
                     try {
-                        errorResponse = errorConverter.convert(response.errorBody());
-                    } catch (final Exception e) {
+                        final ResponseBody errorBody = response.errorBody();
+                        final String error = errorBody.string();
                         try {
-                            errorResponse = new ErrorResponse(response.code(),
-                                    response.errorBody().string(), "An unknown Error occurred");
-                        } catch (final IOException e1) {
-                            errorResponse = new ErrorResponse(response.code(),
-                                    "unknown : " + e1.toString(), "An unknown Error occurred");
+                            errorResponse = errorConverter
+                                    .convert(ResponseBody.create(errorBody.contentType(), error));
+                        } catch (final Exception e) {
+                            errorResponse = new ErrorResponse(response.code(), error,
+                                    "An unknown Error occurred");
                         }
+                    } catch (final IOException e1) {
+                        errorResponse = new ErrorResponse(response.code(),
+                                "unknown : " + e1.toString(), "An unknown Error occurred");
                     }
                     setFailureResult(errorResponse);
                 }

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.125m125.kt</groupId>
-        <artifactId>ktapi</artifactId>
+        <artifactId>ktapi-requester</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>ktapi-jerseyRequester</artifactId>
@@ -23,15 +23,13 @@
             <artifactId>ktapi-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requesterIntegrationTest</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>2.25.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock</artifactId>
-            <version>2.21.0</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

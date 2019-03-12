@@ -19,8 +19,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
-import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
-
 import de._125m125.kt.ktapi.core.BuySell;
 import de._125m125.kt.ktapi.core.BuySellBoth;
 import de._125m125.kt.ktapi.core.KtRequester;
@@ -315,12 +313,6 @@ public class KtJerseyRequester implements KtRequester {
                 if (this.resultClass != null) {
                     setSuccessResult(response.getStatus(), response.readEntity(this.resultClass));
                 } else {
-                    if (this.resultType.getRawType() == List.class) {
-                        setSuccessResult(response.getStatus(),
-                                response.readEntity(new GenericType<ListResult<T>>(
-                                        new ParameterizedTypeImpl(ListResult.class,
-                                                this.resultType.getType()))).entries);
-                    }
                     setSuccessResult(response.getStatus(), response.readEntity(this.resultType));
                 }
             } else {
@@ -345,9 +337,5 @@ public class KtJerseyRequester implements KtRequester {
             setErrorResult(throwable);
         }
 
-    }
-
-    private static class ListResult<T> {
-        public T entries;
     }
 }

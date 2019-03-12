@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.125m125.kt</groupId>
-        <artifactId>ktapi</artifactId>
+        <artifactId>ktapi-requester</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>

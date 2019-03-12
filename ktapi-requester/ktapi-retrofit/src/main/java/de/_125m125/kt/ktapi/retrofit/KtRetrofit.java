@@ -10,9 +10,10 @@ import de._125m125.kt.ktapi.core.users.CertificateUser;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
 import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
-import de._125m125.kt.ktapi.retrofit.requester.modifier.ConverterFactoryAdder;
+import de._125m125.kt.ktapi.retrofit.requester.modifier.GsonConverterFactoryAdder;
+import de._125m125.kt.ktapi.retrofit.requester.modifier.HybridModifier;
 import de._125m125.kt.ktapi.retrofit.requester.modifier.RetrofitModifier;
-import de._125m125.kt.ktapi.retrofit.tsvparser.univocity.UnivocityConverterFactory;
+import de._125m125.kt.ktapi.retrofit.tsvparser.univocity.UnivocityConverterFactoryAdder;
 import de._125m125.kt.okhttp.helper.modifier.BasicAuthenticator;
 import de._125m125.kt.okhttp.helper.modifier.ClientCertificateAdder;
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
@@ -20,12 +21,11 @@ import de._125m125.kt.okhttp.helper.modifier.ContentTypeAdder;
 import de._125m125.kt.okhttp.helper.modifier.HeaderAdder;
 import de._125m125.kt.okhttp.helper.modifier.UserKeyRemover;
 import okhttp3.Cache;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class KtRetrofit {
-    private static final RetrofitModifier[] RETROFIT_MODIFIERS = new RetrofitModifier[] {
-            new ConverterFactoryAdder(new UnivocityConverterFactory()),
-            new ConverterFactoryAdder(GsonConverterFactory.create()) };
+    private static final RetrofitModifier[] RETROFIT_MODIFIERS = new RetrofitModifier[] {};
+    private static final HybridModifier[]   HYBRID_MODIFIERS   = new HybridModifier[] {
+            new UnivocityConverterFactoryAdder(), new GsonConverterFactoryAdder(), };
 
     public static KtRetrofitRequester createDefaultRequester(final KtUserStore userStore) {
         return createDefaultRequester(userStore, null);
@@ -39,7 +39,8 @@ public class KtRetrofit {
     public static KtRetrofitRequester createDefaultRequester(final KtUserStore userStore,
             final Cache cache) {
         return new KtRetrofitRequester(KtRequester.DEFAULT_BASE_URL,
-                getClientModifiers(userStore, cache), KtRetrofit.RETROFIT_MODIFIERS,
+                getClientModifiers(userStore, cache), KtRetrofit.HYBRID_MODIFIERS,
+                KtRetrofit.RETROFIT_MODIFIERS,
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
     }
 
@@ -49,14 +50,14 @@ public class KtRetrofit {
         return new KtRetrofitRequester(KtRequester.DEFAULT_BASE_URL,
                 getClientModifiers(userStore, cache,
                         ClientCertificateAdder.createUnchecked(user.getFile(), user.getPassword())),
-                KtRetrofit.RETROFIT_MODIFIERS,
+                KtRetrofit.HYBRID_MODIFIERS, KtRetrofit.RETROFIT_MODIFIERS,
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
     }
 
     private static ClientModifier[] getClientModifiers(final KtUserStore store, final Cache cache,
             final ClientModifier... others) {
-        final ClientModifier[] modifiers = new ClientModifier[4 + (cache == null ? 0 : 1)
-                + others.length];
+        final ClientModifier[] modifiers =
+                new ClientModifier[4 + (cache == null ? 0 : 1) + others.length];
         int i = 0;
         System.arraycopy(others, 0, modifiers, i, others.length);
         i += others.length;

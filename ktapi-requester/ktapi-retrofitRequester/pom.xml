@@ -3,11 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.125m125.kt</groupId>
-        <artifactId>ktapi</artifactId>
+        <artifactId>ktapi-requester</artifactId>
         <version>0.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>ktapi-retrofitRequester</artifactId>
     <dependencies>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.5.0</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
@@ -22,10 +28,8 @@
             <artifactId>ktapi-okhttpHelper</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
-            <version>2.5.0</version>
-            <scope>test</scope>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requesterIntegrationTest</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
