@@ -63,6 +63,7 @@ Checkstyle configuration that checks the Google coding conventions from Google J
     <module name="UpperEll"/>
     <module name="ModifierOrder"/>
     <module name="EmptyLineSeparator">
+      <property name="tokens" value="IMPORT,STATIC_IMPORT,CLASS_DEF,ENUM_DEF,INTERFACE_DEF,CTOR_DEF,METHOD_DEF,STATIC_INIT,INSTANCE_INIT,VARIABLE_DEF"/>
       <property name="allowNoEmptyLineBetweenFields" value="true"/>
     </module>
     <module name="SeparatorWrap">
@@ -184,7 +185,6 @@ Checkstyle configuration that checks the Google coding conventions from Google J
     </module>
     <module name="JavadocMethod">
       <property name="severity" value="info"/>
-      <property name="minLineCount" value="-1"/>
       <property name="allowedAnnotations" value="Override, Test"/>
       <property name="scope" value="public"/>
       <property name="allowThrowsTagsForSubclasses" value="true"/>

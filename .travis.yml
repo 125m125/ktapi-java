@@ -23,6 +23,8 @@ jobs:
       script: mvn spotbugs:check -B
     - name: "Checkstyle"
       script: mvn checkstyle:check -B
+    - name: "License"
+      script: mvn license:check -B
     - stage: deploy
       name: "Deploy to Github"
       if: tag IS true AND repo = "125m125/ktapi-java"
