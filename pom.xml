@@ -34,9 +34,7 @@
         <module>ktapi-okhttpWebsocket</module>
         <module>ktapi-pusher</module>
         <module>ktapi-report</module>
-        <module>ktapi-retrofit</module>
-        <module>ktapi-retrofitRequester</module>
-        <module>ktapi-retrofitUnivosityCsvparser</module>
+        <module>ktapi-requester</module>
         <module>ktapi-smartCache</module>
         <module>ktapi-websocket</module>
         <module>ktapi-websocketReactive</module>
@@ -69,6 +67,11 @@
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-core</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-jerseyRequester</artifactId>
                 <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -120,6 +123,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.26</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-requesterIntegrationTest</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -246,6 +255,24 @@
                     <violationSeverity>warning</violationSeverity>
                     <configLocation>de/_125m125/kt/ktapi/checkstyle/checkstyle.xml</configLocation>
                     <!-- <headerLocation>whizbang/LICENSE.txt</headerLocation> -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*It.java</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>

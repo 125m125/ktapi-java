@@ -14,6 +14,7 @@ jobs:
       name: "Unit Tests"              
       before_install:
         - ".travis/before-install.sh"
+      script: mvn verify -B
       install: skip
       after_success:
         - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml

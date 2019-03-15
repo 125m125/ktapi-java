@@ -15,6 +15,10 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-jerseyRequester</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-okhttpHelper</artifactId>
         </dependency>
         <dependency>

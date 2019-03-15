@@ -34,10 +34,8 @@ public class HistoryEntry {
     private double                   close;
     private Double                   low;
     private Double                   high;
-    // @CHECKSTYLE:OFF naming required to allow parsing/encoding of messages
-    private int                      unit_volume;
-    private double                   dollar_volume;
-    // @CHECKSTYLE:ON
+    private int                      unitVolume;
+    private double                   dollarVolume;
 
     protected HistoryEntry() {
         super();
@@ -51,8 +49,8 @@ public class HistoryEntry {
         this.close = close;
         this.low = low;
         this.high = high;
-        this.unit_volume = unitVolume;
-        this.dollar_volume = dollarVolume;
+        this.unitVolume = unitVolume;
+        this.dollarVolume = dollarVolume;
     }
 
     public String getDatestring() {
@@ -80,11 +78,11 @@ public class HistoryEntry {
     }
 
     public int getUnitVolume() {
-        return this.unit_volume;
+        return this.unitVolume;
     }
 
     public double getDollarVolume() {
-        return this.dollar_volume;
+        return this.dollarVolume;
     }
 
     @Override
@@ -101,9 +99,9 @@ public class HistoryEntry {
         builder.append(", high=");
         builder.append(this.high);
         builder.append(", unit_volume=");
-        builder.append(this.unit_volume);
+        builder.append(this.unitVolume);
         builder.append(", dollar_volume=");
-        builder.append(this.dollar_volume);
+        builder.append(this.dollarVolume);
         builder.append("]");
         return builder.toString();
     }
@@ -116,13 +114,13 @@ public class HistoryEntry {
         temp = Double.doubleToLongBits(this.close);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((this.date == null) ? 0 : this.date.hashCode());
-        temp = Double.doubleToLongBits(this.dollar_volume);
+        temp = Double.doubleToLongBits(this.dollarVolume);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((this.high == null) ? 0 : this.high.hashCode());
         result = prime * result + ((this.low == null) ? 0 : this.low.hashCode());
         temp = Double.doubleToLongBits(this.open);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(this.unit_volume);
+        temp = Double.doubleToLongBits(this.unitVolume);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
@@ -149,8 +147,8 @@ public class HistoryEntry {
         } else if (!this.date.equals(other.date)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.dollar_volume) != Double
-                .doubleToLongBits(other.dollar_volume)) {
+        if (Double.doubleToLongBits(this.dollarVolume) != Double
+                .doubleToLongBits(other.dollarVolume)) {
             return false;
         }
         if (this.high == null) {
@@ -170,8 +168,7 @@ public class HistoryEntry {
         if (Double.doubleToLongBits(this.open) != Double.doubleToLongBits(other.open)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.unit_volume) != Double
-                .doubleToLongBits(other.unit_volume)) {
+        if (Double.doubleToLongBits(this.unitVolume) != Double.doubleToLongBits(other.unitVolume)) {
             return false;
         }
         return true;
