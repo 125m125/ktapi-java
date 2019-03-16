@@ -37,14 +37,12 @@ import de._125m125.kt.ktapi.pusher.KtPusher;
 import de._125m125.kt.ktapi.pusher.KtPusherAuthorizer;
 import de._125m125.kt.ktapi.retrofit.KtRetrofit;
 import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
-import de._125m125.kt.ktapi.smartcache.KtSmartCache;
-import de._125m125.kt.ktapi.smartcache.Timestamped;
 
 public class SmartCacheExample {
     public static void main(final String[] args) throws IOException {
         final TokenUser user = new TokenUser("1", "1", "1");
         final KtRetrofitRequester innerRequester = KtRetrofit
-                .createDefaultRequester(new KtUserStore(user));
+                .createDefaultRequester("Smart Cache Example", new KtUserStore(user));
         final KtPusher pusher = new KtPusher(user,
                 unescapedData -> new Gson().fromJson(unescapedData, Notification.class),
                 new KtPusherAuthorizer(user.getKey(), innerRequester));

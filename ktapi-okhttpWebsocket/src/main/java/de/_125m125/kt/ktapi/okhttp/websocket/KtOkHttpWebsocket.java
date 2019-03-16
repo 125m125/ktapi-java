@@ -22,6 +22,8 @@
  */
 package de._125m125.kt.ktapi.okhttp.websocket;
 
+import java.util.Objects;
+
 import de._125m125.kt.ktapi.websocket.KtWebsocket;
 import de._125m125.kt.ktapi.websocket.KtWebsocketManager;
 import de._125m125.kt.okhttp.helper.OkHttpClientBuilder;
@@ -43,8 +45,8 @@ public class KtOkHttpWebsocket implements KtWebsocket {
     /**
      * Creates a new OkHttpWebsocket with default url and default OkHttpClient.
      */
-    public KtOkHttpWebsocket() {
-        this(null, null);
+    public KtOkHttpWebsocket(final String appName) {
+        this(appName, (String) null);
     }
 
     /**
@@ -53,13 +55,15 @@ public class KtOkHttpWebsocket implements KtWebsocket {
      * @param url
      *            the target url used when connection the websocket
      */
-    public KtOkHttpWebsocket(final String url) {
-        this(url, null);
+    public KtOkHttpWebsocket(final String appName, final String url) {
+        this.url = url != null ? url : KtWebsocket.DEFAULT_SERVER_ENDPOINT_URI;
+        this.clientBuilder = new OkHttpClientBuilder(appName)
+                .addModifier(new CertificatePinnerAdder());
+        this.client = this.clientBuilder.build(this);
     }
 
     /**
-     * creates a new OkHttpWebsocket with the specified target url and a
-     * provided client.
+     * creates a new OkHttpWebsocket with the specified target url and a provided client.
      *
      * @param url
      *            the target url used when connection the websocket
@@ -68,12 +72,7 @@ public class KtOkHttpWebsocket implements KtWebsocket {
      */
     public KtOkHttpWebsocket(final String url, final OkHttpClientBuilder clientBuilder) {
         this.url = url != null ? url : KtWebsocket.DEFAULT_SERVER_ENDPOINT_URI;
-        if (clientBuilder != null) {
-            this.clientBuilder = clientBuilder;
-        } else {
-            this.clientBuilder = new OkHttpClientBuilder()
-                    .addModifier(new CertificatePinnerAdder());
-        }
+        this.clientBuilder = Objects.requireNonNull(clientBuilder);
         this.client = this.clientBuilder.build(this);
     }
 

@@ -42,7 +42,6 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.TokenUserKey;
-import de._125m125.kt.ktapi.retrofit.requester.KtRetrofitRequester;
 import de._125m125.kt.ktapi.retrofit.requester.modifier.RetrofitModifier;
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 import okhttp3.Interceptor;
@@ -62,7 +61,7 @@ public class KtRetrofitRequesterTest {
     @Before
     public void beforeKtRetrofitRequesterTest() throws Exception {
         this.fakeInterceptor = new FakeInterceptor();
-        this.uut = new KtRetrofitRequester(KtRetrofitRequesterTest.BASE_URL,
+        this.uut = new KtRetrofitRequester(getClass().getName(), KtRetrofitRequesterTest.BASE_URL,
                 new ClientModifier[] { c -> c.addInterceptor(this.fakeInterceptor) },
                 new RetrofitModifier[] {
                         r -> r.addConverterFactory(GsonConverterFactory.create()) },

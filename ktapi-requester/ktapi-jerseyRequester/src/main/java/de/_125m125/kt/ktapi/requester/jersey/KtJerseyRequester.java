@@ -58,6 +58,7 @@ import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
+import de._125m125.kt.ktapi.requester.jersey.interceptors.HeaderAdderFilter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings(value = "SIC_INNER_SHOULD_BE_STATIC_ANON",
@@ -66,35 +67,40 @@ public class KtJerseyRequester implements KtRequester {
     private final Client    client;
     private final WebTarget target;
 
-    public KtJerseyRequester(final String url) {
-        this(url, null);
+    public KtJerseyRequester(final String appName, final String url) {
+        this(appName, url, null);
     }
 
     @SafeVarargs
-    public KtJerseyRequester(final String url, final Configuration config,
+    public KtJerseyRequester(final String appName, final String url, final Configuration config,
             final Function<ClientBuilder, ClientBuilder>... clientModifier) {
-        this(url, config,
+        this(appName, url, config,
                 Arrays.stream(clientModifier).reduce(Function.identity(), Function::andThen));
     }
 
-    public KtJerseyRequester(final Function<ClientBuilder, ClientBuilder> clientModifier) {
-        this(null, null, clientModifier);
-    }
-
-    public KtJerseyRequester(final Configuration config,
+    public KtJerseyRequester(final String appName,
             final Function<ClientBuilder, ClientBuilder> clientModifier) {
-        this(null, config, clientModifier);
+        this(appName, null, null, clientModifier);
     }
 
-    public KtJerseyRequester(final String url, final Configuration config,
+    public KtJerseyRequester(final String appName, final Configuration config,
+            final Function<ClientBuilder, ClientBuilder> clientModifier) {
+        this(appName, null, config, clientModifier);
+    }
+
+    public KtJerseyRequester(final String appName, final String url, final Configuration config,
             final Function<ClientBuilder, ClientBuilder> clientModifier) {
         ClientBuilder builder = ClientBuilder.newBuilder();
+        // .register(new HeaderAdderFilter("user-agent", "KtApi-Java-Jersey-" + appName));
         if (config != null) {
             builder = builder.withConfig(config);
         }
         if (clientModifier != null) {
             builder = clientModifier.apply(builder);
         }
+        builder = builder
+                .register(new HeaderAdderFilter("user-agent", "KtApi-Java-Jersey-" + appName) {
+                });
         this.client = builder.build();
         this.target = this.client.target(url == null ? KtRequester.DEFAULT_BASE_URL : url);
     }

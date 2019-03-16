@@ -39,7 +39,7 @@ import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
 
 public class Example {
     public static void main(final String[] args) throws InterruptedException {
-        final OkHttpClientBuilder builder = new OkHttpClientBuilder();
+        final OkHttpClientBuilder builder = new OkHttpClientBuilder("Websocket Example");
         final ClientModifier createUnchecked = ClientCertificateAdder.createUnchecked(
                 new File("../../certificateHelper/certificate2.p12"), "a".toCharArray());
         builder.addModifier(createUnchecked);
@@ -48,8 +48,8 @@ public class Example {
                 "a".toCharArray());
         final KtOkHttpWebsocket ws = new KtOkHttpWebsocket("wss://kt.125m125.de/api/websocket",
                 builder);
-        final AbstractKtWebsocketNotificationHandler<?> manager = 
-                new KtWebsocketNotificationHandler(new KtUserStore(user));
+        final AbstractKtWebsocketNotificationHandler<?> manager = new KtWebsocketNotificationHandler(
+                new KtUserStore(user));
         KtWebsocketManager.builder(ws).addDefaultParsers().addListener(new OfflineMessageHandler())
                 .addListener(new SessionHandler()).addListener(manager)
                 .addListener(new AutoReconnectionHandler()).buildAndOpen();

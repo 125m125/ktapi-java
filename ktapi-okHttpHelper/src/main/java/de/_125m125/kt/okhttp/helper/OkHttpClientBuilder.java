@@ -29,14 +29,17 @@ import java.util.Objects;
 import java.util.Set;
 
 import de._125m125.kt.okhttp.helper.modifier.ClientModifier;
+import de._125m125.kt.okhttp.helper.modifier.HeaderAdder;
+import de._125m125.kt.okhttp.helper.modifier.HeaderAdder.ConflictMode;
 import okhttp3.OkHttpClient;
 
 public class OkHttpClientBuilder {
 
+    private final String               appName;
     private final List<ClientModifier> modifiers;
+
     private OkHttpClient               client;
     private final Set<Object>          references = new HashSet<>();
-
     private boolean                    closed     = false;
 
     /**
@@ -45,10 +48,11 @@ public class OkHttpClientBuilder {
      * @param modifiers
      *            the inital modifiers
      */
-    public OkHttpClientBuilder(final ClientModifier... modifiers) {
-        this.modifiers = new ArrayList<>(modifiers.length);
+    public OkHttpClientBuilder(final String appName, final ClientModifier... modifiers) {
+        this.appName = appName;
+        this.modifiers = new ArrayList<>(modifiers.length + 1);
         for (final ClientModifier clientModifier : modifiers) {
-            this.modifiers.add(clientModifier);
+            addModifier(clientModifier);
         }
     }
 
@@ -60,6 +64,10 @@ public class OkHttpClientBuilder {
      * @return the ok http client builder
      */
     public OkHttpClientBuilder addModifier(final ClientModifier modifier) {
+        if (this.client != null) {
+            throw new IllegalStateException(
+                    "The client was already build. No more modifiers can be added.");
+        }
         Objects.requireNonNull(modifier);
         if (this.modifiers.contains(modifier)) {
             return this;
@@ -68,10 +76,6 @@ public class OkHttpClientBuilder {
             throw new IllegalArgumentException(
                     "This builder already contains a unique modifier of type "
                             + modifier.getClass());
-        }
-        if (this.client != null) {
-            throw new IllegalStateException(
-                    "The client was already build. No more modifiers can be added.");
         }
         this.modifiers.add(modifier);
         return this;
@@ -128,6 +132,8 @@ public class OkHttpClientBuilder {
         if (this.client != null) {
             return this.client;
         }
+        addModifier(new HeaderAdder("user-agent", "KtApi-Java-OkHttp-" + this.appName,
+                ConflictMode.SKIP));
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         for (final ClientModifier clientModifier : this.modifiers) {
             clientBuilder = clientModifier.modify(clientBuilder);

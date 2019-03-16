@@ -50,7 +50,7 @@ public class Example {
         // .openConnection(new Proxy(Proxy.Type.HTTP, new
         // InetSocketAddress("localhost", 8080)))));
 
-        final KtRequester requester = new KtJerseyRequester(
+        final KtRequester requester = new KtJerseyRequester("Jersey Requester Example",
                 new BasicAuthFilter(store).andThen(JacksonJsonProviderRegistrator.INSTANCE));
 
         requester.getPermissions(user.getKey()).addCallback(new Callback<Permissions>() {
