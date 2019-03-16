@@ -38,9 +38,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de._125m125.kt.ktapi.requester.jersey.interceptors.HeaderAdderFilter;
 
 /**
- * <b>To use this class, the dependecy
- * com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider is required!</b>
- * <br>
+ * <b>To use this class, the dependecy com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider is
+ * required!</b> <br>
  * This class registers the jackson JSON parser and provider to a ClientBuilder.
  */
 public class JacksonJsonProviderRegistrator implements Function<ClientBuilder, ClientBuilder> {

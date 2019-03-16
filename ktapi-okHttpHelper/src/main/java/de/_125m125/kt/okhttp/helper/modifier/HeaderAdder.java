@@ -23,6 +23,7 @@
 package de._125m125.kt.okhttp.helper.modifier;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 
 import okhttp3.Interceptor;
@@ -59,7 +60,7 @@ public class HeaderAdder implements ClientModifier {
 
     public HeaderAdder(final String name, final HeaderProducer valueProducer,
             final ConflictMode mode) {
-        this.name = Objects.requireNonNull(name).toLowerCase();
+        this.name = Objects.requireNonNull(name).toLowerCase(Locale.ENGLISH);
         this.valueProducer = Objects.requireNonNull(valueProducer);
         this.mode = Objects.requireNonNull(mode);
     }

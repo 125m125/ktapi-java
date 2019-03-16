@@ -61,7 +61,8 @@ import de._125m125.kt.ktapi.core.users.UserKey;
 import de._125m125.kt.ktapi.requester.jersey.interceptors.HeaderAdderFilter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@SuppressFBWarnings(value = "SIC_INNER_SHOULD_BE_STATIC_ANON", justification = "Allow use of anonymous GenericTypes")
+@SuppressFBWarnings(value = "SIC_INNER_SHOULD_BE_STATIC_ANON",
+        justification = "Allow use of anonymous GenericTypes")
 public class KtJerseyRequester implements KtRequester {
     private final Client    client;
     private final WebTarget target;
@@ -112,8 +113,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<HistoryEntry>> getHistory(final String itemid, final int limit,
             final int offset) {
-        final InvocationCallbackResult<List<HistoryEntry>> result = new InvocationCallbackResult<>(
-                new GenericType<List<HistoryEntry>>() {
+        final InvocationCallbackResult<List<HistoryEntry>> result =
+                new InvocationCallbackResult<>(new GenericType<List<HistoryEntry>>() {
                 });
         this.target.path("history").path(itemid).queryParam("limit", limit)
                 .queryParam("offset", offset).request().async().get(result);
@@ -122,8 +123,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<HistoryEntry> getLatestHistory(final String itemid) {
-        final InvocationCallbackResult<HistoryEntry> result = new InvocationCallbackResult<>(
-                HistoryEntry.class);
+        final InvocationCallbackResult<HistoryEntry> result =
+                new InvocationCallbackResult<>(HistoryEntry.class);
         this.target.path("history").path(itemid).path("latest").request().async().get(result);
         return result;
     }
@@ -131,8 +132,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit,
             final BuySellBoth mode, final boolean summarizeRemaining) {
-        final InvocationCallbackResult<List<OrderBookEntry>> result = new InvocationCallbackResult<>(
-                new GenericType<List<OrderBookEntry>>() {
+        final InvocationCallbackResult<List<OrderBookEntry>> result =
+                new InvocationCallbackResult<>(new GenericType<List<OrderBookEntry>>() {
                 });
         this.target.path("orderbook").path(itemid).queryParam("limit", limit)
                 .queryParam("mode", mode).queryParam("summarize", summarizeRemaining).request()
@@ -143,8 +144,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid,
             final BuySellBoth mode) {
-        final InvocationCallbackResult<List<OrderBookEntry>> result = new InvocationCallbackResult<>(
-                new GenericType<List<OrderBookEntry>>() {
+        final InvocationCallbackResult<List<OrderBookEntry>> result =
+                new InvocationCallbackResult<>(new GenericType<List<OrderBookEntry>>() {
                 });
         this.target.path("orderbook").path(itemid).path("best").queryParam("mode", mode).request()
                 .async().get(result);
@@ -153,18 +154,18 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<Permissions> getPermissions(final UserKey userKey) {
-        final InvocationCallbackResult<Permissions> result = new InvocationCallbackResult<>(
-                Permissions.class);
-        final WebTarget property = this.target.path("permissions").path(userKey.getUserId())
-                .property("user", userKey);
+        final InvocationCallbackResult<Permissions> result =
+                new InvocationCallbackResult<>(Permissions.class);
+        final WebTarget property =
+                this.target.path("permissions").path(userKey.getUserId()).property("user", userKey);
         property.request().async().get(result);
         return result;
     }
 
     @Override
     public Result<List<ItemName>> getItemNames() {
-        final InvocationCallbackResult<List<ItemName>> result = new InvocationCallbackResult<>(
-                new GenericType<List<ItemName>>() {
+        final InvocationCallbackResult<List<ItemName>> result =
+                new InvocationCallbackResult<>(new GenericType<List<ItemName>>() {
                 });
         this.target.path("itemnames").request().async().get(result);
         return result;
@@ -172,8 +173,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<List<Item>> getItems(final UserKey userKey) {
-        final InvocationCallbackResult<List<Item>> result = new InvocationCallbackResult<>(
-                new GenericType<List<Item>>() {
+        final InvocationCallbackResult<List<Item>> result =
+                new InvocationCallbackResult<>(new GenericType<List<Item>>() {
                 });
         userTarget(userKey).path("items").request().async().get(result);
         return result;
@@ -189,8 +190,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
             final int limit) {
-        final InvocationCallbackResult<List<Message>> result = new InvocationCallbackResult<>(
-                new GenericType<List<Message>>() {
+        final InvocationCallbackResult<List<Message>> result =
+                new InvocationCallbackResult<>(new GenericType<List<Message>>() {
                 });
         userTarget(userKey).path("messages").request().async().get(result);
         return result;
@@ -199,8 +200,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
             final int limit) {
-        final InvocationCallbackResult<List<Payout>> result = new InvocationCallbackResult<>(
-                new GenericType<List<Payout>>() {
+        final InvocationCallbackResult<List<Payout>> result =
+                new InvocationCallbackResult<>(new GenericType<List<Payout>>() {
                 });
         userTarget(userKey).path("payouts").request().async().get(result);
         return result;
@@ -209,8 +210,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PayoutType type,
             final String itemid, final String amount) {
-        final InvocationCallbackResult<WriteResult<Payout>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Payout>>() {
+        final InvocationCallbackResult<WriteResult<Payout>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {
                 });
         final Form form = new Form().param("type", type.getComName()).param("item", itemid)
                 .param("amount", amount);
@@ -221,8 +222,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
-        final InvocationCallbackResult<WriteResult<Payout>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Payout>>() {
+        final InvocationCallbackResult<WriteResult<Payout>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {
                 });
         userTarget(userKey).path("payouts").path(Long.toString(payoutid)).path("cancel").request()
                 .async()
@@ -232,8 +233,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
-        final InvocationCallbackResult<WriteResult<Payout>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Payout>>() {
+        final InvocationCallbackResult<WriteResult<Payout>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {
                 });
         userTarget(userKey).path("payouts").path(Long.toString(payoutid)).path("takeout").request()
                 .async()
@@ -244,8 +245,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<PusherResult> authorizePusher(final UserKey userKey, final String channelName,
             final String socketId) {
-        final InvocationCallbackResult<PusherResult> result = new InvocationCallbackResult<>(
-                PusherResult.class);
+        final InvocationCallbackResult<PusherResult> result =
+                new InvocationCallbackResult<>(PusherResult.class);
         final Form form = new Form().param("channel_name", channelName).param("socketId", socketId);
         this.target.path("pusher/authenticate").queryParam("user", userKey.getUserId())
                 .property("user", userKey).request().async()
@@ -255,8 +256,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<List<Trade>> getTrades(final UserKey userKey) {
-        final InvocationCallbackResult<List<Trade>> result = new InvocationCallbackResult<>(
-                new GenericType<List<Trade>>() {
+        final InvocationCallbackResult<List<Trade>> result =
+                new InvocationCallbackResult<>(new GenericType<List<Trade>>() {
                 });
         userTarget(userKey).path("orders").request().async().get(result);
         return result;
@@ -265,8 +266,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BuySell mode,
             final String item, final int amount, final String pricePerItem) {
-        final InvocationCallbackResult<WriteResult<Trade>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Trade>>() {
+        final InvocationCallbackResult<WriteResult<Trade>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {
                 });
         final Form form = new Form().param("buySell", mode.toString()).param("item", item)
                 .param("amount", Integer.toString(amount)).param("price", pricePerItem);
@@ -277,8 +278,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
-        final InvocationCallbackResult<WriteResult<Trade>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Trade>>() {
+        final InvocationCallbackResult<WriteResult<Trade>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {
                 });
         userTarget(userKey).path("orders").path(Long.toString(tradeId)).path("cancel").request()
                 .async()
@@ -288,8 +289,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
-        final InvocationCallbackResult<WriteResult<Trade>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Trade>>() {
+        final InvocationCallbackResult<WriteResult<Trade>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {
                 });
         userTarget(userKey).path("orders").path(Long.toString(tradeId)).path("takeout").request()
                 .async()
@@ -306,8 +307,8 @@ public class KtJerseyRequester implements KtRequester {
 
     @Override
     public Result<WriteResult<Long>> readBankStatement() {
-        final InvocationCallbackResult<WriteResult<Long>> result = new InvocationCallbackResult<>(
-                new GenericType<WriteResult<Long>>() {
+        final InvocationCallbackResult<WriteResult<Long>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Long>>() {
                 });
         this.target.path("bank/read").request().async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
