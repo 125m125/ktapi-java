@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.125m125.kt</groupId>
     <artifactId>ktapi</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>ktapi</name>
     <description>API implementation for Kadcontrade</description>
@@ -67,57 +67,57 @@
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-core</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-jerseyRequester</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-okhttpHelper</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-okhttpWebsocket</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-pusher</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-retrofit</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-retrofitRequester</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-smartCache</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-websocket</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-websocketReactive</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -127,7 +127,7 @@
             <dependency>
                 <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-requesterIntegrationTest</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -248,7 +248,7 @@
                     <dependency>
                         <groupId>de.125m125.kt</groupId>
                         <artifactId>ktapi-buildTools</artifactId>
-                        <version>0.0.4-SNAPSHOT</version>
+                        <version>1.0.0</version>
                     </dependency>
                 </dependencies>
                 <configuration>
