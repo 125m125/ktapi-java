@@ -38,6 +38,7 @@
         <module>ktapi-smartCache</module>
         <module>ktapi-websocket</module>
         <module>ktapi-websocketReactive</module>
+        <module>ktapi-lottery</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/125m125/ktapi.git</connection>
