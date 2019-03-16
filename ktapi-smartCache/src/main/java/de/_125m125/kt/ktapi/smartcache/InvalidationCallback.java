@@ -23,8 +23,9 @@
 package de._125m125.kt.ktapi.smartcache;
 
 import de._125m125.kt.ktapi.core.results.Callback;
+import de._125m125.kt.ktapi.core.results.WriteResult;
 
-public class InvalidationCallback<T> implements Callback<T> {
+public class InvalidationCallback<T> implements Callback<WriteResult<T>> {
 
     private final String       key;
     private final KtSmartCache requester;
@@ -35,8 +36,8 @@ public class InvalidationCallback<T> implements Callback<T> {
     }
 
     @Override
-    public void onSuccess(final int status, final T result) {
-        invalidate(result);
+    public void onSuccess(final int status, final WriteResult<T> result) {
+        invalidate(result.getObject());
     }
 
     @Override
@@ -55,7 +56,7 @@ public class InvalidationCallback<T> implements Callback<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private void invalidate(final T result) {
+    public void invalidate(final T result) {
         this.requester.<T>invalidate(this.key,
                 result != null ? (T[]) new Object[] { result } : null);
     }

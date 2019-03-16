@@ -80,8 +80,8 @@ public class KtSmartCache extends KtRequesterDecorator
             t -> t.getSold() == t.getAmount() && t.getToTakeItems() == 0 && t.getToTakeMoney() == 0);
     // @CHECKSTYLE:ON
 
-    private static final Logger                                    logger           = LoggerFactory
-            .getLogger(KtSmartCache.class);
+    private static final Logger                                    logger           =
+            LoggerFactory.getLogger(KtSmartCache.class);
 
     public static final int                                        CACHE_HIT_STATUS = 299;
 
@@ -209,8 +209,8 @@ public class KtSmartCache extends KtRequesterDecorator
 
     @Override
     public void update(final Notification notification) {
-        final String key = notification.getDetails().get("source")
-                + notification.getDetails().get("key");
+        final String key =
+                notification.getDetails().get("source") + notification.getDetails().get("key");
         KtSmartCache.logger.debug("received notification for key {}: {}", key, notification);
         if (notification instanceof UpdateNotification<?>) {
             invalidate(key, ((UpdateNotification<?>) notification).getChangedEntries());
@@ -302,9 +302,9 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PayoutType type,
             final String itemid, final String amount) {
-        final Result<WriteResult<Payout>> result = this.requester.createPayout(userKey, type,
-                itemid, amount);
-        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this,
+        final Result<WriteResult<Payout>> result =
+                this.requester.createPayout(userKey, type, itemid, amount);
+        result.addCallback(new InvalidationCallback<Payout>(this,
                 Entity.PAYOUT.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -312,7 +312,7 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.cancelPayout(userKey, payoutid);
-        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this,
+        result.addCallback(new InvalidationCallback<Payout>(this,
                 Entity.PAYOUT.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -320,7 +320,7 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         final Result<WriteResult<Payout>> result = this.requester.takeoutPayout(userKey, payoutid);
-        result.addCallback(new InvalidationCallback<WriteResult<Payout>>(this,
+        result.addCallback(new InvalidationCallback<Payout>(this,
                 Entity.PAYOUT.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -342,9 +342,9 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BuySell mode,
             final String item, final int amount, final String pricePerItem) {
-        final Result<WriteResult<Trade>> result = this.requester.createTrade(userKey, mode, item,
-                amount, pricePerItem);
-        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
+        final Result<WriteResult<Trade>> result =
+                this.requester.createTrade(userKey, mode, item, amount, pricePerItem);
+        result.addCallback(new InvalidationCallback<Trade>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -352,7 +352,7 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         final Result<WriteResult<Trade>> result = this.requester.cancelTrade(userKey, tradeId);
-        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
+        result.addCallback(new InvalidationCallback<Trade>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -360,7 +360,7 @@ public class KtSmartCache extends KtRequesterDecorator
     @Override
     public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         final Result<WriteResult<Trade>> result = this.requester.takeoutTrade(userKey, tradeId);
-        result.addCallback(new InvalidationCallback<WriteResult<Trade>>(this,
+        result.addCallback(new InvalidationCallback<Trade>(this,
                 Entity.TRADE.getUpdateChannel() + userKey.getUserId()));
         return result;
     }
@@ -369,8 +369,8 @@ public class KtSmartCache extends KtRequesterDecorator
             final Function<String, CacheData<T>> cacheGenerator,
             final Supplier<Result<List<T>>> fetcher) {
         @SuppressWarnings("unchecked")
-        final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key,
-                cacheGenerator);
+        final CacheData<T> cacheEntry =
+                (CacheData<T>) this.cache.computeIfAbsent(key, cacheGenerator);
         final Optional<TimestampedList<T>> all = cacheEntry.get(start, end);
         if (all.isPresent()) {
             KtSmartCache.logger.debug("getting {} to {} for {} resulted in a cache hit", start, end,
@@ -388,8 +388,8 @@ public class KtSmartCache extends KtRequesterDecorator
             final Function<String, CacheData<T>> cacheGenerator,
             final Supplier<Result<T>> fetcher) {
         @SuppressWarnings("unchecked")
-        final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key,
-                cacheGenerator);
+        final CacheData<T> cacheEntry =
+                (CacheData<T>) this.cache.computeIfAbsent(key, cacheGenerator);
         final Optional<T> all = cacheEntry.get(index);
         if (all.isPresent()) {
             KtSmartCache.logger.debug("getting index {} for {} resulted in a cache hit", index,
@@ -408,8 +408,8 @@ public class KtSmartCache extends KtRequesterDecorator
             final Function<String, CacheData<T>> cacheGenerator,
             final Supplier<Result<T>> fetcher) {
         @SuppressWarnings("unchecked")
-        final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key,
-                cacheGenerator);
+        final CacheData<T> cacheEntry =
+                (CacheData<T>) this.cache.computeIfAbsent(key, cacheGenerator);
         final Optional<T> all = cacheEntry.getAny(index);
         if (all.isPresent()) {
             KtSmartCache.logger.debug("getting {} with predicate {} resulted in a cache hit", key,
@@ -419,9 +419,9 @@ public class KtSmartCache extends KtRequesterDecorator
         } else {
             KtSmartCache.logger.debug("getting {} with predicate {} resulted in a cache miss", key,
                     index);
-            final ExposedResult<T> returnResult = new ExposedResult<>(fetcher,
-                    (status, result) -> KtSmartCache.this.factory.create(result,
-                            cacheEntry.getLastInvalidationTime(), false));
+            final ExposedResult<T> returnResult =
+                    new ExposedResult<>(fetcher, (status, result) -> KtSmartCache.this.factory
+                            .create(result, cacheEntry.getLastInvalidationTime(), false));
             return returnResult;
         }
     }
@@ -430,8 +430,8 @@ public class KtSmartCache extends KtRequesterDecorator
             final Function<String, CacheData<T>> cacheGenerator,
             final Supplier<Result<List<T>>> fetcher) {
         @SuppressWarnings("unchecked")
-        final CacheData<T> cacheEntry = (CacheData<T>) this.cache.computeIfAbsent(key,
-                cacheGenerator);
+        final CacheData<T> cacheEntry =
+                (CacheData<T>) this.cache.computeIfAbsent(key, cacheGenerator);
         final Optional<TimestampedList<T>> all = cacheEntry.getAll();
         if (all.isPresent()) {
             KtSmartCache.logger.debug("getting all entries for {} resulted in a cache hit", key);

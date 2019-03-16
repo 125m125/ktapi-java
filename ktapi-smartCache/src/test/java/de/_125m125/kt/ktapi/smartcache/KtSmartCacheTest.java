@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -43,6 +44,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.AdditionalMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -54,8 +56,10 @@ import de._125m125.kt.ktapi.core.entities.HistoryEntry;
 import de._125m125.kt.ktapi.core.entities.Message;
 import de._125m125.kt.ktapi.core.entities.Notification;
 import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
+import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.Callback;
 import de._125m125.kt.ktapi.core.results.Result;
+import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.TokenUserKey;
 import de._125m125.kt.ktapi.smartcache.caches.CacheData;
 import de._125m125.kt.ktapi.smartcache.objects.TimestampedHistoryEntry;
@@ -114,8 +118,8 @@ public class KtSmartCacheTest {
         this.cache.put("orderbook1", cacheData);
         when(cacheData.getLastInvalidationTime()).thenReturn(10000L);
 
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(
-                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
+        final List<OrderBookEntry> orderbook =
+                new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -129,8 +133,8 @@ public class KtSmartCacheTest {
         this.cache.put("orderbook1", cacheData);
         when(cacheData.getLastInvalidationTime()).thenReturn(20000L);
 
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(
-                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
+        final List<OrderBookEntry> orderbook =
+                new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -144,8 +148,8 @@ public class KtSmartCacheTest {
         this.cache.put("orderbook2", cacheData);
         when(cacheData.getLastInvalidationTime()).thenReturn(10000L);
 
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(
-                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
+        final List<OrderBookEntry> orderbook =
+                new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -154,8 +158,8 @@ public class KtSmartCacheTest {
 
     @Test
     public void testIsValidOrderBook_empty() throws Exception {
-        final List<OrderBookEntry> orderbook = new TimestampedList<>(
-                Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
+        final List<OrderBookEntry> orderbook =
+                new TimestampedList<>(Arrays.asList(new OrderBookEntry("buy", 1.0, 1)), 15000L);
 
         final boolean result = this.uut.isValidOrderBook("1", orderbook);
 
@@ -208,13 +212,13 @@ public class KtSmartCacheTest {
 
         @SuppressWarnings("unchecked")
         final Result<List<HistoryEntry>> result = mock(Result.class);
-        final List<HistoryEntry> asList = Arrays
-                .asList(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1, 2d));
+        final List<HistoryEntry> asList =
+                Arrays.asList(new HistoryEntry("a", 1d, 2d, 1d, 2d, 1, 2d));
         when(this.requester.getHistory("1", 1, 5)).thenReturn(result);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")
-            final Callback<List<HistoryEntry>> argumentAt = invocation.getArgumentAt(0,
-                    Callback.class);
+            final Callback<List<HistoryEntry>> argumentAt =
+                    invocation.getArgumentAt(0, Callback.class);
             argumentAt.onSuccess(200, asList);
             return null;
         }).when(result).addCallback(any());
@@ -290,11 +294,27 @@ public class KtSmartCacheTest {
         }).when(result).addCallback(any());
         when(cacheData.set(asList, 5, true)).thenReturn(new TimestampedList<>(asList, 1000));
 
-        final Result<List<Message>> messages = this.uut.getMessages(new TokenUserKey("1", "2"), 2,
-                5);
+        final Result<List<Message>> messages =
+                this.uut.getMessages(new TokenUserKey("1", "2"), 2, 5);
 
         assertEquals(asList, messages.getContent());
         assertEquals(200, messages.getStatus());
         assertTrue(messages.getContent() instanceof TimestampedList);
+    }
+
+    @Test
+    public void testWriteResult() throws Exception {
+        final Trade expectedTrade =
+                new Trade(12, true, "4", "Cobblestone(4)", 10, 0.5, 10, 4, 200, true);
+        when(this.requester.cancelTrade(any(), anyLong())).thenReturn(new ImmediateResult<>(200,
+                new WriteResult<>(true, "cancelsuccess", expectedTrade)));
+        @SuppressWarnings("unchecked")
+        final CacheData<Trade> cacheData = mock(CacheData.class);
+        this.cache.put("tradesuid", cacheData);
+        when(cacheData.getClazz()).thenReturn(Trade.class);
+
+        this.uut.cancelTrade(new TokenUserKey("uid", "token"), 12L);
+
+        verify(cacheData).invalidate(AdditionalMatchers.aryEq(new Trade[] { expectedTrade }));
     }
 }

@@ -32,6 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalMatchers;
 
+import de._125m125.kt.ktapi.core.results.WriteResult;
+
 public class InvalidationCallbackTest {
 
     private InvalidationCallback<String> uut;
@@ -66,9 +68,16 @@ public class InvalidationCallbackTest {
 
     @Test
     public void testOnSuccessInvalidatesOnSuccess() {
-        this.uut.onSuccess(200, "success");
+        this.uut.onSuccess(200, new WriteResult<>(true, "successMessage", "success"));
 
         verify(this.requester, times(1)).invalidate(eq("testKey"),
                 AdditionalMatchers.aryEq(new String[] { "success" }));
+    }
+
+    @Test
+    public void testOnSuccessInvalidatesOnEmpty() {
+        this.uut.onSuccess(200, new WriteResult<>(true, "successMessage"));
+
+        verify(this.requester, times(1)).invalidate(eq("testKey"), eq(null));
     }
 }
