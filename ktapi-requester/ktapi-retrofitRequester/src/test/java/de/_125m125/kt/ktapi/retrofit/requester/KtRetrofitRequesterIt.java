@@ -37,7 +37,7 @@ public class KtRetrofitRequesterIt extends RequesterIntegrationTest {
 
     @Override
     public KtRequester createRequester(final String baseUrl, final KtUserStore userStore) {
-        return new KtRetrofitRequester(baseUrl, new ClientModifier[] {},
+        return new KtRetrofitRequester(getClass().getName(), baseUrl, new ClientModifier[] {},
                 new HybridModifier[] { new GsonConverterFactoryAdder() }, new RetrofitModifier[] {},
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
     }

@@ -49,27 +49,28 @@ public class KtRetrofit {
     private static final HybridModifier[]   HYBRID_MODIFIERS   = new HybridModifier[] {
             new UnivocityConverterFactoryAdder(), new GsonConverterFactoryAdder(), };
 
-    public static KtRetrofitRequester createDefaultRequester(final KtUserStore userStore) {
-        return createDefaultRequester(userStore, null);
+    public static KtRetrofitRequester createDefaultRequester(final String appName,
+            final KtUserStore userStore) {
+        return createDefaultRequester(appName, userStore, null);
     }
 
-    public static KtRetrofitRequester createDefaultRequester(final KtUserStore userStore,
-            final File cacheDirectory, final long maxCacheSize) {
-        return createDefaultRequester(userStore, new Cache(cacheDirectory, maxCacheSize));
+    public static KtRetrofitRequester createDefaultRequester(final String appName,
+            final KtUserStore userStore, final File cacheDirectory, final long maxCacheSize) {
+        return createDefaultRequester(appName, userStore, new Cache(cacheDirectory, maxCacheSize));
     }
 
-    public static KtRetrofitRequester createDefaultRequester(final KtUserStore userStore,
-            final Cache cache) {
-        return new KtRetrofitRequester(KtRequester.DEFAULT_BASE_URL,
+    public static KtRetrofitRequester createDefaultRequester(final String appName,
+            final KtUserStore userStore, final Cache cache) {
+        return new KtRetrofitRequester(appName, KtRequester.DEFAULT_BASE_URL,
                 getClientModifiers(userStore, cache), KtRetrofit.HYBRID_MODIFIERS,
                 KtRetrofit.RETROFIT_MODIFIERS,
                 value -> new Gson().fromJson(value.charStream(), ErrorResponse.class));
     }
 
-    public static KtRetrofitRequester createClientCertificateRequester(final KtUserStore userStore,
-            final UserKey userKey, final Cache cache) {
+    public static KtRetrofitRequester createClientCertificateRequester(final String appName,
+            final KtUserStore userStore, final UserKey userKey, final Cache cache) {
         final CertificateUser user = userStore.get(userKey, CertificateUser.class);
-        return new KtRetrofitRequester(KtRequester.DEFAULT_BASE_URL,
+        return new KtRetrofitRequester(appName, KtRequester.DEFAULT_BASE_URL,
                 getClientModifiers(userStore, cache,
                         ClientCertificateAdder.createUnchecked(user.getFile(), user.getPassword())),
                 KtRetrofit.HYBRID_MODIFIERS, KtRetrofit.RETROFIT_MODIFIERS,
@@ -78,8 +79,8 @@ public class KtRetrofit {
 
     private static ClientModifier[] getClientModifiers(final KtUserStore store, final Cache cache,
             final ClientModifier... others) {
-        final ClientModifier[] modifiers =
-                new ClientModifier[4 + (cache == null ? 0 : 1) + others.length];
+        final ClientModifier[] modifiers = new ClientModifier[4 + (cache == null ? 0 : 1)
+                + others.length];
         int i = 0;
         System.arraycopy(others, 0, modifiers, i, others.length);
         i += others.length;

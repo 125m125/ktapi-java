@@ -31,7 +31,8 @@ public class KtJerseyRequesterIt extends RequesterIntegrationTest {
 
     @Override
     public KtRequester createRequester(final String baseUrl, final KtUserStore userStore) {
-        return new KtJerseyRequester(baseUrl, null, JacksonJsonProviderRegistrator.INSTANCE);
+        return new KtJerseyRequester(getClass().getName(), baseUrl, null,
+                JacksonJsonProviderRegistrator.INSTANCE);
     }
 
 }

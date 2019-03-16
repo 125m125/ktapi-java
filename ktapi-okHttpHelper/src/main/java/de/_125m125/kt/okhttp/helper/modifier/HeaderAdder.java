@@ -23,11 +23,19 @@
 package de._125m125.kt.okhttp.helper.modifier;
 
 import java.io.IOException;
+import java.util.Objects;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient.Builder;
 import okhttp3.Request;
 
 public class HeaderAdder implements ClientModifier {
+    public static enum ConflictMode {
+        ABORT,
+        APPEND,
+        REPLACE,
+        SKIP,
+    }
 
     public static interface HeaderProducer {
         public String apply(Request r) throws IOException;
@@ -35,34 +43,70 @@ public class HeaderAdder implements ClientModifier {
 
     private final String         name;
     private final HeaderProducer valueProducer;
+    private final ConflictMode   mode;
 
     public HeaderAdder(final String name, final String value) {
         this(name, r -> value);
     }
 
+    public HeaderAdder(final String name, final String value, final ConflictMode mode) {
+        this(name, r -> value, mode);
+    }
+
     public HeaderAdder(final String name, final HeaderProducer valueProducer) {
-        this.name = name;
-        this.valueProducer = valueProducer;
+        this(name, valueProducer, ConflictMode.APPEND);
+    }
+
+    public HeaderAdder(final String name, final HeaderProducer valueProducer,
+            final ConflictMode mode) {
+        this.name = Objects.requireNonNull(name).toLowerCase();
+        this.valueProducer = Objects.requireNonNull(valueProducer);
+        this.mode = Objects.requireNonNull(mode);
     }
 
     @Override
     public Builder modify(final Builder builder) {
-        return builder.addInterceptor(chain -> {
-            final String value = HeaderAdder.this.valueProducer.apply(chain.request());
-            Request request = chain.request();
-            if (value != null) {
-                request = chain.request().newBuilder().addHeader(HeaderAdder.this.name, value)
-                        .build();
-            }
-            return chain.proceed(request);
-        });
+        return builder.addInterceptor(createInterceptor());
     }
 
-    @Override
-    public boolean conflictsWith(final ClientModifier modifier) {
-        if (!(modifier instanceof HeaderAdder)) {
-            return false;
-        }
-        return this.name.equals(((HeaderAdder) modifier).name);
+    protected Interceptor createInterceptor() {
+        return chain -> {
+            Request request = chain.request();
+            final String value = HeaderAdder.this.valueProducer.apply(request);
+            if (value != null) {
+                if (value.isEmpty()) {
+                    request = request.newBuilder().removeHeader(HeaderAdder.this.name).build();
+                } else {
+                    if (request.headers(this.name).isEmpty()) {
+                        request = request.newBuilder().addHeader(HeaderAdder.this.name, value)
+                                .build();
+                    } else {
+                        switch (this.mode) {
+                        case APPEND:
+                            request = request.newBuilder().addHeader(HeaderAdder.this.name, value)
+                                    .build();
+                            break;
+                        case REPLACE:
+                            request = request.newBuilder().header(HeaderAdder.this.name, value)
+                                    .build();
+                            break;
+                        case SKIP:
+                            break;
+                        case ABORT:
+                            throw new IllegalStateException(
+                                    "Header " + this.name + " was already set!");
+                        default:
+                            throw new IllegalArgumentException(
+                                    "ConflictMode " + this.mode + " is currently not supported!");
+                        }
+                    }
+                }
+            }
+            return chain.proceed(request);
+        };
+    }
+
+    public String getName() {
+        return this.name;
     }
 }
