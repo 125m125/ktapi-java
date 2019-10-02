@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
+import com.pusher.client.channel.PusherEvent;
 
 import de._125m125.kt.ktapi.core.KtNotificationManager.Priority;
 import de._125m125.kt.ktapi.core.KtRequester;
@@ -79,8 +80,10 @@ public class KtPusherTest {
         details.put("key", "1");
         details.put("channel", "orderbook");
         final Notification notification = new Notification(false, 0, "0", "update", details);
-        this.uut.onEvent("orderbook", "update",
-                "\"" + new Gson().toJson(notification).replaceAll("\"", "\\\\\"") + "\"");
+        final Map<String, Object> data = new HashMap<>();
+        data.put("channel", "orderbook");
+        data.put("data", "\"" + new Gson().toJson(notification).replaceAll("\"", "\\\\\"") + "\"");
+        this.uut.onEvent(new PusherEvent(data));
 
         for (int i = 0; i < listeners.length; i++) {
             inOrder.verify(listeners[i]).update(notification);
@@ -102,8 +105,10 @@ public class KtPusherTest {
         details.put("key", "1");
         details.put("channel", "orderbook");
         final Notification notification = new Notification(false, 0, "0", "update", details);
-        this.uut.onEvent("orderbook", "update",
-                "\"" + new Gson().toJson(notification).replaceAll("\"", "\\\\\"") + "\"");
+        final Map<String, Object> data = new HashMap<>();
+        data.put("channel", "orderbook");
+        data.put("data", "\"" + new Gson().toJson(notification).replaceAll("\"", "\\\\\"") + "\"");
+        this.uut.onEvent(new PusherEvent(data));
 
         for (int i = 0; i < listeners.length; i++) {
             inOrder.verify(listeners[i]).update(notification);

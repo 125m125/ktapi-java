@@ -33,6 +33,7 @@ import com.pusher.client.Authorizer;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.PrivateChannelEventListener;
+import com.pusher.client.channel.PusherEvent;
 import com.pusher.client.connection.ConnectionEventListener;
 import com.pusher.client.connection.ConnectionState;
 import com.pusher.client.connection.ConnectionStateChange;
@@ -78,17 +79,17 @@ public class KtPusher
 
     protected Pusher createPusher(final PusherOptions options) {
         final Pusher pusher = new Pusher("25ba65999fadc5a6e290", options);
-        this.pusher.connect(new ConnectionEventListenerImplementation(), ConnectionState.ALL);
+        pusher.connect(new ConnectionEventListenerImplementation(), ConnectionState.ALL);
         return pusher;
     }
 
     @Override
-    public void onEvent(final String channelname, final String eventName, final String data) {
-        final String unescapedData = data.substring(1, data.length() - 1).replaceAll("\\\\\"",
-                "\"");
+    public void onEvent(final PusherEvent event) {
+        final String unescapedData = event.getData().substring(1, event.getData().length() - 1)
+                .replaceAll("\\\\\"", "\"");
         final Notification notification = this.parser.parse(unescapedData);
-        final EnumMap<Priority, Set<NotificationListener>> receivers = this.listeners
-                .get(channelname);
+        final EnumMap<Priority, Set<NotificationListener>> receivers =
+                this.listeners.get(event.getChannelName());
         if (receivers != null) {
             synchronized (receivers) {
                 receivers.values().stream().flatMap(Set::stream)
