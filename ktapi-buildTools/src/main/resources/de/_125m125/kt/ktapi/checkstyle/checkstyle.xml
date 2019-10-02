@@ -24,10 +24,6 @@
       <property name="allowByTailComment" value="true"/>
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
-    <module name="LineLength">
-      <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-      <property name="max" value="100"/>
-    </module>
     <module name="AvoidStarImport"/>
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap"/>
@@ -190,7 +186,6 @@
       <property name="allowedAnnotations" value="Override, Test"/>
       <property name="scope" value="public"/>
       <property name="allowThrowsTagsForSubclasses" value="true"/>
-      <property name="allowMissingPropertyJavadoc" value="true"/>
     </module>
     <module name="MethodName">
       <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
@@ -204,6 +199,15 @@
     </module>
     <module name="CommentsIndentation"/>
     <module name="SuppressionCommentFilter"/>
+  </module>
+    <module name="SuppressWithPlainTextCommentFilter">
+      <property name="offCommentFormat" value="@CHECKSTYLE:OFF"/>
+      <property name="onCommentFormat" value="@CHECKSTYLE:ON"/>
+      <property name="checkFormat" value="LineLength"/>
+    </module>
+  <module name="LineLength">
+    <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    <property name="max" value="100"/>
   </module>
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
