@@ -34,12 +34,13 @@ import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
 import de._125m125.kt.ktapi.core.entities.Trade;
+import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
 
 public interface KtRequester extends Closeable {
-    String              DEFAULT_BASE_URL   = "https://kt.125m125.de/api/v2.0/";
+    String DEFAULT_BASE_URL = "https://kt.125m125.de/api/v2.0/";
 
     public Result<List<HistoryEntry>> getHistory(String itemid, int limit, int offset);
 
@@ -75,8 +76,8 @@ public interface KtRequester extends Closeable {
 
     public Result<List<Payout>> getPayouts(UserKey userKey, int offset, int limit);
 
-    public Result<WriteResult<Payout>> createPayout(UserKey userKey, PayoutType type,
-            String itemid, String amount);
+    public Result<WriteResult<Payout>> createPayout(UserKey userKey, PayoutType type, String itemid,
+            String amount);
 
     public Result<WriteResult<Payout>> cancelPayout(UserKey userKey, long payoutid);
 
@@ -103,4 +104,7 @@ public interface KtRequester extends Closeable {
      *         sent.
      */
     public Result<WriteResult<Long>> readBankStatement();
+
+    public Result<ItemPayinResult> adminAddItems(UserKey adminKey, String targetName,
+            List<Item> items, String message);
 }

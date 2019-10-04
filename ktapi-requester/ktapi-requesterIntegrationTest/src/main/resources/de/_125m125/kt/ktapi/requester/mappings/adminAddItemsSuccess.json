@@ -1,0 +1,29 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPath": "/admins/123/namedUsers/test/items",
+		"bodyPatterns": [
+			{
+				"contains": "\"4\":64"
+			},
+			{
+				"contains": "\"1\":10"
+			}
+		],
+		"headers": {
+			"Content-Type": {
+				"contains": "application/json"
+			},
+			"Accept": {
+				"contains": "application/json"
+			}
+		}
+	},
+	"response": {
+		"status": 200,
+		"bodyFileName": "adminAddItemsSuccess.json",
+		"headers": {
+			"Content-Type": "application/json"
+		}
+	}
+}

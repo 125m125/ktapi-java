@@ -20,66 +20,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de._125m125.kt.ktapi.core.entities;
+package de._125m125.kt.ktapi.core.results;
 
-import java.util.Objects;
+import java.util.List;
 
-public class Item {
-    private String id;
-    private String name;
-    private double amount;
+import de._125m125.kt.ktapi.core.entities.Item;
 
-    protected Item() {
-        super();
+public class ItemPayinResult {
+    private final EntryList<Item> succeeded;
+    private final EntryList<Item> failed;
+
+    public ItemPayinResult() {
+        this(null, null);
     }
 
-    public Item(final String id, final double amount) {
-        super();
-        this.id = Objects.requireNonNull(id);
-        this.name = id;
-        this.amount = amount;
+    public ItemPayinResult(final List<Item> succeeded, final List<Item> failed) {
+        this.succeeded = EntryList.of(succeeded);
+        this.failed = EntryList.of(failed);
     }
 
-    public Item(final String id, final String name, final double amount) {
-        super();
-        this.id = Objects.requireNonNull(id);
-        this.name = Objects.requireNonNull(name);
-        this.amount = amount;
+    public EntryList<Item> getSucceeded() {
+        return this.succeeded;
     }
 
-    public String getId() {
-        return this.id;
+    public EntryList<Item> getFailed() {
+        return this.failed;
     }
 
-    public String getName() {
-        return this.name;
+    public boolean hasFailures() {
+        return this.failed != null && !this.failed.isEmpty();
     }
 
-    public double getAmount() {
-        return this.amount;
+    public boolean hasSuccesses() {
+        return this.succeeded != null && !this.succeeded.isEmpty();
     }
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Item [id=");
-        builder.append(this.id);
-        builder.append(", name=");
-        builder.append(this.name);
-        builder.append(", amount=");
-        builder.append(this.amount);
-        builder.append("]");
-        return builder.toString();
+        return "ItemPayinResult [succeeded=" + this.succeeded + ", failed=" + this.failed + "]";
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits(this.amount);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+        result = prime * result + ((this.failed == null) ? 0 : this.failed.hashCode());
+        result = prime * result + ((this.succeeded == null) ? 0 : this.succeeded.hashCode());
         return result;
     }
 
@@ -94,18 +80,21 @@ public class Item {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Item other = (Item) obj;
-        if (Double.doubleToLongBits(this.amount) != Double.doubleToLongBits(other.amount)) {
-            return false;
-        }
-        if (this.id == null) {
-            if (other.id != null) {
+        final ItemPayinResult other = (ItemPayinResult) obj;
+        if (this.failed == null) {
+            if (other.failed != null) {
                 return false;
             }
-        } else if (!this.id.equals(other.id)) {
+        } else if (!this.failed.equals(other.failed)) {
+            return false;
+        }
+        if (this.succeeded == null) {
+            if (other.succeeded != null) {
+                return false;
+            }
+        } else if (!this.succeeded.equals(other.succeeded)) {
             return false;
         }
         return true;
     }
-
 }

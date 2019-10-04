@@ -23,6 +23,7 @@
 package de._125m125.kt.ktapi.retrofit.requester;
 
 import java.util.List;
+import java.util.Map;
 
 import de._125m125.kt.ktapi.core.BuySell;
 import de._125m125.kt.ktapi.core.BuySellBoth;
@@ -35,8 +36,10 @@ import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
 import de._125m125.kt.ktapi.core.entities.Trade;
+import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -133,4 +136,9 @@ public interface KtRetrofitClient {
 
     @POST("bank/read")
     Call<WriteResult<Long>> readBankStatement();
+
+    @POST("admins/{adminId}/namedUsers/{targetName}/items")
+    Call<ItemPayinResult> adminAddItems(@Path("adminId") String adminId,
+            @Path("targetName") String targetName, @Body Map<String, Double> flattenedItems,
+            @Query("message") String message, @Header("userKey") String identifier);
 }

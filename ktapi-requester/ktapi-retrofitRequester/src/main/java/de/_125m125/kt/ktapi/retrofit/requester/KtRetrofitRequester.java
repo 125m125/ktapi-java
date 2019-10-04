@@ -23,6 +23,8 @@
 package de._125m125.kt.ktapi.retrofit.requester;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de._125m125.kt.ktapi.core.BuySell;
@@ -39,6 +41,7 @@ import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
+import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
@@ -91,8 +94,8 @@ public class KtRetrofitRequester implements KtRequester {
                 retrofitBuilder = retrofitModifier.modify(retrofitBuilder);
             }
         }
-        this.client = retrofitBuilder.client(this.okHttpClient).build()
-                .create(KtRetrofitClient.class);
+        this.client =
+                retrofitBuilder.client(this.okHttpClient).build().create(KtRetrofitClient.class);
     }
 
     @Override
@@ -236,5 +239,14 @@ public class KtRetrofitRequester implements KtRequester {
 
     public OkHttpClientBuilder getOkHttpClient() {
         return this.clientBuilder;
+    }
+
+    @Override
+    public Result<ItemPayinResult> adminAddItems(final UserKey adminKey, final String targetName,
+            final List<Item> items, final String message) {
+        final Map<String, Double> flattenedItems =
+                items.stream().collect(Collectors.toMap(Item::getId, Item::getAmount));
+        return new RetrofitResult<>(this.client.adminAddItems(adminKey.getUserId(), targetName,
+                flattenedItems, message, adminKey.getIdentifier()), this.errorConverter);
     }
 }

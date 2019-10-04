@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
@@ -55,6 +56,7 @@ import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
+import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.UserKey;
@@ -312,6 +314,19 @@ public class KtJerseyRequester implements KtRequester {
                 });
         this.target.path("bank/read").request().async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
+        return result;
+    }
+
+    @Override
+    public Result<ItemPayinResult> adminAddItems(final UserKey adminKey, final String targetName,
+            final List<Item> items, final String message) {
+        final InvocationCallbackResult<ItemPayinResult> result =
+                new InvocationCallbackResult<>(ItemPayinResult.class);
+        this.target.path("admins").path(adminKey.getUserId()).path("namedUsers").path(targetName)
+                .path("items").queryParam("message", message).request().async()
+                .post(Entity.entity(
+                        items.stream().collect(Collectors.toMap(Item::getId, Item::getAmount)),
+                        MediaType.APPLICATION_JSON), result);
         return result;
     }
 

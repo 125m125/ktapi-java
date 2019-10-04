@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 import de._125m125.kt.ktapi.requester.jersey.interceptors.HeaderAdderFilter;
@@ -55,7 +54,7 @@ public class JacksonJsonProviderRegistrator implements Function<ClientBuilder, C
         JacksonJsonProviderRegistrator.MAPPER.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         JacksonJsonProviderRegistrator.MAPPER.setVisibility(PropertyAccessor.ALL,
                 JsonAutoDetect.Visibility.ANY);
-        JacksonJsonProviderRegistrator.MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
+        // JacksonJsonProviderRegistrator.MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
 
         INSTANCE = new JacksonJsonProviderRegistrator();
     }

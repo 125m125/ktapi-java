@@ -39,11 +39,15 @@ import org.junit.Test;
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
+import com.github.tomakehurst.wiremock.verification.NearMiss;
 
 import de._125m125.kt.ktapi.core.BuySell;
 import de._125m125.kt.ktapi.core.KtRequester;
 import de._125m125.kt.ktapi.core.entities.HistoryEntry;
+import de._125m125.kt.ktapi.core.entities.Item;
 import de._125m125.kt.ktapi.core.entities.Trade;
+import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.Result;
 import de._125m125.kt.ktapi.core.results.WriteResult;
 import de._125m125.kt.ktapi.core.users.KtUserStore;
@@ -69,6 +73,13 @@ public abstract class RequesterIntegrationTest {
 
     @After
     public void closeRequester() {
+        final ServeEvent serveEvent =
+                RequesterIntegrationTest.wireMockRule.getAllServeEvents().get(0);
+        if (!serveEvent.getWasMatched()) {
+            final List<NearMiss> findNearMissesFor = RequesterIntegrationTest.wireMockRule
+                    .findNearMissesFor(serveEvent.getRequest());
+            System.out.println(findNearMissesFor);
+        }
         if (this.uut != null) {
             try {
                 this.uut.close();
@@ -135,4 +146,37 @@ public abstract class RequesterIntegrationTest {
         assertEquals(expected, createTrade.getContent());
     }
 
+    @Test
+    public void testAdminAddItemsSuccess() throws Exception {
+        if (this.uut == null) {
+            throw new IllegalStateException(
+                    "initializeRequester has to be called before executing tests.");
+        }
+        final Result<ItemPayinResult> actual = this.uut.adminAddItems(this.user.getKey(), "test",
+                Arrays.asList(new Item("4", "Cobblestone", 64), new Item("1", "Stone", 10)),
+                "Test");
+
+        final ItemPayinResult expected =
+                new ItemPayinResult(Arrays.asList(new Item("4", 64), new Item("1", 10)), null);
+
+        assertEquals(200, actual.getStatus());
+        assertEquals(expected, actual.getContent());
+    }
+
+    @Test
+    public void testAdminAddItemsPartialSuccess() throws Exception {
+        if (this.uut == null) {
+            throw new IllegalStateException(
+                    "initializeRequester has to be called before executing tests.");
+        }
+        final Result<ItemPayinResult> actual = this.uut.adminAddItems(this.user.getKey(), "test",
+                Arrays.asList(new Item("4", "Cobblestone", 64), new Item("-5", "Unknown", 10)),
+                "Test");
+
+        final ItemPayinResult expected = new ItemPayinResult(Arrays.asList(new Item("4", 64)),
+                Arrays.asList(new Item("-5", 0)));
+
+        assertEquals(207, actual.getStatus());
+        assertEquals(expected, actual.getContent());
+    }
 }
