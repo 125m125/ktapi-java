@@ -11,7 +11,7 @@ sudo: required
 jobs: 
   include: 
     - stage: test
-      name: "Unit Tests"              
+      name: "Unit Tests OpenJDK8"
       before_install:
         - ".travis/before-install.sh"
       script: mvn verify -B
@@ -19,6 +19,14 @@ jobs:
       after_success:
         - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
         - bash <(curl -s https://codecov.io/bash)
+    - name: "Unit Tests OpenJDK11"
+      install: skip
+      jdk: openjdk11
+      script: mvn verify -B
+    - name: "Unit Tests OpenJDK13"
+      install: skip
+      jdk: openjdk13
+      script: mvn verify -B
     - name: "Spotbugs"
       script: mvn spotbugs:check -B
     - name: "Checkstyle"
