@@ -3,47 +3,43 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.125m125.kt</groupId>
-        <artifactId>ktapi</artifactId>
+        <artifactId>ktapi-requester</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>ktapi-smartCache</artifactId>
+    <artifactId>ktapi-requester-retrofit</artifactId>
     <dependencies>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.6.2</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.5.0</version>
+        </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-okhttpHelper</artifactId>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-pusher</artifactId>
-            <scope>test</scope>
+            <artifactId>ktapi-requester-integrationTest</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-requester-retrofit-simple</artifactId>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

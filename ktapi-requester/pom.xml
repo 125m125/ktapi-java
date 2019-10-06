@@ -9,10 +9,10 @@
     <artifactId>ktapi-requester</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>ktapi-jerseyRequester</module>
-        <module>ktapi-requesterIntegrationTest</module>
-        <module>ktapi-retrofit</module>
-        <module>ktapi-retrofitRequester</module>
-        <module>ktapi-retrofitUnivosityCsvparser</module>
+        <module>ktapi-requester-integrationTest</module>
+        <module>ktapi-requester-jersey</module>
+        <module>ktapi-requester-retrofit</module>
+        <module>ktapi-requester-retrofit-simple</module>
+        <module>ktapi-requester-retrofit-tsvparser-univocity</module>
     </modules>
 </project>
