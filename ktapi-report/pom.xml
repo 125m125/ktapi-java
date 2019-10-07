@@ -23,6 +23,11 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requester-integrationTest</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-requester-jersey</artifactId>
         </dependency>
         <dependency>
@@ -44,6 +49,10 @@
         <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-websocket-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-websocket-javaWebsocket</artifactId>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>

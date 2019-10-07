@@ -109,6 +109,11 @@
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-websocket-javaWebsocket</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-websocket-okHttp</artifactId>
                 <version>1.0.0</version>
             </dependency>

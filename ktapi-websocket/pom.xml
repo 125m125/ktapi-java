@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>ktapi-websocket-core</module>
+        <module>ktapi-websocket-javaWebsocket</module>
         <module>ktapi-websocket-okHttp</module>
         <module>ktapi-websocket-reactive</module>
     </modules>
