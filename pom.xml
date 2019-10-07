@@ -31,13 +31,11 @@
         <module>ktapi-buildTools</module>
         <module>ktapi-core</module>
         <module>ktapi-okHttpHelper</module>
-        <module>ktapi-okhttpWebsocket</module>
         <module>ktapi-pusher</module>
         <module>ktapi-report</module>
         <module>ktapi-requester</module>
         <module>ktapi-smartCache</module>
         <module>ktapi-websocket</module>
-        <module>ktapi-websocketReactive</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/125m125/ktapi.git</connection>
@@ -71,17 +69,7 @@
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-jerseyRequester</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>de.125m125.kt</groupId>
                 <artifactId>ktapi-okhttpHelper</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-okhttpWebsocket</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
@@ -91,17 +79,22 @@
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-retrofit</artifactId>
+                <artifactId>ktapi-requester-jersey</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-retrofitRequester</artifactId>
+                <artifactId>ktapi-requester-retrofit</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>
+                <artifactId>ktapi-requester-retrofit-simple</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-requester-retrofit-tsvparser-univocity</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
@@ -111,12 +104,22 @@
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-websocket</artifactId>
+                <artifactId>ktapi-websocket-core</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-websocketReactive</artifactId>
+                <artifactId>ktapi-websocket-javaWebsocket</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-websocket-okHttp</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-websocket-reactive</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
@@ -126,7 +129,13 @@
             </dependency>
             <dependency>
                 <groupId>de.125m125.kt</groupId>
-                <artifactId>ktapi-requesterIntegrationTest</artifactId>
+                <artifactId>ktapi-buildTools</artifactId>
+                <version>1.0.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.125m125.kt</groupId>
+                <artifactId>ktapi-requester-integrationTest</artifactId>
                 <version>1.0.0</version>
                 <scope>test</scope>
             </dependency>
