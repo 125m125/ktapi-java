@@ -15,15 +15,7 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-jerseyRequester</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-okhttpHelper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-okhttpWebsocket</artifactId>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
@@ -31,15 +23,24 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-retrofit</artifactId>
+            <artifactId>ktapi-requester-integrationTest</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-retrofitRequester</artifactId>
+            <artifactId>ktapi-requester-jersey</artifactId>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-retrofitUnivosityTsvparser</artifactId>
+            <artifactId>ktapi-requester-retrofit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requester-retrofit-simple</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requester-retrofit-tsvparser-univocity</artifactId>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
@@ -47,11 +48,19 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-websocket</artifactId>
+            <artifactId>ktapi-websocket-core</artifactId>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-websocketReactive</artifactId>
+            <artifactId>ktapi-websocket-javaWebsocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-websocket-okHttp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-websocket-reactive</artifactId>
         </dependency>
     </dependencies>
     <build>

@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.125m125.kt</groupId>
-        <artifactId>ktapi</artifactId>
+        <artifactId>ktapi-websocket</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>ktapi-okhttpHelper</artifactId>
+    <artifactId>ktapi-websocket-okHttp</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -15,22 +15,11 @@
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
-            <artifactId>ktapi-core</artifactId>
+            <artifactId>ktapi-okhttpHelper</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>pl.pragmatists</groupId>
-            <artifactId>JUnitParams</artifactId>
-            <scope>test</scope>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-websocket-core</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -3,32 +3,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.125m125.kt</groupId>
-        <artifactId>ktapi</artifactId>
+        <artifactId>ktapi-requester</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>ktapi-pusher</artifactId>
+    <artifactId>ktapi-requester-retrofit-simple</artifactId>
     <dependencies>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pusher</groupId>
-            <artifactId>pusher-java-client</artifactId>
-            <version>2.0.1</version>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.6.2</version>
         </dependency>
         <dependency>
             <groupId>de.125m125.kt</groupId>
             <artifactId>ktapi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requester-retrofit</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <groupId>de.125m125.kt</groupId>
+            <artifactId>ktapi-requester-retrofit-tsvparser-univocity</artifactId>
         </dependency>
     </dependencies>
     <build>
