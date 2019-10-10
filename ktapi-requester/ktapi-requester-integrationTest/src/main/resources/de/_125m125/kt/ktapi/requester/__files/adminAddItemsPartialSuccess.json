@@ -1,22 +1,28 @@
 {
-    "succeeded": {
-        "entries": [
-            {
-                "amount": "64",
-                "id": "4",
-                "TSV_HEADER": "id\tname\tamount"
-            }
-        ],
-        "TSV_HEADER": "id\tname\tamount"
-    },
-    "failed": {
-        "entries": [
-            {
-                "amount": "0",
-                "id": "-5",
-                "TSV_HEADER": "id\tname\tamount"
-            }
-        ],
-        "TSV_HEADER": "id\tname\tamount"
+    "success": true,
+    "code": 207,
+    "message": "SomeUnknownItems",
+    "humanReadableMessage": "SomeUnknownItems",
+    "data": {
+        "succeeded": {
+            "entries": [
+                {
+                    "amount": "64",
+                    "id": "4",
+                    "TSV_HEADER": "id\tname\tamount"
+                }
+            ],
+            "TSV_HEADER": "id\tname\tamount"
+        },
+        "failed": {
+            "entries": [
+                {
+                    "amount": "0",
+                    "id": "-5",
+                    "TSV_HEADER": "id\tname\tamount"
+                }
+            ],
+            "TSV_HEADER": "id\tname\tamount"
+        }
     }
 }

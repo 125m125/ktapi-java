@@ -1,17 +1,23 @@
 {
-    "succeeded": {
-        "entries": [
-            {
-                "amount": "10",
-                "id": "1",
-                "TSV_HEADER": "id\tname\tamount"
-            },
-            {
-                "amount": "64",
-                "id": "4",
-                "TSV_HEADER": "id\tname\tamount"
-            }
-        ],
-        "TSV_HEADER": "id\tname\tamount"
+    "success": true,
+    "code": 200,
+    "message": "itemAddSuccess",
+    "humanReadableMessage": "itemAddSuccess",
+    "data": {
+        "succeeded": {
+            "entries": [
+                {
+                    "amount": "10",
+                    "id": "1",
+                    "TSV_HEADER": "id\tname\tamount"
+                },
+                {
+                    "amount": "64",
+                    "id": "4",
+                    "TSV_HEADER": "id\tname\tamount"
+                }
+            ],
+            "TSV_HEADER": "id\tname\tamount"
+        }
     }
 }

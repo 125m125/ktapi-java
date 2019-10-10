@@ -138,7 +138,7 @@ public interface KtRetrofitClient {
     Call<WriteResult<Long>> readBankStatement();
 
     @POST("admins/{adminId}/namedUsers/{targetName}/items")
-    Call<ItemPayinResult> adminAddItems(@Path("adminId") String adminId,
+    Call<WriteResult<ItemPayinResult>> adminAddItems(@Path("adminId") String adminId,
             @Path("targetName") String targetName, @Body Map<String, Double> flattenedItems,
             @Query("message") String message, @Header("userKey") String identifier);
 }

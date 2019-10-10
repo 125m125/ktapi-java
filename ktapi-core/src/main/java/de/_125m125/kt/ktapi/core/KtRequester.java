@@ -105,6 +105,6 @@ public interface KtRequester extends Closeable {
      */
     public Result<WriteResult<Long>> readBankStatement();
 
-    public Result<ItemPayinResult> adminAddItems(UserKey adminKey, String targetName,
+    public Result<WriteResult<ItemPayinResult>> adminAddItems(UserKey adminKey, String targetName,
             List<Item> items, String message);
 }

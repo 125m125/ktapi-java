@@ -171,8 +171,8 @@ public class KtRequesterDecorator implements KtRequester {
     }
 
     @Override
-    public Result<ItemPayinResult> adminAddItems(final UserKey adminKey, final String targetName,
-            final List<Item> items, final String message) {
+    public Result<WriteResult<ItemPayinResult>> adminAddItems(final UserKey adminKey,
+            final String targetName, final List<Item> items, final String message) {
         return this.requester.adminAddItems(adminKey, targetName, items, message);
     }
 

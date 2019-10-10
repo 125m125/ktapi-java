@@ -242,8 +242,8 @@ public class KtRetrofitRequester implements KtRequester {
     }
 
     @Override
-    public Result<ItemPayinResult> adminAddItems(final UserKey adminKey, final String targetName,
-            final List<Item> items, final String message) {
+    public Result<WriteResult<ItemPayinResult>> adminAddItems(final UserKey adminKey,
+            final String targetName, final List<Item> items, final String message) {
         final Map<String, Double> flattenedItems =
                 items.stream().collect(Collectors.toMap(Item::getId, Item::getAmount));
         return new RetrofitResult<>(this.client.adminAddItems(adminKey.getUserId(), targetName,

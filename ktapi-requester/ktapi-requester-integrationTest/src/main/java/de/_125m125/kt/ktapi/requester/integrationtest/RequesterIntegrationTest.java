@@ -60,10 +60,10 @@ public abstract class RequesterIntegrationTest {
                     .usingFilesUnderClasspath("de/_125m125/kt/ktapi/requester").dynamicPort());
 
     @Rule
-    public final WireMockClassRule        instanceRule = RequesterIntegrationTest.wireMockRule;
+    public final WireMockClassRule instanceRule = RequesterIntegrationTest.wireMockRule;
 
-    private KtRequester                   uut;
-    private final TokenUser               user         = new TokenUser("123", "234", "345");
+    private KtRequester     uut;
+    private final TokenUser user = new TokenUser("123", "234", "345");
 
     @Before
     public void initializeRequester() {
@@ -152,15 +152,16 @@ public abstract class RequesterIntegrationTest {
             throw new IllegalStateException(
                     "initializeRequester has to be called before executing tests.");
         }
-        final Result<ItemPayinResult> actual = this.uut.adminAddItems(this.user.getKey(), "test",
-                Arrays.asList(new Item("4", "Cobblestone", 64), new Item("1", "Stone", 10)),
-                "Test");
+        final Result<WriteResult<ItemPayinResult>> actual =
+                this.uut.adminAddItems(this.user.getKey(), "test",
+                        Arrays.asList(new Item("4", "Cobblestone", 64), new Item("1", "Stone", 10)),
+                        "Test");
 
         final ItemPayinResult expected =
                 new ItemPayinResult(Arrays.asList(new Item("4", 64), new Item("1", 10)), null);
 
         assertEquals(200, actual.getStatus());
-        assertEquals(expected, actual.getContent());
+        assertEquals(expected, actual.getContent().getObject());
     }
 
     @Test
@@ -169,7 +170,8 @@ public abstract class RequesterIntegrationTest {
             throw new IllegalStateException(
                     "initializeRequester has to be called before executing tests.");
         }
-        final Result<ItemPayinResult> actual = this.uut.adminAddItems(this.user.getKey(), "test",
+        final Result<WriteResult<ItemPayinResult>> actual = this.uut.adminAddItems(
+                this.user.getKey(), "test",
                 Arrays.asList(new Item("4", "Cobblestone", 64), new Item("-5", "Unknown", 10)),
                 "Test");
 
@@ -177,6 +179,7 @@ public abstract class RequesterIntegrationTest {
                 Arrays.asList(new Item("-5", 0)));
 
         assertEquals(207, actual.getStatus());
-        assertEquals(expected, actual.getContent());
+        assertEquals("SomeUnknownItems", actual.getContent().getMessage());
+        assertEquals(expected, actual.getContent().getObject());
     }
 }
