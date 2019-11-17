@@ -14,17 +14,20 @@ jobs:
       name: "Unit Tests"              
       before_install:
         - ".travis/before-install.sh"
-      script: mvn verify -B
+      script: mvn -s .travis/mavenSettings.xml verify -B
       install: skip
       after_success:
         - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r ktapi-report/target/site/jacoco-aggregate/jacoco.xml
         - bash <(curl -s https://codecov.io/bash)
     - name: "Spotbugs"
-      script: mvn spotbugs:check -B
+      install: mvn install  -s .travis/mavenSettings.xml -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+      script: mvn -s .travis/mavenSettings.xml spotbugs:check -B
     - name: "Checkstyle"
-      script: mvn checkstyle:check -B
+      install: mvn install  -s .travis/mavenSettings.xml -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+      script: mvn -s .travis/mavenSettings.xml checkstyle:check -B
     - name: "License"
-      script: mvn license:check -B
+      install: mvn install  -s .travis/mavenSettings.xml -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+      script: mvn -s .travis/mavenSettings.xml license:check -B
     - stage: deploy
       name: "Deploy to Github"
       if: tag IS true AND repo = "125m125/ktapi-java"
