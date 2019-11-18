@@ -54,6 +54,7 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
+import de._125m125.kt.ktapi.core.entities.RegisteredUser;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.ItemPayinResult;
@@ -101,7 +102,8 @@ public class KtJerseyRequester implements KtRequester {
             builder = clientModifier.apply(builder);
         }
         builder = builder
-                .register(new HeaderAdderFilter("user-agent", "KtApi-Java-Jersey-" + appName) {});
+                .register(new HeaderAdderFilter("user-agent", "KtApi-Java-Jersey-" + appName) {
+                });
         this.client = builder.build();
         this.target = this.client.target(url == null ? KtRequester.DEFAULT_BASE_URL : url);
     }
@@ -115,7 +117,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<List<HistoryEntry>> getHistory(final String itemid, final int limit,
             final int offset) {
         final InvocationCallbackResult<List<HistoryEntry>> result =
-                new InvocationCallbackResult<>(new GenericType<List<HistoryEntry>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<HistoryEntry>>() {
+                });
         this.target.path("history").path(itemid).queryParam("limit", limit)
                 .queryParam("offset", offset).request().async().get(result);
         return result;
@@ -133,7 +136,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<List<OrderBookEntry>> getOrderBook(final String itemid, final int limit,
             final BuySellBoth mode, final boolean summarizeRemaining) {
         final InvocationCallbackResult<List<OrderBookEntry>> result =
-                new InvocationCallbackResult<>(new GenericType<List<OrderBookEntry>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<OrderBookEntry>>() {
+                });
         this.target.path("orderbook").path(itemid).queryParam("limit", limit)
                 .queryParam("mode", mode).queryParam("summarize", summarizeRemaining).request()
                 .async().get(result);
@@ -144,7 +148,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<List<OrderBookEntry>> getBestOrderBookEntries(final String itemid,
             final BuySellBoth mode) {
         final InvocationCallbackResult<List<OrderBookEntry>> result =
-                new InvocationCallbackResult<>(new GenericType<List<OrderBookEntry>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<OrderBookEntry>>() {
+                });
         this.target.path("orderbook").path(itemid).path("best").queryParam("mode", mode).request()
                 .async().get(result);
         return result;
@@ -163,7 +168,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<ItemName>> getItemNames() {
         final InvocationCallbackResult<List<ItemName>> result =
-                new InvocationCallbackResult<>(new GenericType<List<ItemName>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<ItemName>>() {
+                });
         this.target.path("itemnames").request().async().get(result);
         return result;
     }
@@ -171,7 +177,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<Item>> getItems(final UserKey userKey) {
         final InvocationCallbackResult<List<Item>> result =
-                new InvocationCallbackResult<>(new GenericType<List<Item>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<Item>>() {
+                });
         userTarget(userKey).path("items").request().async().get(result);
         return result;
     }
@@ -187,7 +194,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<List<Message>> getMessages(final UserKey userKey, final int offset,
             final int limit) {
         final InvocationCallbackResult<List<Message>> result =
-                new InvocationCallbackResult<>(new GenericType<List<Message>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<Message>>() {
+                });
         userTarget(userKey).path("messages").request().async().get(result);
         return result;
     }
@@ -196,7 +204,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<List<Payout>> getPayouts(final UserKey userKey, final int offset,
             final int limit) {
         final InvocationCallbackResult<List<Payout>> result =
-                new InvocationCallbackResult<>(new GenericType<List<Payout>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<Payout>>() {
+                });
         userTarget(userKey).path("payouts").request().async().get(result);
         return result;
     }
@@ -205,7 +214,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<WriteResult<Payout>> createPayout(final UserKey userKey, final PayoutType type,
             final String itemid, final String amount) {
         final InvocationCallbackResult<WriteResult<Payout>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {
+                });
         final Form form = new Form().param("type", type.getComName()).param("item", itemid)
                 .param("amount", amount);
         userTarget(userKey).path("payouts").request().async()
@@ -216,7 +226,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Payout>> cancelPayout(final UserKey userKey, final long payoutid) {
         final InvocationCallbackResult<WriteResult<Payout>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {
+                });
         userTarget(userKey).path("payouts").path(Long.toString(payoutid)).path("cancel").request()
                 .async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
@@ -226,7 +237,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Payout>> takeoutPayout(final UserKey userKey, final long payoutid) {
         final InvocationCallbackResult<WriteResult<Payout>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Payout>>() {
+                });
         userTarget(userKey).path("payouts").path(Long.toString(payoutid)).path("takeout").request()
                 .async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
@@ -248,7 +260,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<List<Trade>> getTrades(final UserKey userKey) {
         final InvocationCallbackResult<List<Trade>> result =
-                new InvocationCallbackResult<>(new GenericType<List<Trade>>() {});
+                new InvocationCallbackResult<>(new GenericType<List<Trade>>() {
+                });
         userTarget(userKey).path("orders").request().async().get(result);
         return result;
     }
@@ -257,7 +270,8 @@ public class KtJerseyRequester implements KtRequester {
     public Result<WriteResult<Trade>> createTrade(final UserKey userKey, final BuySell mode,
             final String item, final int amount, final String pricePerItem) {
         final InvocationCallbackResult<WriteResult<Trade>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {
+                });
         final Form form = new Form().param("buySell", mode.toString()).param("item", item)
                 .param("amount", Integer.toString(amount)).param("price", pricePerItem);
         userTarget(userKey).path("orders").request().async()
@@ -268,7 +282,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Trade>> cancelTrade(final UserKey userKey, final long tradeId) {
         final InvocationCallbackResult<WriteResult<Trade>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {
+                });
         userTarget(userKey).path("orders").path(Long.toString(tradeId)).path("cancel").request()
                 .async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
@@ -278,7 +293,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Trade>> takeoutTrade(final UserKey userKey, final long tradeId) {
         final InvocationCallbackResult<WriteResult<Trade>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Trade>>() {
+                });
         userTarget(userKey).path("orders").path(Long.toString(tradeId)).path("takeout").request()
                 .async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
@@ -295,7 +311,8 @@ public class KtJerseyRequester implements KtRequester {
     @Override
     public Result<WriteResult<Long>> readBankStatement() {
         final InvocationCallbackResult<WriteResult<Long>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<Long>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Long>>() {
+                });
         this.target.path("bank/read").request().async()
                 .post(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
         return result;
@@ -305,12 +322,35 @@ public class KtJerseyRequester implements KtRequester {
     public Result<WriteResult<ItemPayinResult>> adminAddItems(final UserKey adminKey,
             final String targetName, final List<Item> items, final String message) {
         final InvocationCallbackResult<WriteResult<ItemPayinResult>> result =
-                new InvocationCallbackResult<>(new GenericType<WriteResult<ItemPayinResult>>() {});
+                new InvocationCallbackResult<>(new GenericType<WriteResult<ItemPayinResult>>() {
+                });
         this.target.path("admins").path(adminKey.getUserId()).path("namedUsers").path(targetName)
                 .path("items").queryParam("message", message).request().async()
                 .post(Entity.entity(
                         items.stream().collect(Collectors.toMap(Item::getId, Item::getAmount)),
                         MediaType.APPLICATION_JSON), result);
+        return result;
+    }
+
+    @Override
+    public Result<WriteResult<Long>> adminCreateUser(final UserKey adminKey,
+            final String targetName) {
+        final InvocationCallbackResult<WriteResult<Long>> result =
+                new InvocationCallbackResult<>(new GenericType<WriteResult<Long>>() {
+                });
+        this.target.path("admins").path(adminKey.getUserId()).path("namedUsers").path(targetName)
+                .request().async()
+                .put(Entity.entity(null, MediaType.APPLICATION_FORM_URLENCODED_TYPE), result);
+        return result;
+    }
+
+    @Override
+    public Result<List<RegisteredUser>> adminGetUsers(final UserKey adminKey) {
+        final InvocationCallbackResult<List<RegisteredUser>> result =
+                new InvocationCallbackResult<>(new GenericType<List<RegisteredUser>>() {
+                });
+        this.target.path("admins").path(adminKey.getUserId()).path("namedUsers").request().async()
+                .get(result);
         return result;
     }
 
@@ -365,4 +405,5 @@ public class KtJerseyRequester implements KtRequester {
         }
 
     }
+
 }

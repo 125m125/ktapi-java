@@ -34,6 +34,7 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
+import de._125m125.kt.ktapi.core.entities.RegisteredUser;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.Result;
@@ -174,6 +175,17 @@ public class KtRequesterDecorator implements KtRequester {
     public Result<WriteResult<ItemPayinResult>> adminAddItems(final UserKey adminKey,
             final String targetName, final List<Item> items, final String message) {
         return this.requester.adminAddItems(adminKey, targetName, items, message);
+    }
+
+    @Override
+    public Result<WriteResult<Long>> adminCreateUser(final UserKey adminKey,
+            final String targetName) {
+        return this.requester.adminCreateUser(adminKey, targetName);
+    }
+
+    @Override
+    public Result<List<RegisteredUser>> adminGetUsers(final UserKey adminKey) {
+        return this.requester.adminGetUsers(adminKey);
     }
 
 }

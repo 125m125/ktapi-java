@@ -39,6 +39,7 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
+import de._125m125.kt.ktapi.core.entities.RegisteredUser;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ErrorResponse;
 import de._125m125.kt.ktapi.core.results.ItemPayinResult;
@@ -248,5 +249,19 @@ public class KtRetrofitRequester implements KtRequester {
                 items.stream().collect(Collectors.toMap(Item::getId, Item::getAmount));
         return new RetrofitResult<>(this.client.adminAddItems(adminKey.getUserId(), targetName,
                 flattenedItems, message, adminKey.getIdentifier()), this.errorConverter);
+    }
+
+    @Override
+    public Result<WriteResult<Long>> adminCreateUser(final UserKey adminKey,
+            final String targetName) {
+        return new RetrofitResult<>(this.client.adminCreateUser(adminKey.getUserId(), targetName,
+                adminKey.getIdentifier()), this.errorConverter);
+    }
+
+    @Override
+    public Result<List<RegisteredUser>> adminGetUsers(final UserKey adminKey) {
+        return new RetrofitResult<>(
+                this.client.adminGetUsers(adminKey.getUserId(), adminKey.getIdentifier()),
+                this.errorConverter);
     }
 }

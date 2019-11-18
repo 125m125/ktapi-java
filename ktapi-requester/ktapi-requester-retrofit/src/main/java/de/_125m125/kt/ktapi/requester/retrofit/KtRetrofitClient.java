@@ -35,6 +35,7 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
+import de._125m125.kt.ktapi.core.entities.RegisteredUser;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.WriteResult;
@@ -45,6 +46,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -141,4 +143,12 @@ public interface KtRetrofitClient {
     Call<WriteResult<ItemPayinResult>> adminAddItems(@Path("adminId") String adminId,
             @Path("targetName") String targetName, @Body Map<String, Double> flattenedItems,
             @Query("message") String message, @Header("userKey") String identifier);
+
+    @PUT("admins/{adminId}/namedUsers/{targetName}")
+    Call<WriteResult<Long>> adminCreateUser(@Path("adminId") String adminId,
+            @Path("targetName") String targetName, @Header("userKey") String identifier);
+
+    @GET("admins/{adminId}/namedUsers/")
+    Call<List<RegisteredUser>> adminGetUsers(@Path("adminId") String adminId,
+            @Header("userKey") String identifier);
 }

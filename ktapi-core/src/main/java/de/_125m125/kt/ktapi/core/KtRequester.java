@@ -33,6 +33,7 @@ import de._125m125.kt.ktapi.core.entities.OrderBookEntry;
 import de._125m125.kt.ktapi.core.entities.Payout;
 import de._125m125.kt.ktapi.core.entities.Permissions;
 import de._125m125.kt.ktapi.core.entities.PusherResult;
+import de._125m125.kt.ktapi.core.entities.RegisteredUser;
 import de._125m125.kt.ktapi.core.entities.Trade;
 import de._125m125.kt.ktapi.core.results.ItemPayinResult;
 import de._125m125.kt.ktapi.core.results.Result;
@@ -107,4 +108,8 @@ public interface KtRequester extends Closeable {
 
     public Result<WriteResult<ItemPayinResult>> adminAddItems(UserKey adminKey, String targetName,
             List<Item> items, String message);
+
+    public Result<WriteResult<Long>> adminCreateUser(UserKey adminKey, String targetName);
+
+    public Result<List<RegisteredUser>> adminGetUsers(UserKey adminKey);
 }
