@@ -33,7 +33,9 @@ public class CertificatePinnerAdder implements ClientModifier {
             new CertificatePinnerAdderCertificate("kt.125m125.de",
                     "sha256/ZnHPNFeZ/okzKy3UttEwn4O9V8T/qEvByGaE1FLBdq8=",
                     "sha256/tcgiMrn7yiqTpt7SDna6sU0faF8m4QUiq24aQVW3F9U=",
-                    "sha256/Ii0NcQVclBzikUGw+iAV5+UnEmTqQDIhLZifNGM4yHY="), };
+                    "sha256/Ii0NcQVclBzikUGw+iAV5+UnEmTqQDIhLZifNGM4yHY=",
+                    "sha256/BACuvvyhjQYzCbNMfqXZU8/XYBiSCQbcGqHXbrEmUKY=",
+                    "sha256/47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), };
 
     private final CertificatePinner                          certificatePinner;
 
