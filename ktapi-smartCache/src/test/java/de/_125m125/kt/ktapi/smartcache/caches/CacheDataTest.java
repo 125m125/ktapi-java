@@ -154,7 +154,7 @@ public class CacheDataTest {
         assertEquals(Optional.empty(), this.uut.get(5));
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testSet_failure_negativeIndex() throws Exception {
         this.uut.set(Arrays.asList("c", "d"), -1);
     }
