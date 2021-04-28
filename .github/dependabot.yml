@@ -1,0 +1,27 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "07:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.glassfish.jersey.inject:jersey-hk2
+    versions:
+    - 3.0.0
+  - dependency-name: org.glassfish.jersey.core:jersey-client
+    versions:
+    - 3.0.0
+  - dependency-name: com.github.spotbugs:spotbugs-annotations
+    versions:
+    - 4.2.0
+  - dependency-name: com.squareup.okhttp3:okhttp
+    versions:
+    - 4.9.0
+  - dependency-name: com.github.ekryd.sortpom:sortpom-maven-plugin
+    versions:
+    - 2.12.0
+  - dependency-name: org.apache.maven.plugins:maven-checkstyle-plugin
+    versions:
+    - 3.1.1
